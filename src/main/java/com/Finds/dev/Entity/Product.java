@@ -33,9 +33,6 @@ public class Product {
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
     
-    @Column(name = "old_price", precision = 10, scale = 2)
-    private BigDecimal oldPrice;
-    
     @Column(name = "stock", nullable = false)
     private Integer stock = 0;
     
@@ -70,7 +67,6 @@ public class Product {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     
@@ -88,9 +84,6 @@ public class Product {
     
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
-    
-    public BigDecimal getOldPrice() { return oldPrice; }
-    public void setOldPrice(BigDecimal oldPrice) { this.oldPrice = oldPrice; }
     
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }

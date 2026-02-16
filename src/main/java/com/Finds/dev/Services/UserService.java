@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -68,7 +70,6 @@ public class UserService {
             String currentPassword = updatePasswordDto.getCurrentPassword();
             String newPassword = updatePasswordDto.getNewPassword();
 
-            // Валидация
             if (currentPassword == null || currentPassword.trim().isEmpty()) {
                 throw new RuntimeException("Текущий пароль не может быть пустым");
             }
@@ -97,6 +98,17 @@ public class UserService {
             throw new RuntimeException("Ошибка аутентификации. Пожалуйста, войдите снова.");
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при смене пароля: " + e.getMessage());
+        }
+    }
+
+    public List<User> searchUsersByEmail(String email) {
+        try {
+            List<User> users = new ArrayList<>();
+            Optional<User> user = userRepository.findByEmail(email);
+            user.ifPresent(users::add);
+            return users;
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при поиске пользователей: " + e.getMessage());
         }
     }
 }

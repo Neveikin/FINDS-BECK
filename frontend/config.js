@@ -72,28 +72,47 @@ class ApiClient {
             ...options
         };
 
-        if (token) {
+        // Не добавляем Authorization header для auth запросов
+        if (token && !endpoint.includes('/api/auth/')) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
 
         try {
             const response = await fetch(url, config);
             
-            // Если токен истек (401), пытаемся обновить
-            if (response.status === 401 && !options._retry) {
-                const newToken = await this.refreshToken();
-                if (newToken) {
-                    // Повторяем запрос с новым токеном
-                    config.headers['Authorization'] = `Bearer ${newToken}`;
-                    config._retry = true;
-                    return this.request(endpoint, config);
+            // Если токен истек (401), пытаемся обновить для всех запросов кроме auth
+            if (response.status === 401 && !options._retry && 
+                !endpoint.includes('/api/auth/signin') && 
+                !endpoint.includes('/api/auth/signup') && 
+                !endpoint.includes('/api/auth/refresh')) {
+                try {
+                    const newToken = await this.refreshToken();
+                    if (newToken) {
+                        // Повторяем запрос с новым токеном
+                        config.headers['Authorization'] = `Bearer ${newToken}`;
+                        config._retry = true;
+                        return this.request(endpoint, config);
+                    }
+                } catch (refreshError) {
+                    // Если обновление не удалось, просто продолжаем с исходной ошибкой
+                    console.log('Token refresh failed:', refreshError.message);
+                    // Не выбрасываем ошибку дальше, просто продолжаем с 401
                 }
             }
 
-            const data = await response.json();
+            const data = await response.text().then(text => {
+                try {
+                    return text ? JSON.parse(text) : {};
+                } catch (e) {
+                    console.warn('Failed to parse JSON, returning raw text:', text);
+                    // Если не JSON, возвращаем текст как есть
+                    return text;
+                }
+            });
             
             if (!response.ok) {
-                throw new Error(data.message || 'Request failed');
+                const errorMessage = typeof data === 'string' ? data : (data.message || `HTTP ${response.status}: ${response.statusText}`);
+                throw new Error(errorMessage);
             }
             
             return data;
@@ -118,7 +137,14 @@ class ApiClient {
                 body: JSON.stringify({ refreshToken })
             });
 
-            const data = await response.json();
+            const data = await response.text().then(text => {
+                try {
+                    return text ? JSON.parse(text) : {};
+                } catch (e) {
+                    console.warn('Failed to parse JSON in refresh:', text);
+                    return {};
+                }
+            });
             
             if (response.ok) {
                 TokenManager.setTokens(data.accesToken, data.refershToken);
@@ -127,13 +153,13 @@ class ApiClient {
                 throw new Error(data.message || 'Token refresh failed');
             }
         } catch (error) {
-            // Если обновление не удалось - очищаем токены и перенаправляем на вход
+            // Если обновление не удалось - очищаем токены
             TokenManager.clearAll();
-            window.location.href = 'index.html';
             throw error;
         }
     }
 
+    
     // Удобные методы для разных типов запросов
     static get(endpoint) {
         return this.request(endpoint, { method: 'GET' });

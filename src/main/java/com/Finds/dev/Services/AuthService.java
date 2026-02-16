@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 public class AuthService {
     // lsof -ti:8090 | xargs kill -9
-    // cd /Users/ilanevejkin/Desktop/FINDS/frontend && python3 -m http.server 3001
+    // cd /Users/ilanevejkin/Desktop/FINDS-BECK/frontend && python3 -m http.server 3001
 
     @Autowired
     private UserRepository userRepository;

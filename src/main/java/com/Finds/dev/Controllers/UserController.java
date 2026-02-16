@@ -10,9 +10,11 @@ import com.Finds.dev.Security.jwt.JwtCore;
 import com.Finds.dev.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -41,7 +43,6 @@ public class UserController {
         try {
             UserProfileDto profile = userService.updateEmail(updateEmailDto);
             
-            // Генерируем новые токены с обновленными данными
             User user = userService.getCurrentUser();
             String newAccessToken = jwtCore.generateAccesToken(user.getEmail(), String.valueOf(user.getId()), user.getRole().name());
             String newRefreshToken = jwtCore.generateRefreshToken(user.getEmail(), String.valueOf(user.getId()));
@@ -60,7 +61,6 @@ public class UserController {
         try {
             UserProfileDto profile = userService.updateName(updateNameDto);
             
-            // Генерируем новые токены с обновленными данными
             User user = userService.getCurrentUser();
             String newAccessToken = jwtCore.generateAccesToken(user.getEmail(), String.valueOf(user.getId()), user.getRole().name());
             String newRefreshToken = jwtCore.generateRefreshToken(user.getEmail(), String.valueOf(user.getId()));
@@ -80,8 +80,32 @@ public class UserController {
             UserProfileDto profile = userService.updatePassword(updatePasswordDto);
             return ResponseEntity.ok(profile);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest()
-                    .body("{\"message\": \"" + e.getMessage() + "\"}");
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", "PASSWORD_UPDATE_FAILED");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @GetMapping("/admin/users/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> searchUsers(@RequestParam String email) {
+        try {
+            List<User> users = userService.searchUsersByEmail(email);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("data", users);
+            response.put("count", users.size());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", "USER_SEARCH_FAILED");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 }

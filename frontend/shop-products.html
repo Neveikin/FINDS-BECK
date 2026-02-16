@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Товары магазина - FINDS</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -71,9 +72,14 @@
                         </div>
                     </div>
                 </div>
-                <button class="btn btn-outline" onclick="history.back()">
-                    <i class="fas fa-arrow-left"></i> Назад к магазинам
-                </button>
+                <div class="shop-actions">
+                    <button class="btn btn-outline" onclick="history.back()">
+                        <i class="fas fa-arrow-left"></i> Назад к магазинам
+                    </button>
+                    <button id="add-product-btn" class="btn btn-success" onclick="openAddProductModal()" style="display: none;">
+                        <i class="fas fa-plus"></i> Добавить товар
+                    </button>
+                </div>
             </section>
 
             <!-- Фильтры и поиск товаров -->
@@ -151,6 +157,46 @@
             </div>
         </div>
     </footer>
+
+    <!-- Модальное окно добавления товара -->
+    <div id="add-product-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Добавление товара</h3>
+                <button class="modal-close" onclick="closeAddProductModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="add-product-form" class="modal-body">
+                <div class="form-group">
+                    <label for="product-name">Название товара</label>
+                    <input type="text" id="product-name" name="name" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="product-description">Описание</label>
+                    <textarea id="product-description" name="description" rows="4" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Цена</label>
+                    <input type="number" id="product-price" name="price" step="0.01" min="0.01" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="product-stock">Количество</label>
+                    <input type="number" id="product-stock" name="stock" min="0" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="product-active" name="isActive" checked>
+                        Активен
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeAddProductModal()" class="btn btn-outline">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="config.js"></script>
     <script src="main.js"></script>

@@ -1,4 +1,24 @@
 // Управление хедером и авторизацией
+document.addEventListener('DOMContentLoaded', () => {
+    // Проверяем наличие зависимостей
+    if (typeof TokenManager === 'undefined') {
+        console.error('TokenManager not loaded in main.js');
+        return;
+    }
+    
+    if (typeof MessageManager === 'undefined') {
+        console.error('MessageManager not loaded in main.js');
+        return;
+    }
+    
+    // Инициализируем HeaderManager
+    const headerManager = new HeaderManager();
+    headerManager.init();
+    
+    // Делаем доступным глобально
+    window.headerManager = headerManager;
+});
+
 class HeaderManager {
     constructor() {
         this.authButtons = document.getElementById('auth-buttons');
@@ -6,8 +26,6 @@ class HeaderManager {
         this.userAvatar = document.getElementById('user-avatar');
         this.userDropdown = document.getElementById('user-dropdown');
         this.logoutBtn = document.getElementById('logout-btn');
-        
-        this.init();
     }
 
     init() {
@@ -23,15 +41,45 @@ class HeaderManager {
             this.authButtons.style.display = 'none';
             this.userMenu.style.display = 'block';
             
-            // Загружаем данные пользователя для аватара
+            // Загружаем данные пользователя для аватара и проверки роли
             const userData = TokenManager.getUser();
             if (userData && userData.name) {
                 this.userAvatar.innerHTML = userData.name.charAt(0).toUpperCase();
             }
+            
+            // Показываем кнопку админ панели если пользователь ADMIN
+            this.showAdminButtonIfNeeded(userData);
         } else {
             // Показываем кнопки входа/регистрации
             this.authButtons.style.display = 'flex';
             this.userMenu.style.display = 'none';
+        }
+    }
+
+    showAdminButtonIfNeeded(userData) {
+        // Проверяем есть ли уже кнопка админ панели
+        let adminButton = document.getElementById('admin-panel-btn');
+        
+        if (userData && userData.role === 'ADMIN') {
+            if (!adminButton) {
+                // Создаем кнопку админ панели только для ADMIN
+                adminButton = document.createElement('a');
+                adminButton.id = 'admin-panel-btn';
+                adminButton.href = 'admin.html';
+                adminButton.className = 'btn btn-outline';
+                adminButton.innerHTML = '<i class="fas fa-cog"></i> Админ панель';
+                
+                // Добавляем кнопку в навигацию
+                const navList = document.querySelector('.nav-list');
+                if (navList) {
+                    navList.appendChild(adminButton);
+                }
+            }
+        } else {
+            // Если пользователь не ADMIN, удаляем кнопку если она есть
+            if (adminButton) {
+                adminButton.remove();
+            }
         }
     }
 

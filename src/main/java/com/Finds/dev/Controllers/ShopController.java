@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -51,12 +52,26 @@ public class ShopController {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addShop(@RequestBody Shop shop) {
         try {
-            return ResponseEntity.ok(shopRepository.save(shop));
+            Shop savedShop = shopRepository.save(shop);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Shop created successfully");
+            response.put("data", Map.of(
+                "shopId", savedShop.getId(),
+                "shopName", savedShop.getName()
+            ));
+            
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", "SHOP_CREATION_FAILED");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
@@ -65,9 +80,21 @@ public class ShopController {
     public ResponseEntity<?> deleteShop(@PathVariable String id) {
         try {
             shopRepository.deleteById(id);
-            return ResponseEntity.ok("Магазин удален");
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Shop deleted successfully");
+            response.put("data", Map.of(
+                "shopId", id
+            ));
+            
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", "SHOP_DELETION_FAILED");
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 

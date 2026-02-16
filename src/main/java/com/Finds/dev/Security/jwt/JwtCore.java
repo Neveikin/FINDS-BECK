@@ -79,7 +79,6 @@ public class JwtCore {
         return jwtAuth;
     }
     
-    // Обратная совместимость
     public JwtAuth generateAuthToken(String email) {
         JwtAuth jwtAuth = new JwtAuth();
         jwtAuth.setAccesToken(generateAccesToken(email, "", ""));

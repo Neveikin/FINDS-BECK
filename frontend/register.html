@@ -22,8 +22,15 @@
                         <li><a href="#" class="nav-link">О нас</a></li>
                     </ul>
                 </nav>
-                <div class="auth-section">
+                <div class="auth-section" id="auth-buttons">
                     <a href="login.html" class="btn btn-outline">Вход</a>
+                </div>
+                <div class="user-menu" id="user-menu" style="display: none;">
+                    <div class="user-avatar" id="user-avatar"></div>
+                    <div class="user-dropdown" id="user-dropdown" style="display: none;">
+                        <a href="dashboard.html">Личный кабинет</a>
+                        <a href="#" id="logout-btn">Выйти</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,5 +117,6 @@
 
     <script src="config.js"></script>
     <script src="script.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>

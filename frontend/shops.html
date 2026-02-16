@@ -81,6 +81,24 @@
                 <span>Не удалось загрузить магазины. Попробуйте обновить страницу.</span>
             </div>
 
+            <!-- Сообщение об успехе -->
+            <div id="success-message" class="success-message" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <span></span>
+            </div>
+
+            <!-- Сообщение об ошибке -->
+            <div id="error-container" class="error-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span></span>
+            </div>
+
+            <!-- Сообщение об успехе -->
+            <div id="success-container" class="success-message" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <span></span>
+            </div>
+
             <!-- Сообщение о загрузке -->
             <div id="loading" class="loading">
                 <i class="fas fa-spinner fa-spin"></i>
@@ -95,6 +113,47 @@
             </section>
         </div>
     </main>
+
+    <!-- Модальное окно добавления товара -->
+    <div id="add-product-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Добавление товара</h3>
+                <button class="modal-close" onclick="closeAddProductModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="add-product-form" class="modal-body">
+                <input type="hidden" id="current-shop-id" name="shopId">
+                <div class="form-group">
+                    <label for="product-name">Название товара</label>
+                    <input type="text" id="product-name" name="name" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="product-description">Описание</label>
+                    <textarea id="product-description" name="description" rows="4" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Цена</label>
+                    <input type="number" id="product-price" name="price" step="0.01" min="0.01" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="product-stock">Количество</label>
+                    <input type="number" id="product-stock" name="stock" min="0" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="product-active" name="isActive" checked>
+                        Активен
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeAddProductModal()" class="btn btn-outline">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Футер -->
     <footer class="footer">

@@ -2,7 +2,7 @@
 class ShopProductsPage {
     constructor() {
         this.shopId = this.getShopIdFromUrl();
-        this.productsGrid = document.getElementById('products-grid');
+        this.productsContainer = document.getElementById('products-container');
         this.loading = document.getElementById('loading');
         this.errorMessage = document.getElementById('error-message');
         this.productSearch = document.getElementById('product-search');
@@ -14,6 +14,9 @@ class ShopProductsPage {
         this.filteredProducts = [];
         
         this.init();
+        
+        // Делаем экземпляр доступным глобально
+        window.shopPage = this;
     }
 
     init() {
@@ -34,17 +37,8 @@ class ShopProductsPage {
 
     setupEventListeners() {
         // Поиск товаров
-        if (this.productSearch) {
-            this.productSearch.addEventListener('input', () => this.handleSearch());
-        }
-        
         if (this.searchProductsBtn) {
             this.searchProductsBtn.addEventListener('click', () => this.handleSearch());
-        }
-
-        // Сортировка
-        if (this.sortSelect) {
-            this.sortSelect.addEventListener('change', () => this.handleSort());
         }
 
         // Enter в поиске
@@ -55,11 +49,25 @@ class ShopProductsPage {
                 }
             });
         }
+
+        // Сортировка
+        if (this.sortSelect) {
+            this.sortSelect.addEventListener('change', () => this.handleSort());
+        }
+
+        // Форма добавления товара
+        const addProductForm = document.getElementById('add-product-form');
+        if (addProductForm) {
+            addProductForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                window.shopPage.addProduct();
+            });
+        }
     }
 
     async loadShopInfo() {
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/shops/${this.shopId}`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/shops/${this.shopId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,9 +85,55 @@ class ShopProductsPage {
             this.shop = data.body || data;
             this.renderShopInfo();
             
+            // Проверяем права и показываем кнопку добавления товара
+            this.checkAndShowAddButton();
+            
         } catch (error) {
             console.error('Error loading shop info:', error);
             // Не показываем ошибку критично, продолжаем загрузку товаров
+        }
+    }
+
+    checkAndShowAddButton() {
+        const addProductBtn = document.getElementById('add-product-btn');
+        if (!addProductBtn) {
+            console.log('Кнопка add-product-btn не найдена');
+            return;
+        }
+
+        const currentUser = TokenManager.getUser();
+        console.log('Current user:', currentUser);
+        console.log('Shop data:', this.shop);
+        
+        if (!currentUser) {
+            console.log('Пользователь не авторизован');
+            addProductBtn.style.display = 'none';
+            return;
+        }
+
+        const isAdmin = currentUser.role === 'ADMIN';
+        const isOwner = this.shop && this.shop.owners && 
+            this.shop.owners.some(owner => owner.email === currentUser.email);
+
+        console.log('Is admin:', isAdmin);
+        console.log('Is owner:', isOwner);
+
+        if (isAdmin || isOwner) {
+            console.log('Показываем кнопку добавления товара');
+            addProductBtn.style.display = 'inline-flex';
+            
+            // Добавляем обработчик клика
+            addProductBtn.onclick = function() {
+                console.log('Кнопка нажата!');
+                if (typeof openAddProductModal === 'function') {
+                    openAddProductModal();
+                } else {
+                    console.error('Функция openAddProductModal не найдена');
+                }
+            };
+        } else {
+            console.log('Скрываем кнопку добавления товара');
+            addProductBtn.style.display = 'none';
         }
     }
 
@@ -87,43 +141,31 @@ class ShopProductsPage {
         try {
             this.showLoading();
             
-            // В реальном приложении здесь будет запрос к API для получения товаров магазина
-            // Пока используем моковые данные
-            const mockProducts = this.generateMockProducts();
-            
-            // Имитация задержки загрузки
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            this.products = mockProducts;
+            const response = await fetch(`${API_CONFIG.BASE_URL}/product/get?id=${this.shopId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(TokenManager.isAuthenticated() && {
+                        'Authorization': `Bearer ${TokenManager.getAccessToken()}`
+                    })
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            this.products = data.body || data;
             this.filteredProducts = [...this.products];
-            
             this.renderProducts();
-            this.hideLoading();
             
         } catch (error) {
             console.error('Error loading products:', error);
-            this.showError();
+            this.showError('Не удалось загрузить товары. Попробуйте обновить страницу.');
+        } finally {
             this.hideLoading();
         }
-    }
-
-    generateMockProducts() {
-        const productNames = [
-            'Смартфон iPhone 15', 'Ноутбук MacBook Pro', 'Наушники AirPods',
-            'Камера Canon EOS', 'Планшет iPad', 'Часы Apple Watch',
-            'Клавиатура Mechanical', 'Мышь Gaming Mouse', 'Монитор 4K',
-            'Колонки Bluetooth', 'Power Bank', 'Кабель USB-C'
-        ];
-        
-        return productNames.map((name, index) => ({
-            id: `product_${index + 1}`,
-            name: name,
-            price: Math.floor(Math.random() * 50000) + 1000,
-            rating: (Math.random() * 2 + 3).toFixed(1),
-            image: `https://via.placeholder.com/300x300?text=${encodeURIComponent(name.substring(0, 10))}`,
-            description: `Отличное качество по доступной цене. ${name} - это выбор современных пользователей.`,
-            inStock: Math.random() > 0.2
-        }));
     }
 
     renderShopInfo() {
@@ -131,58 +173,68 @@ class ShopProductsPage {
 
         const shopName = document.getElementById('shop-name');
         const shopDescription = document.getElementById('shop-description');
-        const shopLogo = document.getElementById('shop-logo');
         const shopRating = document.getElementById('shop-rating');
         const productsCount = document.getElementById('products-count');
 
         if (shopName) shopName.textContent = this.shop.name || 'Магазин';
         if (shopDescription) shopDescription.textContent = this.shop.description || 'Описание магазина';
-        if (shopLogo) {
-            shopLogo.src = this.shop.logo || 'https://via.placeholder.com/100x100';
-            shopLogo.alt = this.shop.name || 'Магазин';
-        }
         if (shopRating) shopRating.textContent = (this.shop.rating || 0).toFixed(1);
-        if (productsCount) productsCount.textContent = `${this.products.length} товаров`;
+        if (productsCount) productsCount.textContent = `${this.shop.productCount || 0} товаров`;
     }
 
     renderProducts() {
-        if (!this.productsGrid) return;
+        if (!this.productsContainer) return;
 
         if (this.filteredProducts.length === 0) {
-            this.productsGrid.innerHTML = `
+            this.productsContainer.innerHTML = `
                 <div class="no-products">
                     <i class="fas fa-box-open"></i>
                     <h3>Товары не найдены</h3>
-                    <p>Попробуйте изменить параметры поиска</p>
+                    <p>В этом магазине пока нет товаров</p>
                 </div>
             `;
             return;
         }
 
         const productsHTML = this.filteredProducts.map(product => this.createProductCard(product)).join('');
-        this.productsGrid.innerHTML = productsHTML;
+        this.productsContainer.innerHTML = productsHTML;
     }
 
     createProductCard(product) {
+        const user = TokenManager.getUser();
+        const isAdmin = user && user.role === 'ADMIN';
+        const isSeller = user && user.role === 'SELLER';
+        const canEdit = isAdmin || isSeller;
+        const canAddProducts = isAdmin || isSeller; 
+
         return `
-            <div class="product-card">
+            <div class="product-card ${!product.isActive ? 'inactive' : ''} ${product.stock === 0 ? 'out-of-stock' : ''}">
                 <div class="product-image">
-                    <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
-                    ${!product.inStock ? '<div class="out-of-stock">Нет в наличии</div>' : ''}
+                    <img src="${product.imageUrl || `https://via.placeholder.com/300x200?text=${encodeURIComponent(product.name)}`}" 
+                         alt="${product.name}" 
+                         onerror="this.src='https://via.placeholder.com/300x200?text=${encodeURIComponent(product.name)}'">
+                    ${!product.isActive ? '<div class="inactive-badge">Неактивен</div>' : ''}
+                    ${product.stock === 0 ? '<div class="out-of-stock-badge">Нет в наличии</div>' : ''}
                 </div>
                 <div class="product-info">
-                    <h4 class="product-title">${this.escapeHtml(product.name)}</h4>
-                    <div class="product-rating">
-                        <i class="fas fa-star"></i>
-                        <span>${product.rating}</span>
+                    <h4 class="product-name">${this.escapeHtml(product.name)}</h4>
+                    <p class="product-price">${this.formatPrice(product.price)} руб</p>
+                    
+                    <div class="product-actions">
+                        ${canAddProducts ? `
+                            <button class="btn btn-sm btn-outline add-product-btn" onclick="openAddProductModal()" title="Добавить товар">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        ` : ''}
+                        ${canEdit ? `
+                            <button class="btn btn-sm btn-outline edit-product-btn" onclick="window.location.href='edit-product.html?id=${product.id}'">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-sm btn-primary add-to-cart-btn" onclick="addToCart('${product.id}')">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
                     </div>
-                    <p class="product-price">${this.formatPrice(product.price)} ₽</p>
-                    <button class="btn btn-primary ${!product.inStock ? 'disabled' : ''}" 
-                            onclick="addToCart('${product.id}')" 
-                            ${!product.inStock ? 'disabled' : ''}>
-                        <i class="fas fa-shopping-cart"></i>
-                        ${product.inStock ? 'В корзину' : 'Нет в наличии'}
-                    </button>
                 </div>
             </div>
         `;
@@ -204,11 +256,14 @@ class ShopProductsPage {
     }
 
     handleSort() {
-        const sortValue = this.sortSelect.value;
+        const sortBy = this.sortSelect.value;
         
-        switch (sortValue) {
-            case 'name':
+        switch (sortBy) {
+            case 'name-asc':
                 this.filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+                break;
+            case 'name-desc':
+                this.filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
                 break;
             case 'price-asc':
                 this.filteredProducts.sort((a, b) => a.price - b.price);
@@ -216,12 +271,47 @@ class ShopProductsPage {
             case 'price-desc':
                 this.filteredProducts.sort((a, b) => b.price - a.price);
                 break;
-            case 'rating':
-                this.filteredProducts.sort((a, b) => b.rating - a.rating);
+            case 'newest':
+                this.filteredProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                break;
+            case 'oldest':
+                this.filteredProducts.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
                 break;
         }
         
         this.renderProducts();
+    }
+
+    async addProduct() {
+        const formData = new FormData(document.getElementById('add-product-form'));
+        const productData = {
+            name: formData.get('name'),
+            description: formData.get('description'),
+            price: parseFloat(formData.get('price')),
+            stock: parseInt(formData.get('stock')),
+            isActive: formData.get('isActive') === 'on'
+        };
+
+        try {
+            const response = await ApiClient.post(`/product/add/${this.shopId}`, productData);
+            
+            if (response.ok || response.success) {
+                MessageManager.showSuccess('Товар успешно добавлен');
+                this.closeAddProductModal();
+                this.loadProducts(); // Перезагружаем список товаров
+            } else {
+                MessageManager.showError('Не удалось добавить товар');
+            }
+        } catch (error) {
+            MessageManager.showError('Ошибка при добавлении товара');
+        }
+    }
+
+    closeAddProductModal() {
+        const modal = document.getElementById('add-product-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
     }
 
     formatPrice(price) {
@@ -251,6 +341,30 @@ class ShopProductsPage {
     }
 }
 
+// Глобальные функции для модального окна добавления товара
+function openAddProductModal() {
+    const modal = document.getElementById('add-product-modal');
+    const shopIdInput = document.getElementById('current-shop-id');
+    
+    if (modal && shopIdInput && window.shopPage) {
+        shopIdInput.value = window.shopPage.shopId;
+        modal.style.display = 'flex';
+    }
+}
+
+function closeAddProductModal() {
+    const modal = document.getElementById('add-product-modal');
+    const form = document.getElementById('add-product-form');
+    
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    
+    if (form) {
+        form.reset();
+    }
+}
+
 // Глобальная функция для добавления в корзину
 function addToCart(productId) {
     if (!TokenManager.isAuthenticated()) {
@@ -258,7 +372,6 @@ function addToCart(productId) {
         return;
     }
     
-    // Здесь будет логика добавления товара в корзину
     MessageManager.show('success-container', 'Товар добавлен в корзину', 'success');
 }
 

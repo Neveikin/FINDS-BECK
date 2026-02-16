@@ -134,12 +134,17 @@ class ShopsPage {
         const shopId = shop.id || '';
         const shopName = shop.name || 'Без названия';
         const shopDescription = shop.description || 'Описание отсутствует';
-        const shopLogo = shop.logoUrl || `https://via.placeholder.com/200x200?text=${encodeURIComponent(shopName.charAt(0))}`;
+        const shopLogo = shop.logoUrl || 'https://via.placeholder.com/200x200?text=' + encodeURIComponent(shopName.charAt(0));
         const shopRating = shop.rating || 0;
         const shopProducts = shop.productCount || 0;
+        
+        // Проверяем, является ли текущий пользователь владельцем магазина
+        const currentUser = TokenManager.getUser();
+        const isOwner = currentUser && shop.owners && shop.owners.some(owner => owner.email === currentUser.email);
+        const isAdmin = currentUser && currentUser.role === 'ADMIN';
 
         return `
-            <div class="shop-card" onclick="window.location.href='shop-products.html?id=${shopId}'">
+            <div class="shop-card">
                 <div class="shop-logo">
                     <img src="${shopLogo}" alt="${shopName}" onerror="this.src='https://via.placeholder.com/200x200?text=${encodeURIComponent(shopName.charAt(0))}'">
                 </div>
@@ -155,6 +160,16 @@ class ShopsPage {
                             <i class="fas fa-box"></i>
                             <span>${shopProducts} товаров</span>
                         </div>
+                    </div>
+                    <div class="shop-actions">
+                        <button class="btn btn-primary" onclick="window.location.href='shop-products.html?id=${shopId}'">
+                            <i class="fas fa-eye"></i> Товары
+                        </button>
+                        ${(isOwner || isAdmin) ? `
+                            <button class="btn btn-success" onclick="openAddProductModal('${shopId}', '${shopName}')">
+                                <i class="fas fa-plus"></i> Добавить товар
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
             </div>
@@ -218,17 +233,46 @@ class ShopsPage {
     }
 }
 
+// Обработка формы добавления товара
+document.addEventListener('DOMContentLoaded', () => {
+    const addProductForm = document.getElementById('add-product-form');
+    if (addProductForm) {
+        addProductForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(addProductForm);
+            const productData = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                price: parseFloat(formData.get('price')),
+                stock: parseInt(formData.get('stock')),
+                isActive: formData.get('isActive') === 'on'
+            };
+            
+            try {
+                const response = await ApiClient.post(`/product/add/${formData.get('shopId')}`, productData);
+                
+                if (response.success) {
+                    MessageManager.show('success-container', 'Товар успешно добавлен', 'success');
+                    closeAddProductModal();
+                } else {
+                    MessageManager.show('error-container', response.message || 'Не удалось добавить товар', 'error');
+                }
+            } catch (error) {
+                console.error('Error adding product:', error);
+                MessageManager.show('error-container', 'Ошибка при добавлении товара', 'error');
+            }
+        });
+    }
+});
+
 // Инициализация страницы при загрузке DOM
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM загружен, начинаю инициализацию...');
-    
     // Инициализируем HeaderManager для авторизации
     new HeaderManager();
     
     // Ждем немного, чтобы API_CONFIG загрузился
     setTimeout(() => {
-        console.log('API_CONFIG после задержки:', typeof API_CONFIG);
-        console.log('API_CONFIG.BASE_URL после задержки:', API_CONFIG?.BASE_URL);
         
         // Инициализируем страницу магазинов
         new ShopsPage();

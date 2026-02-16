@@ -150,13 +150,13 @@
     </footer>
 
     <script src="config.js"></script>
+    <script src="main.js"></script>
     <script>
-        // Отключаем автоматическую инициализацию App на главной странице
+        // Инициализация главной страницы
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Main page loaded - initializing HeaderManager only');
+            console.log('Main page loaded - initializing HeaderManager');
             new HeaderManager();
         });
     </script>
-    <script src="main.js"></script>
 </body>
 </html>

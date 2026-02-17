@@ -8,6 +8,7 @@ import com.Finds.dev.Entity.User;
 import com.Finds.dev.Repositories.UserRepository;
 import com.Finds.dev.Security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,16 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public String getCurrentUserId() {
+        try {
+            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder
+                    .getContext().getAuthentication().getPrincipal();
+            return userDetails.getUser().getId();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     public User getCurrentUser() {
         try {

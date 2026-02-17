@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Товары магазина - FINDS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Хедер -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><a href="index.html">FINDS</a></h1>
+                </div>
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li><a href="shops.html" class="nav-link">Магазины</a></li>
+                        <li><a href="#" class="nav-link">Каталог</a></li>
+                        <li><a href="#" class="nav-link">О нас</a></li>
+                        <li><a href="#" class="nav-link">Контакты</a></li>
+                        <li><a href="admin.html" class="nav-link admin-link" style="display: none;">Админ панель</a></li>
+                    </ul>
+                </nav>
+                <div class="auth-section" id="auth-section">
+                    <!-- Динамически будет заменяться через JavaScript -->
+                    <div class="auth-buttons" id="auth-buttons">
+                        <a href="login.html" class="btn btn-outline">Sign In</a>
+                        <a href="register.html" class="btn btn-primary">Sign Up</a>
+                    </div>
+                    <div class="user-menu" id="user-menu" style="display: none;">
+                        <div class="user-avatar" id="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-dropdown" id="user-dropdown">
+                            <a href="dashboard.html" class="dropdown-item">
+                                <i class="fas fa-user-circle"></i> Личный кабинет
+                            </a>
+                            <a href="#" class="dropdown-item" id="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Выход
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main">
+        <div class="container">
+            <!-- Информация о магазине -->
+            <section class="shop-header" id="shop-header">
+                <div class="shop-info">
+                    <div class="shop-logo-large">
+                        <img id="shop-logo" src="https://via.placeholder.com/100x100" alt="Логотип магазина">
+                    </div>
+                    <div class="shop-details">
+                        <h2 id="shop-name">Загрузка...</h2>
+                        <p id="shop-description">Описание магазина</p>
+                        <div class="shop-meta">
+                            <div class="shop-rating">
+                                <i class="fas fa-star"></i>
+                                <span id="shop-rating">0.0</span>
+                            </div>
+                            <div class="shop-products-count">
+                                <i class="fas fa-box"></i>
+                                <span id="products-count">0 товаров</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="shop-actions">
+                    <button class="btn btn-outline" onclick="history.back()">
+                        <i class="fas fa-arrow-left"></i> Назад к магазинам
+                    </button>
+                    <button id="add-product-btn" class="btn btn-success" onclick="openAddProductModal()" style="display: none;">
+                        <i class="fas fa-plus"></i> Добавить товар
+                    </button>
+                </div>
+            </section>
+
+            <!-- Фильтры и поиск товаров -->
+            <section class="products-filters">
+                <div class="search-bar">
+                    <input type="text" id="product-search" placeholder="Поиск товаров в магазине...">
+                    <button class="btn btn-primary" id="search-products-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="sort-options">
+                    <label for="sort-select">Сортировка:</label>
+                    <select id="sort-select">
+                        <option value="name">По названию</option>
+                        <option value="price-asc">Цена: по возрастанию</option>
+                        <option value="price-desc">Цена: по убыванию</option>
+                        <option value="rating">По рейтингу</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Сообщение об ошибке -->
+            <div id="error-message" class="error-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Не удалось загрузить товары. Попробуйте обновить страницу.</span>
+            </div>
+
+            <!-- Сообщение о загрузке -->
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>Загрузка товаров...</span>
+            </div>
+
+            <!-- Сетка товаров -->
+            <section class="products-section">
+                <div id="products-grid" class="products-grid">
+                    <!-- Товары будут загружены через JavaScript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>FINDS</h4>
+                    <p>Лучший маркетплейс для ваших покупок</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Покупателям</h4>
+                    <ul>
+                        <li><a href="#">Как заказать</a></li>
+                        <li><a href="#">Доставка</a></li>
+                        <li><a href="#">Возврат</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Продавцам</h4>
+                    <ul>
+                        <li><a href="#">Продавать на FINDS</a></li>
+                        <li><a href="#">Тарифы</a></li>
+                        <li><a href="#">Помощь</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <p>Email: info@finds.com</p>
+                    <p>Телефон: +7 (999) 123-45-67</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 FINDS. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальное окно добавления товара -->
+    <div id="add-product-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Добавление товара</h3>
+                <button class="modal-close" onclick="closeAddProductModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="add-product-form" class="modal-body">
+                <div class="form-group">
+                    <label for="product-name">Название товара</label>
+                    <input type="text" id="product-name" name="name" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="product-description">Описание</label>
+                    <textarea id="product-description" name="description" rows="4" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Цена</label>
+                    <input type="number" id="product-price" name="price" step="0.01" min="0.01" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="product-stock">Количество</label>
+                    <input type="number" id="product-stock" name="stock" min="0" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="product-active" name="isActive" checked>
+                        Активен
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeAddProductModal()" class="btn btn-outline">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="main.js"></script>
+    <script src="shop-products.js"></script>
+</body>
+</html>

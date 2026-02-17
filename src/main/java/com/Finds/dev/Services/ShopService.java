@@ -7,24 +7,27 @@ import com.Finds.dev.Repositories.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ShopService {
 
     ShopRepository shopRepository;
     UserRepository userRepository;
+    UserService userService;
 
-    public ShopService (ShopRepository shopRepository, UserRepository userRepository) {
+    public ShopService (ShopRepository shopRepository, UserRepository userRepository, UserService userService) {
         this.shopRepository = shopRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public boolean canUserManageShop(String shopId, Authentication authentication) {
         if (authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-            return true; // ADMIN может управлять любым магазином
+            return true;
         }
 
-        // Для SELLER проверяем, есть ли он в списке владельцев
         String currentUserEmail = authentication.getName();
         User currentUser = userRepository.findByEmail(currentUserEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -36,5 +39,9 @@ public class ShopService {
         Shop shop = shopRepository.findById(shopId).orElse(null);
         return shop != null && shop.getOwners().stream()
                 .anyMatch(owner -> owner.getId().equals(currentUser.getId()));
+    }
+
+    public List getShops() {
+        return shopRepository.findAllShopsWithFavorite(userService.getCurrentUserId());
     }
 }

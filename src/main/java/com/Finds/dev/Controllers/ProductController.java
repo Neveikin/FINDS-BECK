@@ -28,14 +28,8 @@ public class ProductController {
 
     @GetMapping("/get")
     public ResponseEntity<?> getProducts(@RequestParam String id) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userRole = auth.getAuthorities().iterator().next().getAuthority();
-
         try {
-            if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_SELLER"))
-                return ResponseEntity.ok(productRepository.findAll());
-            else
-                return ResponseEntity.ok(productRepository.findActiveProducts());
+            return ResponseEntity.ok(productService.getProducts(id));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
         }

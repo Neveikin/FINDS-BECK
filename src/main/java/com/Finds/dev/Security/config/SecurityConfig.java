@@ -68,6 +68,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/shops/**").permitAll()
                         .requestMatchers("/api/lk/me/**").authenticated()
+                        .requestMatchers("/favorites/**").authenticated()
+                        .requestMatchers("/cart/**").authenticated()
                         .anyRequest().permitAll())
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) -> {

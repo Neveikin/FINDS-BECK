@@ -36,7 +36,7 @@ public class ShopController {
     @GetMapping
     public ResponseEntity<?> getShops() {
         try {
-            return ResponseEntity.ok(shopRepository.findAll());
+            return ResponseEntity.ok(shopService.getShops());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

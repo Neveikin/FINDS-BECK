@@ -8,11 +8,11 @@ import java.util.UUID;
 @Entity
 @Table(name = "favorites")
 public class Favorite {
-    
+
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private String id = UUID.randomUUID().toString();
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -21,19 +21,11 @@ public class Favorite {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
     
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-    
     public Favorite() {}
     
     public Favorite(User user, Product product) {
         this.user = user;
         this.product = product;
-    }
-    
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
     }
     
     public String getId() { return id; }
@@ -44,7 +36,4 @@ public class Favorite {
     
     public Product getProduct() { return product; }
     public void setProduct(Product product) { this.product = product; }
-    
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

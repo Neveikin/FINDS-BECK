@@ -18,9 +18,6 @@ public class Cart {
     @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User user;
     
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CartItem> items;
     
@@ -29,22 +26,13 @@ public class Cart {
     public Cart(User user) {
         this.user = user;
     }
-    
-    @PrePersist
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
-    
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
-    
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-    
+
     public List<CartItem> getItems() { return items; }
     public void setItems(List<CartItem> items) { this.items = items; }
 }

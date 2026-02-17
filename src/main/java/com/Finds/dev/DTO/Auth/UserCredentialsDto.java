@@ -9,6 +9,9 @@ public class UserCredentialsDto {
         this.password = password;
     }
 
+    public UserCredentialsDto() {
+    }
+
     public String getEmail() {
         return email;
     }

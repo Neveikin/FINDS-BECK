@@ -4,12 +4,15 @@ import com.Finds.dev.DTO.Auth.JwtAuth;
 import com.Finds.dev.DTO.Auth.RefreshTokenDto;
 import com.Finds.dev.DTO.Auth.UserCredentialsDto;
 import com.Finds.dev.DTO.Auth.UserRegistrationDto;
+import com.Finds.dev.Entity.Cart;
 import com.Finds.dev.Entity.User;
+import com.Finds.dev.Repositories.CartRepository;
 import com.Finds.dev.Repositories.UserRepository;
 import com.Finds.dev.Security.jwt.JwtCore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -27,6 +30,9 @@ public class AuthService {
 
     @Autowired
     private JwtCore jwtCore;
+    
+    @Autowired
+    private CartRepository cartRepository;
 
     public JwtAuth signin(UserCredentialsDto userCredentials) {
         String email = userCredentials.getEmail();
@@ -45,6 +51,7 @@ public class AuthService {
         return jwtCore.generateAuthToken(email, user.getId(), user.getRole().name());
     }
 
+    @Transactional
     public JwtAuth signup(UserRegistrationDto registrationDto) {
         String email = registrationDto.getEmail();
         String password = registrationDto.getPassword();
@@ -80,6 +87,9 @@ public class AuthService {
         user.setCreatedAt(LocalDateTime.now());
 
         user = userRepository.save(user);
+
+        Cart cart = new Cart(user);
+        cartRepository.save(cart);
 
         return jwtCore.generateAuthToken(email, user.getId(), user.getRole().name());
     }

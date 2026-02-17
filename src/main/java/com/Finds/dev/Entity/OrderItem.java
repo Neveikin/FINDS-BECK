@@ -29,8 +29,6 @@ public class OrderItem {
     private BigDecimal priceAtPurchase;
     
     public OrderItem() {}
-
-    // kill -9 $(lsof -ti:8090)
     
     public OrderItem(Order order, Product product, Integer quantity, BigDecimal priceAtPurchase) {
         this.order = order;

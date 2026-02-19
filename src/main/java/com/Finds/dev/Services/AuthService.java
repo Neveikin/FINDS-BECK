@@ -56,8 +56,6 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
 
-
-
         return jwtCore.generateAuthToken(email, user.getId(), user.getRole().name());
     }
 

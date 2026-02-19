@@ -5,31 +5,31 @@ spring:
     name: dev
   
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/marketplace}
-    username: ${DB_USERNAME:ilanevejkin}
-    password: ${DB_PASSWORD:}
+    url: jdbc:postgresql://localhost:5432/marketplace
+    username: ilanevejkin
+    password:
     driver-class-name: org.postgresql.Driver
-  
+
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
+      host: localhost
+      port: 6379
+      password:
       database: 0
       timeout: 2000ms
-  
+
   cache:
     type: redis
-  
+
   docker:
     compose:
       enabled: false
-  
+
   mail:
     host: smtp-relay.brevo.com
     port: 587
     username: a2bbf8001@smtp-brevo.com
-    password: ${SMTP_PASSWORD}
+    password: xsmtpsib-a86ad33e80a7975bf8883c9c2dc89daceb4bd90efeab6b81ca00e8538be36f9f-WDBoDBou5qqjo1HF
     properties:
       mail:
         smtp:
@@ -41,9 +41,10 @@ spring:
     hibernate:
       ddl-auto: update
 
+server:
+  port: 8090
+
 jwt:
-  secret: ${JWT_SECRET}
+  secret: mySuperSecretKey123456789012345678901234567890
   access-expiration: 3600000
   refresh-expiration: 2592000000
-
-

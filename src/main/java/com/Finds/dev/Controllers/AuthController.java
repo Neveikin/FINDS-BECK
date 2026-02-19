@@ -96,10 +96,14 @@ public class AuthController {
       @PostMapping("/email-confirm/{email}")
       public ResponseEntity<?> email_confirm(@PathVariable String email) {
           try {
+              System.out.println("DEBUG: Controller received request for email: " + email);
               mailConfirmService.sendCode(email);
+              System.out.println("DEBUG: Controller - email sent successfully");
               return ResponseEntity.ok("Проверьте почту");
           } catch (Exception e) {
-              return ResponseEntity.badRequest().build();
+              System.out.println("DEBUG: Controller - Exception occurred: " + e.getMessage());
+              e.printStackTrace();
+              return ResponseEntity.badRequest().body("Ошибка: " + e.getMessage());
           }
       }
       

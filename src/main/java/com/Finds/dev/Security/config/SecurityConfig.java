@@ -1,6 +1,7 @@
 package com.Finds.dev.Security.config;
 
 import com.Finds.dev.Security.jwt.JwtFilter;
+import com.Finds.dev.Security.jwt.JwtCore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -22,12 +23,13 @@ import com.Finds.dev.Security.CustomUserDetailsService;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
     private final CustomUserDetailsService customUserDetailsService;
 
-    public SecurityConfig(JwtFilter jwtFilter, CustomUserDetailsService customUserDetailsService) {
-        this.jwtFilter = jwtFilter;
+    private final JwtCore jwtCore;
+
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtCore jwtCore) {
         this.customUserDetailsService = customUserDetailsService;
+        this.jwtCore = jwtCore;
     }
 
     @Bean
@@ -82,8 +84,7 @@ public class SecurityConfig {
                             response.setContentType("application/json;charset=UTF-8");
                             response.getWriter().write("{\"message\":\"Доступ запрещен. У вас недостаточно прав для выполнения этого действия.\"}");
                         }))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }

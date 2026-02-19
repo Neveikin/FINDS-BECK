@@ -46,16 +46,25 @@ public class MailConfirmService {
 
 
     public void sendCode(String to) throws Exception {
+        System.out.println("DEBUG: Starting sendCode for email: " + to);
         String code = generateCode();
-
-        if (redisService.exists("comf:" + to + ":TTN"))
+        System.out.println("DEBUG: Generated code: " + code);
+        
+        System.out.println("DEBUG: Checking TTN key: comf:" + to + ":TTN");
+        if (redisService.exists("comf:" + to + ":TTN")) {
+            System.out.println("DEBUG: TTN key exists - throwing exception");
             throw new Exception("Подождите чтобы получить новый код");
+        }
 
+        System.out.println("DEBUG: Checking TTW key: comf:" + to + ":TTW");
         Object value = redisService.getValue("comf:" + to + ":TTW");
+        System.out.println("DEBUG: TTW value: " + value);
         if (value != null && value instanceof Integer && (Integer) value >= 5) {
+            System.out.println("DEBUG: TTW limit exceeded - throwing exception");
             throw new Exception("Подождите 10 минут до повторной попытки подтверждения");
         }
 
+        System.out.println("DEBUG: Creating HTML content");
         String htmlContent = "<html>" +
                 "<head>" +
                 "<style>" +
@@ -86,23 +95,29 @@ public class MailConfirmService {
                 "</body>" +
                 "</html>";
 
+        System.out.println("DEBUG: Preparing to send email");
         mailSender.send(new MimeMessagePreparator() {
             public void prepare(MimeMessage mimeMessage) throws Exception {
+                System.out.println("DEBUG: Inside MimeMessagePreparator");
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
                 helper.setTo(to);
                 helper.setFrom("FINDS 🛍 <no-reply@finds-shop.ru>");
                 helper.setSubject("🔐 Код подтверждения FINDS");
                 helper.setText(htmlContent, true);
                 
+                System.out.println("DEBUG: Adding avatar image");
                 helper.addInline("avatar", new ClassPathResource("static/emailAvatar.jpeg"));
+                System.out.println("DEBUG: Email prepared successfully");
             }
         });
 
+        System.out.println("DEBUG: Email sent, saving to Redis");
         redisService.saveValue("comf:" + to, code, RedisService.DurationType.M, 5);
 
         redisService.incrementValueWithTTL("comf:" + to + ":TTN", RedisService.DurationType.M, 1);
 
         redisService.incrementValueWithTTL("comf:" + to + ":TTW", RedisService.DurationType.M, 10);
+        System.out.println("DEBUG: sendCode completed successfully");
 
     }
 

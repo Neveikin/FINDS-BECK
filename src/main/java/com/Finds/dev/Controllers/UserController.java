@@ -29,9 +29,9 @@ public class UserController {
     private JwtCore jwtCore;
 
     @GetMapping("/get")
-    public ResponseEntity<UserProfileDto> getUserProfile() {
+    public ResponseEntity<User> getUserProfile() {
         try {
-            UserProfileDto profile = userService.getUserProfile();
+            User profile = userService.getUserProfile();
             return ResponseEntity.ok(profile);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

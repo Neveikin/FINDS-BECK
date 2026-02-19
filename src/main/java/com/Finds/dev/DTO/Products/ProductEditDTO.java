@@ -1,8 +1,10 @@
 package com.Finds.dev.DTO.Products;
 
+import com.Finds.dev.Entity.Product;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class ProductEditDTO {
     @NotBlank(message = "Name cannot be blank")
@@ -16,6 +18,10 @@ public class ProductEditDTO {
     
     @NotNull(message = "Stock cannot be null")
     private Integer stock;
+    
+    private String material;
+    
+    private List<Product.ProductSize> availableSizes;
 
     @NotNull
     private Boolean isActive;
@@ -58,6 +64,22 @@ public class ProductEditDTO {
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+    
+    public String getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+    
+    public List<Product.ProductSize> getAvailableSizes() {
+        return availableSizes;
+    }
+
+    public void setAvailableSizes(List<Product.ProductSize> availableSizes) {
+        this.availableSizes = availableSizes;
     }
 
     public Boolean getActive() {

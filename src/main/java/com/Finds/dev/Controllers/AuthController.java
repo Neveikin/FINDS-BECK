@@ -1,12 +1,10 @@
 package com.Finds.dev.Controllers;
 
-import com.Finds.dev.DTO.Auth.JwtAuth;
-import com.Finds.dev.DTO.Auth.RefreshTokenDto;
-import com.Finds.dev.DTO.Auth.UserCredentialsDto;
-import com.Finds.dev.DTO.Auth.UserRegistrationDto;
+import com.Finds.dev.DTO.Auth.*;
 import com.Finds.dev.Services.AuthService;
 import com.Finds.dev.Entity.User;
 import com.Finds.dev.Repositories.UserRepository;
+import com.Finds.dev.Services.MailConfirmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +24,9 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private MailConfirmService mailConfirmService;
+
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody UserCredentialsDto userCredentials) {
         try {
@@ -40,8 +41,8 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody UserRegistrationDto registrationDto) {
         try {
-            JwtAuth jwtAuth = authService.signup(registrationDto);
-            return ResponseEntity.ok(jwtAuth);
+            authService.signup(registrationDto);
+            return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("{\"message\": \"" + e.getMessage() + "\"}");
@@ -90,4 +91,26 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
+
+
+      @PostMapping("/email-confirm/{email}")
+      public ResponseEntity<?> email_confirm(@PathVariable String email) {
+          try {
+              mailConfirmService.sendCode(email);
+              return ResponseEntity.ok("Проверьте почту");
+          } catch (Exception e) {
+              return ResponseEntity.badRequest().build();
+          }
+      }
+      
+      @PostMapping("/confirm-email")
+      public ResponseEntity<?> confirmEmail(@RequestBody EmailConfirmDTO emailConfirmDTO) {
+          try {
+              mailConfirmService.confirm(emailConfirmDTO);
+              return ResponseEntity.ok("Email подтвержден");
+          } catch (Exception e) {
+              return ResponseEntity.badRequest().body(e.getMessage());
+          }
+      }
+
 }

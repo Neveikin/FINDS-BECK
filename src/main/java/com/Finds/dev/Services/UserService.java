@@ -50,9 +50,9 @@ public class UserService {
         }
     }
 
-    public UserProfileDto getUserProfile() {
+    public User getUserProfile() {
         User user = getCurrentUser();
-        return new UserProfileDto(user);
+        return user;
     }
 
     public UserProfileDto updateEmail(UpdateEmailDto updateEmailDto) {

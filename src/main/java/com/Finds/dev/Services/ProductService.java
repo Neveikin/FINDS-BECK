@@ -31,7 +31,9 @@ public class ProductService {
         }
         
         productRepository.updateAllFieldsById(id, productEditDTO.getName(),
-                productEditDTO.getDescription(), price, productEditDTO.getStock(), productEditDTO.getActive());
+                productEditDTO.getDescription(), price, productEditDTO.getStock(), 
+                productEditDTO.getActive(), productEditDTO.getMaterial(), 
+                productEditDTO.getAvailableSizes());
     }
 
     public List getProducts(String id) throws Exception {

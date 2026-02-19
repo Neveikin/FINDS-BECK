@@ -93,16 +93,53 @@ body {
 }
 
 .user-dropdown {
-    position: absolute;
-    top: 50px;
-    right: 0;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    min-width: 200px;
-    display: none;
-    z-index: 1001;
+    position: absolute !important;
+    top: 50px !important;
+    right: 0 !important;
+    background: white !important;
+    border: 2px solid red !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    min-width: 200px !important;
+    display: none !important;
+    z-index: 9999 !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    transform: translateY(-10px) !important;
+    transition: all 0.3s ease !important;
+}
+
+.user-dropdown.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* Дополнительные стили для уверенности */
+.user-menu .user-dropdown.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#user-dropdown.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Защита от конфликтующих стилей */
+header .user-menu .user-dropdown.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.user-dropdown.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .dropdown-item {

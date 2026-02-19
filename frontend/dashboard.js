@@ -138,12 +138,15 @@ function showChangePasswordModal() {
 
 // Закрытие модальных окон
 document.addEventListener('click', (e) => {
+    // Не закрываем модальные окна если клик внутри dropdown
+    if (e.target.closest('#user-dropdown')) {
+        return;
+    }
+    
     if (e.target.classList.contains('modal')) {
         e.target.style.display = 'none';
     }
-});
-
-document.addEventListener('click', (e) => {
+    
     if (e.target.classList.contains('close-modal')) {
         e.target.closest('.modal').style.display = 'none';
     }

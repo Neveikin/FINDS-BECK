@@ -1,14 +1,89 @@
+// Класс для управления хедером и авторизацией
+class HeaderManager {
+    constructor() {
+        this.initialize();
+    }
+
+    async initialize() {
+        console.log('HeaderManager initializing...');
+        // НЕ вызываем updateAuthUI здесь, так как он будет вызван в initializeApp()
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        console.log('HeaderManager: Setting up event listeners');
+        
+        // Ждем немного чтобы DOM успел загрузиться
+        setTimeout(() => {
+            // Обработчик для кнопки выхода
+            const logoutBtn = document.getElementById('logout-btn');
+            console.log('HeaderManager: logoutBtn found:', !!logoutBtn);
+            
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // Обработчик для dropdown меню
+            const userAvatar = document.getElementById('user-avatar');
+            const userDropdown = document.getElementById('user-dropdown');
+            
+            console.log('HeaderManager: userAvatar found:', !!userAvatar);
+            console.log('HeaderManager: userDropdown found:', !!userDropdown);
+            
+            if (userAvatar && userDropdown) {
+                console.log('HeaderManager: Adding click listener to user avatar');
+                userAvatar.addEventListener('click', (e) => {
+                    console.log('HeaderManager: User avatar clicked!');
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('show');
+                    console.log('HeaderManager: Dropdown classes after toggle:', userDropdown.className);
+                });
+                
+                // Закрываем dropdown при клике вне его
+                document.addEventListener('click', (e) => {
+                    // Проверяем что клик не внутри dropdown и не на аватаре
+                    if (!e.target.closest('#user-dropdown') && !e.target.closest('#user-avatar')) {
+                        console.log('HeaderManager: Document clicked outside dropdown, closing');
+                        userDropdown.classList.remove('show');
+                    }
+                });
+            } else {
+                console.error('HeaderManager: Could not find user avatar or dropdown elements');
+            }
+            
+            // Обработчики для мобильного меню
+            this.setupMobileMenu();
+        }, 100);
+    }
+
+    setupMobileMenu() {
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const nav = document.querySelector('.nav');
+        
+        if (mobileMenuBtn && nav) {
+            mobileMenuBtn.addEventListener('click', () => {
+                nav.classList.toggle('active');
+                mobileMenuBtn.classList.toggle('active');
+            });
+        }
+    }
+}
+
+// Делаем HeaderManager доступным глобально
+window.HeaderManager = HeaderManager;
+
 // Основные функции приложения
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Main.js: DOM loaded, initializing app');
     initializeApp();
 });
 
 async function initializeApp() {
     // Проверяем авторизацию и обновляем UI
     await updateAuthUI();
-    
-    // Добавляем обработчики событий
-    setupEventListeners();
     
     // Инициализируем компоненты
     initializeComponents();
@@ -53,12 +128,16 @@ async function updateAuthUI() {
         
         // Показываем меню пользователя
         if (authButtons) authButtons.style.display = 'none';
-        if (userMenu) userMenu.style.display = 'block';
+        if (userMenu) {
+            userMenu.style.display = 'block';
+            console.log('HeaderManager: User menu displayed');
+        }
         
         // Обновляем аватар
         const userAvatar = document.getElementById('user-avatar');
         if (userAvatar && userData) {
             userAvatar.innerHTML = userData.name ? userData.name.charAt(0).toUpperCase() : '<i class="fas fa-user"></i>';
+            console.log('HeaderManager: User avatar updated');
         }
         
         // Обновляем имя пользователя в dropdown
@@ -101,52 +180,6 @@ async function updateAuthUI() {
             console.log('Unauthenticated user on protected page, redirecting to login...');
             window.location.href = 'login.html';
         }
-    }
-}
-
-function setupEventListeners() {
-    // Обработчик для кнопки выхода
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            logout();
-        });
-    }
-    
-    // Обработчик для dropdown меню
-    const userAvatar = document.getElementById('user-avatar');
-    const userDropdown = document.getElementById('user-dropdown');
-    
-    if (userAvatar && userDropdown) {
-        userAvatar.addEventListener('click', (e) => {
-            e.stopPropagation();
-            userDropdown.classList.toggle('show');
-        });
-        
-        // Закрываем dropdown при клике вне его
-        document.addEventListener('click', () => {
-            userDropdown.classList.remove('show');
-        });
-        
-        userDropdown.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-    }
-    
-    // Обработчики для мобильного меню
-    setupMobileMenu();
-}
-
-function setupMobileMenu() {
-    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-    const nav = document.querySelector('.nav');
-    
-    if (mobileMenuBtn && nav) {
-        mobileMenuBtn.addEventListener('click', () => {
-            nav.classList.toggle('active');
-            mobileMenuBtn.classList.toggle('active');
-        });
     }
 }
 

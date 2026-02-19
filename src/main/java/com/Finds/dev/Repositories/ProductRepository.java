@@ -14,11 +14,12 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("UPDATE Product p SET p.name = :name, p.description = :description, p.price = :price, " +
-           "p.stock = :stock, p.isActive = :isActive WHERE p.id = :id")
+           "p.stock = :stock, p.isActive = :isActive, p.material = :material WHERE p.id = :id")
     @Modifying
     void updateAllFieldsById(@Param("id") String id, @Param("name") String name, 
                            @Param("description") String description, @Param("price") java.math.BigDecimal price,
-                           @Param("stock") Integer stock, @Param("isActive") Boolean isActive);
+                           @Param("stock") Integer stock, @Param("isActive") Boolean isActive, 
+                           @Param("material") String material, @Param("availableSizes") java.util.List<com.Finds.dev.Entity.Product.ProductSize> availableSizes);
 
     @Query("SELECT p FROM Product p WHERE p.isActive = true")
     List<Product> findActiveProducts();
@@ -28,7 +29,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         p.id,
         p.name,
         CASE WHEN f.id IS NOT NULL THEN TRUE ELSE FALSE END AS is_favorite,
-        pi.url AS image_url
+        pi.url AS image_url,
+        p.material,
+        (SELECT ARRAY_AGG(size_code) FROM product_sizes WHERE product_id = p.id) AS available_sizes
     FROM products p
     LEFT JOIN favorites f
         ON f.product_id = p.id
@@ -50,7 +53,9 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         p.id,
         p.name,
         CASE WHEN f.id IS NOT NULL THEN TRUE ELSE FALSE END AS is_favorite,
-        pi.url AS image_url
+        pi.url AS image_url,
+        p.material,
+        (SELECT ARRAY_AGG(size_code) FROM product_sizes WHERE product_id = p.id) AS available_sizes
     FROM products p
     LEFT JOIN favorites f
         ON f.product_id = p.id

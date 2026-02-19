@@ -383,9 +383,6 @@ function addToCart(productId) {
 
 // Инициализация страницы при загрузке DOM
 document.addEventListener('DOMContentLoaded', () => {
-    // Инициализируем HeaderManager для авторизации
-    new HeaderManager();
-    
     // Инициализируем страницу товаров магазина
     new ShopProductsPage();
 });

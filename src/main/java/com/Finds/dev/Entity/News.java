@@ -22,9 +22,6 @@ public class News {
     @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
     
-    @Column(name = "is_published")
-    private Boolean isPublished = true;
-    
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
@@ -57,10 +54,7 @@ public class News {
     
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-    
-    public Boolean getIsPublished() { return isPublished; }
-    public void setIsPublished(Boolean isPublished) { this.isPublished = isPublished; }
-    
+
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

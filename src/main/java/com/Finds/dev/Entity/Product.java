@@ -36,6 +36,19 @@ public class Product {
     @Column(name = "stock", nullable = false)
     private Integer stock = 0;
     
+    @Column(name = "material", length = 100)
+    private String material;
+    
+    @ElementCollection
+    @CollectionTable(name = "product_sizes", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "size_code")
+    @Enumerated(EnumType.STRING)
+    private List<ProductSize> availableSizes = new ArrayList<>();
+    
+    public enum ProductSize {
+        XS, S, M, L, XL, XXL, XXXL
+    }
+    
     @Column(name = "is_active")
     private Boolean isActive = true;
     
@@ -56,6 +69,9 @@ public class Product {
     
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Favorite> favorites = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Review> reviews = new ArrayList<>();
     
     @PrePersist
     protected void onCreate() {
@@ -88,6 +104,12 @@ public class Product {
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }
     
+    public String getMaterial() { return material; }
+    public void setMaterial(String material) { this.material = material; }
+    
+    public List<ProductSize> getAvailableSizes() { return availableSizes; }
+    public void setAvailableSizes(List<ProductSize> availableSizes) { this.availableSizes = availableSizes; }
+    
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
     
@@ -108,4 +130,7 @@ public class Product {
     
     public List<Favorite> getFavorites() { return favorites; }
     public void setFavorites(List<Favorite> favorites) { this.favorites = favorites; }
+    
+    public List<Review> getReviews() { return reviews; }
+    public void setReviews(List<Review> reviews) { this.reviews = reviews; }
 }

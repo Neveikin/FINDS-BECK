@@ -6,9 +6,12 @@ import com.Finds.dev.DTO.Auth.UserCredentialsDto;
 import com.Finds.dev.DTO.Auth.UserRegistrationDto;
 import com.Finds.dev.Entity.Cart;
 import com.Finds.dev.Entity.User;
+import com.Finds.dev.Redis.RedisConfig;
+import com.Finds.dev.Redis.RedisService;
 import com.Finds.dev.Repositories.CartRepository;
 import com.Finds.dev.Repositories.UserRepository;
 import com.Finds.dev.Security.jwt.JwtCore;
+import jakarta.security.auth.message.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,25 +37,32 @@ public class AuthService {
     @Autowired
     private CartRepository cartRepository;
 
+    @Autowired
+    private RedisService redisService;
+
     public JwtAuth signin(UserCredentialsDto userCredentials) {
         String email = userCredentials.getEmail();
         String password = userCredentials.getPassword();
 
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
+        if (userRepository.findByEmail(email).isEmpty()) {
             throw new RuntimeException("User not found with email: " + email);
         }
-
-        User user = userOptional.get();
+        
+        User user = userRepository.findByEmail(email).get();
+        if (user.getStatus() == User.UserStatus.UNCONFIRMED) {
+            throw new RuntimeException("UNCONFIRMED");
+        }
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new RuntimeException("Invalid password");
         }
+
+
 
         return jwtCore.generateAuthToken(email, user.getId(), user.getRole().name());
     }
 
     @Transactional
-    public JwtAuth signup(UserRegistrationDto registrationDto) {
+    public void signup(UserRegistrationDto registrationDto) {
         String email = registrationDto.getEmail();
         String password = registrationDto.getPassword();
         String name = registrationDto.getName();
@@ -85,13 +95,9 @@ public class AuthService {
         user.setName(name);
         user.setRole(role != null ? User.UserRole.valueOf(role) : User.UserRole.USER);
         user.setCreatedAt(LocalDateTime.now());
+        user.setStatus(User.UserStatus.UNCONFIRMED);
 
-        user = userRepository.save(user);
-
-        Cart cart = new Cart(user);
-        cartRepository.save(cart);
-
-        return jwtCore.generateAuthToken(email, user.getId(), user.getRole().name());
+        redisService.saveValue(redisService.getUserConfKey(email), user, RedisService.DurationType.D, 7);
     }
 
     public JwtAuth refresh(RefreshTokenDto refreshTokenDto) {

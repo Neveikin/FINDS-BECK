@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Минимальный тест dropdown - FINDS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Переопределяем стили для этого теста */
+        .user-dropdown {
+            position: absolute !important;
+            top: 50px !important;
+            right: 0 !important;
+            background: white !important;
+            border: 3px solid blue !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+            min-width: 250px !important;
+            display: none !important;
+            z-index: 99999 !important;
+        }
+        
+        .user-dropdown.show {
+            display: block !important;
+        }
+        
+        .debug-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #ffeb3b;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 100000;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Панель отладки -->
+    <div class="debug-panel">
+        <div>DEBUG PANEL</div>
+        <div>Avatar: <span id="debug-avatar">NO</span></div>
+        <div>Dropdown: <span id="debug-dropdown">NO</span></div>
+        <div>Classes: <span id="debug-classes">NONE</span></div>
+        <button onclick="testDropdown()" style="margin-top: 10px;">TEST DROPDOWN</button>
+    </div>
+
+    <!-- Хедер -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><a href="index.html">FINDS</a></h1>
+                </div>
+                <div class="auth-section" id="auth-section">
+                    <div class="user-menu" id="user-menu" style="display: block;">
+                        <div class="user-avatar" id="user-avatar" style="background: red;">
+                            TEST
+                        </div>
+                        <div class="user-dropdown" id="user-dropdown">
+                            <a href="dashboard.html" class="dropdown-item">
+                                <i class="fas fa-user-circle"></i> Личный кабинет
+                            </a>
+                            <a href="#" class="dropdown-item" id="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Выход
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <h1>Минимальный тест dropdown</h1>
+            <p>Эта страница использует только базовые стили и один обработчик событий.</p>
+            
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa;">
+                <h3>Что проверяем:</h3>
+                <ul>
+                    <li>Находятся ли элементы (смотрите debug panel)</li>
+                    <li>Работает ли клик на аватар</li>
+                    <li>Добавляется ли класс show</li>
+                    <li>Применяются ли стили</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // МИНИМАЛЬНЫЙ JavaScript БЕЗ КОНФЛИКТОВ
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('=== МИНИМАЛЬНЫЙ ТЕСТ НАЧАТ ===');
+            
+            const userAvatar = document.getElementById('user-avatar');
+            const userDropdown = document.getElementById('user-dropdown');
+            const debugAvatar = document.getElementById('debug-avatar');
+            const debugDropdown = document.getElementById('debug-dropdown');
+            const debugClasses = document.getElementById('debug-classes');
+            
+            // Обновляем debug panel
+            function updateDebug() {
+                debugAvatar.textContent = userAvatar ? 'YES' : 'NO';
+                debugDropdown.textContent = userDropdown ? 'YES' : 'NO';
+                debugClasses.textContent = userDropdown ? userDropdown.className : 'NONE';
+            }
+            
+            updateDebug();
+            
+            if (userAvatar && userDropdown) {
+                console.log('Элементы найдены, добавляем обработчик');
+                
+                // ОДИН ЕДИНСТВЕННЫЙ ОБРАБОТЧИК
+                userAvatar.addEventListener('click', (e) => {
+                    console.log('=== КЛИК НА АВАТАР ===');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Переключаем класс
+                    const isVisible = userDropdown.classList.contains('show');
+                    
+                    if (isVisible) {
+                        userDropdown.classList.remove('show');
+                        console.log('Dropdown СКРЫТ');
+                    } else {
+                        userDropdown.classList.add('show');
+                        console.log('Dropdown ОТКРЫТ');
+                        console.log('Стили dropdown:', getComputedStyle(userDropdown).cssText);
+                    }
+                    
+                    updateDebug();
+                });
+                
+                // Закрываем при клике вне
+                document.addEventListener('click', (e) => {
+                    if (!userAvatar.contains(e.target) && !userDropdown.contains(e.target)) {
+                        userDropdown.classList.remove('show');
+                        console.log('Dropdown закрыт по клику вне');
+                        updateDebug();
+                    }
+                });
+                
+            } else {
+                console.error('Элементы не найдены!');
+                console.log('userAvatar:', userAvatar);
+                console.log('userDropdown:', userDropdown);
+            }
+        });
+        
+        // Глобальная функция для теста
+        window.testDropdown = function() {
+            const userDropdown = document.getElementById('user-dropdown');
+            if (userDropdown) {
+                userDropdown.classList.toggle('show');
+                console.log('Тест: toggle dropdown');
+                
+                // Принудительные стили
+                if (userDropdown.classList.contains('show')) {
+                    userDropdown.style.cssText = `
+                        position: absolute !important;
+                        top: 50px !important;
+                        right: 0 !important;
+                        background: white !important;
+                        border: 3px solid blue !important;
+                        border-radius: 8px !important;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+                        min-width: 250px !important;
+                        display: block !important;
+                        z-index: 99999 !important;
+                    `;
+                    console.log('Принудительные стили применены');
+                }
+            }
+        };
+    </script>
+</body>
+</html>

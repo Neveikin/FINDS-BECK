@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ панель - FINDS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Хедер -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><a href="index.html">FINDS</a></h1>
+                </div>
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li><a href="shops.html" class="nav-link">Магазины</a></li>
+                        <li><a href="#" class="nav-link">Каталог</a></li>
+                        <li><a href="admin.html" class="nav-link active">Админ панель</a></li>
+                    </ul>
+                </nav>
+                <div class="auth-section" id="auth-section">
+                    <!-- Динамически будет заменяться через JavaScript -->
+                    <div class="auth-buttons" id="auth-buttons">
+                        <a href="login.html" class="btn btn-outline">Sign In</a>
+                        <a href="register.html" class="btn btn-primary">Sign Up</a>
+                    </div>
+                    <div class="user-menu" id="user-menu" style="display: none;">
+                        <div class="user-avatar" id="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-dropdown" id="user-dropdown">
+                            <a href="dashboard.html" class="dropdown-item">
+                                <i class="fas fa-user-circle"></i> Личный кабинет
+                            </a>
+                            <a href="#" class="dropdown-item" id="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Выход
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main">
+        <div class="container">
+            <!-- Заголовок админ панели -->
+            <section class="admin-header">
+                <h2>Админ панель</h2>
+                <p>Управление магазинами и товарами</p>
+            </section>
+
+            <!-- Сообщение об ошибке -->
+            <div id="error-message" class="error-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Не удалось загрузить данные. Попробуйте обновить страницу.</span>
+            </div>
+
+            <!-- Сообщение об успехе -->
+            <div id="success-message" class="success-message" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <span>Операция выполнена успешно</span>
+            </div>
+
+            <!-- Панель управления магазинами -->
+            <section class="admin-section">
+                <div class="section-header">
+                    <h3>Управление магазинами</h3>
+                    <button class="btn btn-primary" onclick="openCreateShopModal()">
+                        <i class="fas fa-plus"></i> Создать магазин
+                    </button>
+                </div>
+                
+                <div id="shops-list" class="admin-list">
+                    <!-- Магазины будут загружены через JavaScript -->
+                </div>
+            </section>
+
+            <!-- Панель управления пользователями -->
+            <section class="admin-section">
+                <div class="section-header">
+                    <h3>Управление пользователями</h3>
+                </div>
+                
+                <div class="user-management">
+                    <div class="search-section">
+                        <input type="email" id="user-search" placeholder="Поиск по email..." class="form-control">
+                        <button class="btn btn-primary" onclick="searchUsers()">
+                            <i class="fas fa-search"></i>
+                            Найти
+                        </button>
+                    </div>
+                    
+                    <div id="user-search-results" class="user-results">
+                        <!-- Результаты поиска будут отображены здесь -->
+                    </div>
+                    
+                    <div id="user-details" class="user-details-section" style="display: none;">
+                        <!-- Детальная информация о пользователе -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Панель управления товарами -->
+            <section class="admin-section">
+                <div class="section-header">
+                    <h3>Управление товарами</h3>
+                    <div class="filter-controls">
+                        <select id="shop-filter" class="form-control">
+                            <option value="">Все магазины</option>
+                        </select>
+                        <input type="text" id="product-search" placeholder="Поиск товаров..." class="form-control">
+                    </div>
+                </div>
+                
+                <div id="products-list" class="admin-products-list">
+                    <!-- Товары будут загружены через JavaScript -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Модальное окно создания магазина -->
+    <div id="create-shop-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Создание магазина</h3>
+                <button class="modal-close" onclick="closeCreateShopModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="create-shop-form" class="modal-body">
+                <div class="form-group">
+                    <label for="shop-name">Название магазина</label>
+                    <input type="text" id="shop-name" name="name" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="shop-description">Описание</label>
+                    <textarea id="shop-description" name="description" rows="4" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="shop-logo">URL логотипа</label>
+                    <input type="url" id="shop-logo" name="logo" class="form-control" placeholder="https://example.com/logo.jpg">
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeCreateShopModal()" class="btn btn-outline">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Создать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>FINDS</h4>
+                    <p>Лучший маркетплейс для ваших покупок</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Покупателям</h4>
+                    <ul>
+                        <li><a href="#">Как заказать</a></li>
+                        <li><a href="#">Доставка</a></li>
+                        <li><a href="#">Возврат</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Продавцам</h4>
+                    <ul>
+                        <li><a href="#">Продавать на FINDS</a></li>
+                        <li><a href="#">Тарифы</a></li>
+                        <li><a href="#">Помощь</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <p>Email: info@finds.com</p>
+                    <p>Телефон: +7 (999) 123-45-67</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 FINDS. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="main.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

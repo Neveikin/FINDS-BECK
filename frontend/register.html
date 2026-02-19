@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINDS - Регистрация</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Хедер -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><a href="index.html">FINDS</a></h1>
+                </div>
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li><a href="index.html" class="nav-link">Главная</a></li>
+                        <li><a href="#" class="nav-link">Каталог</a></li>
+                        <li><a href="#" class="nav-link">О нас</a></li>
+                    </ul>
+                </nav>
+                <div class="auth-section" id="auth-buttons">
+                    <a href="login.html" class="btn btn-outline">Вход</a>
+                </div>
+                <div class="user-menu" id="user-menu" style="display: none;">
+                    <div class="user-avatar" id="user-avatar"></div>
+                    <div class="user-dropdown" id="user-dropdown" style="display: none;">
+                        <a href="dashboard.html">Личный кабинет</a>
+                        <a href="#" id="logout-btn">Выйти</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <h1>Регистрация в FINDS</h1>
+                    <p>Создайте аккаунт для доступа ко всем возможностям</p>
+                </div>
+                
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="name">Имя</label>
+                        <input type="text" id="name" name="name" required placeholder="Введите ваше имя">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="Введите ваш email">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Пароль</label>
+                        <input type="password" id="password" name="password" required placeholder="Введите пароль (минимум 6 символов)">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Подтвердите пароль</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Повторите пароль">
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Тип аккаунта</label>
+                        <select id="role" name="role" required>
+                            <option value="USER">Покупатель</option>
+                            <option value="SELLER">Продавец</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Зарегистрироваться</button>
+                </form>
+                
+                <div class="auth-footer">
+                    <p>Уже есть аккаунт? <a href="login.html">Войдите</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>FINDS</h4>
+                    <p>Лучший маркетплейс для ваших покупок</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Покупателям</h4>
+                    <ul>
+                        <li><a href="#">Как заказать</a></li>
+                        <li><a href="#">Доставка</a></li>
+                        <li><a href="#">Возврат</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Продавцам</h4>
+                    <ul>
+                        <li><a href="#">Продавать на FINDS</a></li>
+                        <li><a href="#">Тарифы</a></li>
+                        <li><a href="#">Помощь</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <p>Email: info@finds.com</p>
+                    <p>Телефон: +7 (999) 123-45-67</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 FINDS. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

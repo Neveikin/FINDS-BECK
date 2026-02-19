@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Финальный тест ЛК - FINDS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Точно такой же хедер как на index.html -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><a href="index.html">FINDS</a></h1>
+                </div>
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li><a href="index.html" class="nav-link">Главная</a></li>
+                        <li><a href="shops.html" class="nav-link">Магазины</a></li>
+                        <li><a href="#" class="nav-link">Каталог</a></li>
+                        <li><a href="#" class="nav-link">О нас</a></li>
+                    </ul>
+                </nav>
+                <div class="auth-section" id="auth-section">
+                    <!-- Динамически будет заменяться через JavaScript -->
+                    <div class="auth-buttons" id="auth-buttons">
+                        <a href="login.html" class="btn btn-outline">Sign In</a>
+                        <a href="register.html" class="btn btn-primary">Sign Up</a>
+                    </div>
+                    <div class="user-menu" id="user-menu" style="display: none;">
+                        <div class="user-avatar" id="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-dropdown" id="user-dropdown">
+                            <a href="dashboard.html" class="dropdown-item">
+                                <i class="fas fa-user-circle"></i> Личный кабинет
+                            </a>
+                            <a href="#" class="dropdown-item" id="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Выход
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main">
+        <div class="container">
+            <h2>Финальный тест dropdown меню</h2>
+            <p>Эта страница загружает все те же скрипты что и основные страницы.</p>
+            
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <h3>Инструкции:</h3>
+                <ol>
+                    <li>Откройте консоль разработчика (F12)</li>
+                    <li>Нажмите на аватар пользователя (синий круг с красной рамкой)</li>
+                    <li>Должно появиться dropdown меню с красной рамкой</li>
+                    <li>Проверьте логи в консоли</li>
+                    <li><strong>Если dropdown не виден:</strong> выполните в консоли <code>forceShowDropdown()</code></li>
+                    <li><strong>Для скрытия:</strong> выполните <code>forceHideDropdown()</code></li>
+                </ol>
+                
+                <div id="test-status" style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd;">
+                    <strong>Статус теста:</strong> <span id="status-text">Ожидание клика...</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Загружаем все те же скрипты -->
+    <script src="config.js"></script>
+    <script src="main.js"></script>
+    <script>
+        // Дополнительный тестовый код
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('=== ФИНАЛЬНЫЙ ТЕСТ НАЧАТ ===');
+            
+            const statusText = document.getElementById('status-text');
+            const userAvatar = document.getElementById('user-avatar');
+            const userDropdown = document.getElementById('user-dropdown');
+            
+            // Глобальная функция для отладки
+            window.forceShowDropdown = function() {
+                console.log('=== ПРИНУДИТЕЛЬНОЕ ПОКАЗЫВАНИЕ DROPDOWN ===');
+                if (userDropdown) {
+                    userDropdown.style.display = 'block !important';
+                    userDropdown.style.visibility = 'visible !important';
+                    userDropdown.style.opacity = '1 !important';
+                    userDropdown.style.zIndex = '9999 !important';
+                    userDropdown.classList.add('show');
+                    console.log('Dropdown стили:', userDropdown.style.cssText);
+                    console.log('Dropdown классы:', userDropdown.className);
+                }
+            };
+            
+            window.forceHideDropdown = function() {
+                console.log('=== ПРИНУДИТЕЛЬНОЕ СКРЫТИЕ DROPDOWN ===');
+                if (userDropdown) {
+                    userDropdown.classList.remove('show');
+                }
+            };
+            
+            // Добавляем свой обработчик для теста
+            if (userAvatar) {
+                userAvatar.addEventListener('click', (e) => {
+                    console.log('=== ТЕСТ: Аватар нажат! ===');
+                    statusText.textContent = 'Аватар нажат! Проверьте dropdown...';
+                    statusText.style.color = 'green';
+                });
+            }
+            
+            // Наблюдаем за изменениями dropdown
+            if (userDropdown) {
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.attributeName === 'class') {
+                            console.log('=== ТЕСТ: Классы dropdown изменены:', userDropdown.className);
+                            if (userDropdown.classList.contains('show')) {
+                                statusText.textContent = 'Dropdown ОТКРЫТ! ✅';
+                                statusText.style.color = 'green';
+                                console.log('=== Dropdown вычисленные стили ===');
+                                console.log('display:', getComputedStyle(userDropdown).display);
+                                console.log('visibility:', getComputedStyle(userDropdown).visibility);
+                                console.log('opacity:', getComputedStyle(userDropdown).opacity);
+                                console.log('z-index:', getComputedStyle(userDropdown).zIndex);
+                            } else {
+                                statusText.textContent = 'Dropdown ЗАКРЫТ';
+                                statusText.style.color = 'orange';
+                            }
+                        }
+                    });
+                });
+                
+                observer.observe(userDropdown, {
+                    attributes: true,
+                    attributeFilter: ['class']
+                });
+            }
+        });
+    </script>
+</body>
+</html>

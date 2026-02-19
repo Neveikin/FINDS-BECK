@@ -1,2 +1,6 @@
 .env
+<<<<<<< HEAD
 .env
+=======
+/target/
+>>>>>>> clean-main

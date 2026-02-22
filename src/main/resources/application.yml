@@ -29,13 +29,21 @@ spring:
     host: smtp-relay.brevo.com
     port: 587
     username: a2bbf8001@smtp-brevo.com
-    password: xsmtpsib-a86ad33e80a7975bf8883c9c2dc89daceb4bd90efeab6b81ca00e8538be36f9f-WDBoDBou5qqjo1HF
+    password: xsmtpsib-a86ad33e80a7975bf8883c9c2dc89daceb4bd90efeab6b81ca00e8538be36f9f-BatvMXORiiNxgtsd
+    protocol: smtp
     properties:
       mail:
+        transport:
+          protocol: smtp
         smtp:
           auth: true
           starttls:
             enable: true
+          ssl:
+            trust: "*"
+        connectiontimeout: 10000
+        timeout: 10000
+        writetimeout: 10000
 
   jpa:
     hibernate:

@@ -4,6 +4,7 @@ import com.Finds.dev.DTO.Products.ProductEditDTO;
 import com.Finds.dev.Entity.Product;
 import com.Finds.dev.Repositories.ProductRepository;
 import com.Finds.dev.Services.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,59 +29,39 @@ public class ProductController {
 
     @GetMapping("/get")
     public ResponseEntity<?> getProducts(@RequestParam String id) {
-        try {
-            return ResponseEntity.ok(productService.getProducts(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
-        }
+        return ResponseEntity.ok(productService.getProducts(id));
     }
 
     @PostMapping("/add/{shopId}")
     @PreAuthorize("hasRole('ADMIN') or @securityService.isExistInOwners(#shopId, authentication)")
-    public ResponseEntity<?> addProduct(@RequestBody Product product, @PathVariable String shopId) {
-        try {
-            productRepository.save(product);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Product created successfully");
-            response.put("data", Map.of(
-                "productId", product.getId(),
-                "productName", product.getName(),
-                "shopId", shopId
-            ));
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("error", "PRODUCT_CREATION_FAILED");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+    public ResponseEntity<?> addProduct(@RequestBody @Valid Product product, @PathVariable String shopId) {
+        productRepository.save(product);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Product created successfully");
+        response.put("data", Map.of(
+            "productId", product.getId(),
+            "productName", product.getName(),
+            "shopId", shopId
+        ));
+        
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/edit/{productId}")
     @PreAuthorize("hasRole('ADMIN') or @securityService.isExistInOwners(#productId, authentication)")
     public ResponseEntity<?> editProduct(@Valid @RequestBody ProductEditDTO productEditDTO, @PathVariable String productId) {
-        try {
-            productService.editProduct(productEditDTO, productId);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Product updated successfully");
-            response.put("data", Map.of(
-                "productId", productId
-            ));
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("error", "PRODUCT_UPDATE_FAILED");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+        productService.editProduct(productEditDTO, productId);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Product updated successfully");
+        response.put("data", Map.of(
+            "productId", productId
+        ));
+        
+        return ResponseEntity.ok(response);
     }
 
 }

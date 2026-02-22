@@ -8,6 +8,8 @@ import com.Finds.dev.DTO.Auth.UserProfileDto;
 import com.Finds.dev.Services.UserService;
 import com.Finds.dev.Security.jwt.JwtCore;
 import com.Finds.dev.Entity.User;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,84 +30,40 @@ public class UserController {
     @Autowired
     private JwtCore jwtCore;
 
-    @GetMapping("/get")
+    @GetMapping()
     public ResponseEntity<User> getUserProfile() {
-        try {
-            User profile = userService.getUserProfile();
-            return ResponseEntity.ok(profile);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        User profile = userService.getUserProfile();
+        return ResponseEntity.ok(profile);
     }
 
     @PatchMapping("/email")
-    public ResponseEntity<?> updateEmail(@RequestBody UpdateEmailDto updateEmailDto) {
-        try {
-            UserProfileDto profile = userService.updateEmail(updateEmailDto);
-            
-            User user = userService.getCurrentUser();
-            String newAccessToken = jwtCore.generateAccesToken(user.getEmail(), String.valueOf(user.getId()), user.getRole().name());
-            String newRefreshToken = jwtCore.generateRefreshToken(user.getEmail(), String.valueOf(user.getId()));
-            
-            TokenResponseDto response = new TokenResponseDto(newAccessToken, newRefreshToken, profile);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+    public ResponseEntity<?> updateEmail(@RequestBody @Valid UpdateEmailDto updateEmailDto) {
+        TokenResponseDto response = userService.updateEmail(updateEmailDto);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/name")
-    public ResponseEntity<?> updateName(@RequestBody UpdateNameDto updateNameDto) {
-        try {
-            UserProfileDto profile = userService.updateName(updateNameDto);
-            
-            User user = userService.getCurrentUser();
-            String newAccessToken = jwtCore.generateAccesToken(user.getEmail(), String.valueOf(user.getId()), user.getRole().name());
-            String newRefreshToken = jwtCore.generateRefreshToken(user.getEmail(), String.valueOf(user.getId()));
-            
-            TokenResponseDto response = new TokenResponseDto(newAccessToken, newRefreshToken, profile);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+    public ResponseEntity<?> updateName(@RequestBody @Valid UpdateNameDto updateNameDto) {
+        TokenResponseDto response = userService.updateName(updateNameDto);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/password")
-    public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordDto updatePasswordDto) {
-        try {
-            UserProfileDto profile = userService.updatePassword(updatePasswordDto);
-            return ResponseEntity.ok(profile);
-        } catch (RuntimeException e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("error", "PASSWORD_UPDATE_FAILED");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid UpdatePasswordDto updatePasswordDto) {
+        UserProfileDto profile = userService.updatePassword(updatePasswordDto);
+        return ResponseEntity.ok(profile);
     }
 
     @GetMapping("/admin/users/search")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> searchUsers(@RequestParam String email) {
-        try {
-            List<User> users = userService.searchUsersByEmail(email);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("data", users);
-            response.put("count", users.size());
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("error", "USER_SEARCH_FAILED");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+        List<User> users = userService.searchUsersByEmail(email);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("data", users);
+        response.put("count", users.size());
+        
+        return ResponseEntity.ok(response);
     }
 }

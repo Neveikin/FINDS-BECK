@@ -5,6 +5,8 @@ import com.Finds.dev.Entity.User;
 import com.Finds.dev.Repositories.ShopRepository;
 import com.Finds.dev.Repositories.UserRepository;
 import com.Finds.dev.Services.ShopService;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,103 +37,71 @@ public class ShopController {
 
     @GetMapping
     public ResponseEntity<?> getShops() {
-        try {
-            return ResponseEntity.ok(shopService.getShops());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(shopService.getShops());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getsShopbyId(@PathVariable String id) {
-        try {
-            return ResponseEntity.ok(shopRepository.findById(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(shopRepository.findById(id));
     }
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> addShop(@RequestBody Shop shop) {
-        try {
-            Shop savedShop = shopRepository.save(shop);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Shop created successfully");
-            response.put("data", Map.of(
-                "shopId", savedShop.getId(),
-                "shopName", savedShop.getName()
-            ));
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("error", "SHOP_CREATION_FAILED");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+    public ResponseEntity<?> addShop(@RequestBody @Valid Shop shop) {
+        Shop savedShop = shopRepository.save(shop);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Shop created successfully");
+        response.put("data", Map.of(
+            "shopId", savedShop.getId(),
+            "shopName", savedShop.getName()
+        ));
+        
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteShop(@PathVariable String id) {
-        try {
-            shopRepository.deleteById(id);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Shop deleted successfully");
-            response.put("data", Map.of(
-                "shopId", id
-            ));
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("error", "SHOP_DELETION_FAILED");
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
+        shopRepository.deleteById(id);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Shop deleted successfully");
+        response.put("data", Map.of(
+            "shopId", id
+        ));
+        
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN'")
-    public ResponseEntity<?> updateShop(@PathVariable String id, @RequestBody Shop shop) {
-        try {
-            Shop existingShop = shopRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Shop not found"));
-            
-            existingShop.setName(shop.getName());
-            existingShop.setDescription(shop.getDescription());
-            existingShop.setLogoUrl(shop.getLogoUrl());
-            
-            return ResponseEntity.ok(shopRepository.save(existingShop));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
-        }
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<?> updateShop(@PathVariable String id, @RequestBody @Valid Shop shop) {
+        Shop existingShop = shopRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Shop not found"));
+        
+        existingShop.setName(shop.getName());
+        existingShop.setDescription(shop.getDescription());
+        existingShop.setLogoUrl(shop.getLogoUrl());
+        
+        return ResponseEntity.ok(shopRepository.save(existingShop));
     }
 
     @PostMapping("/{shopId}/add-owner")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addOwner(@PathVariable String shopId, @RequestBody Map<String, String> request) {
-        try {
-            Shop shop = shopRepository.findById(shopId)
-                    .orElseThrow(() -> new RuntimeException("Shop not found"));
-            
-            User user = userRepository.findByEmail(request.get("email"))
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            
-            if (!shop.getOwners().contains(user)) {
-                shop.getOwners().add(user);
-            }
-            
-            return ResponseEntity.ok(shopRepository.save(shop));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new EntityNotFoundException("Shop not found"));
+        
+        User user = userRepository.findByEmail(request.get("email"))
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        
+        if (!shop.getOwners().contains(user)) {
+            shop.getOwners().add(user);
         }
+        
+        return ResponseEntity.ok(shopRepository.save(shop));
     }
 }

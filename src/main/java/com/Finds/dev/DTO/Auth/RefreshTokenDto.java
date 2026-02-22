@@ -1,17 +1,8 @@
 package com.Finds.dev.DTO.Auth;
 
-public class RefreshTokenDto {
-    private String refreshToken;
+import jakarta.validation.constraints.NotBlank;
 
-    public RefreshTokenDto(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-}
+public record RefreshTokenDto(
+        @NotBlank(message = "Refresh token is required")
+        String refreshToken
+) {}

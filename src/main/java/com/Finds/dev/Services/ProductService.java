@@ -21,7 +21,7 @@ public class ProductService {
 
     @Transactional
     public void editProduct(ProductEditDTO productEditDTO, String id) {
-        BigDecimal price = productEditDTO.getPrice();
+        BigDecimal price = productEditDTO.price();
         if (!productRepository.existsById(id)) {
             throw new EntityNotFoundException("Product not found");
         }
@@ -30,23 +30,19 @@ public class ProductService {
             throw new IllegalArgumentException("Incorrect Number Format");
         }
         
-        productRepository.updateAllFieldsById(id, productEditDTO.getName(),
-                productEditDTO.getDescription(), price, productEditDTO.getStock(), 
-                productEditDTO.getActive(), productEditDTO.getMaterial(), 
-                productEditDTO.getAvailableSizes());
+        productRepository.updateAllFieldsById(id, productEditDTO.name(),
+                productEditDTO.description(), price, productEditDTO.stock(),
+                productEditDTO.isActive(), productEditDTO.material(),
+                productEditDTO.availableSizes());
     }
 
-    public List getProducts(String id) throws Exception {
+    public List getProducts(String id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userRole = auth.getAuthorities().iterator().next().getAuthority();
 
-        try {
-            if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_SELLER"))
-                return productRepository.findAllProductsWithFavoriteAndImage(id);
-            else
-                return productRepository.findActiveProductsWithFavoriteAndImage(id);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_SELLER"))
+            return productRepository.findAllProductsWithFavoriteAndImage(id);
+        else
+            return productRepository.findActiveProductsWithFavoriteAndImage(id);
     }
 }

@@ -4,10 +4,12 @@ import com.Finds.dev.Entity.Shop;
 import com.Finds.dev.Entity.User;
 import com.Finds.dev.Repositories.ShopRepository;
 import com.Finds.dev.Repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ShopService {
@@ -30,14 +32,14 @@ public class ShopService {
 
         String currentUserEmail = authentication.getName();
         User currentUser = userRepository.findByEmail(currentUserEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         if (currentUser.getRole() != User.UserRole.SELLER) {
             return false;
         }
 
-        Shop shop = shopRepository.findById(shopId).orElse(null);
-        return shop != null && shop.getOwners().stream()
+        Optional<Shop> shop = shopRepository.findById(shopId);
+        return shop.isPresent() && shop.get().getOwners().stream()
                 .anyMatch(owner -> owner.getId().equals(currentUser.getId()));
     }
 

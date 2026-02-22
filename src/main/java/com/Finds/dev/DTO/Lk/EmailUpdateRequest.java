@@ -1,19 +1,10 @@
 package com.Finds.dev.DTO.Lk;
 
-public class EmailUpdateRequest {
-    private String newEmail;
-    
-    public EmailUpdateRequest() {}
-    
-    public EmailUpdateRequest(String newEmail) {
-        this.newEmail = newEmail;
-    }
-    
-    public String getNewEmail() {
-        return newEmail;
-    }
-    
-    public void setNewEmail(String newEmail) {
-        this.newEmail = newEmail;
-    }
-}
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+public record EmailUpdateRequest(
+        @NotBlank(message = "New email cannot be empty")
+        @Email(message = "Invalid email format")
+        String newEmail
+) {}

@@ -3,8 +3,10 @@ package com.Finds.dev.Controllers;
 import com.Finds.dev.Entity.News;
 import com.Finds.dev.Repositories.NewsRepository;
 import com.Finds.dev.Services.NewsService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,31 +24,22 @@ public class NewsController {
 
     @GetMapping("/get")
     public ResponseEntity<?> getNews() {
-        try {
-            return ResponseEntity.ok(newsService.getNews());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e);
-        }
+        return ResponseEntity.ok(newsService.getNews());
     }
 
+
     @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addNews(@Valid @RequestBody News news) {
-        try {
-            newsService.addNews(news);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        newsService.addNews(news);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteNews(@PathVariable String id) {
-        try {
-            newsService.deleteNews(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        newsService.deleteNews(id);
+        return ResponseEntity.ok().build();
     }
 
 

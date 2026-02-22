@@ -1,58 +1,23 @@
 package com.Finds.dev.DTO.Auth;
 
-public class UserRegistrationDto {
-    private String email;
-    private String password;
-    private String name;
-    private String confirmPassword;
-    private String role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-    public UserRegistrationDto() {
-    }
+public record UserRegistrationDto(
+        @Email(message = "Invalid email format")
+        @NotBlank(message = "Email is required")
+        String email,
 
-    public UserRegistrationDto(String email, String password, String name) {
-        this.email = email;
-        this.password = password;
-        this.name = name;
-    }
+        @NotBlank(message = "Password is required")
+        @Size(min = 6, message = "Password must be at least 6 characters")
+        String password,
 
-    public String getEmail() {
-        return email;
-    }
+        @NotBlank(message = "Name is required")
+        String name,
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+        @NotBlank(message = "Password confirmation is required")
+        String confirmPassword,
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-}
+        String role
+) {}

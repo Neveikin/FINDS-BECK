@@ -28,9 +28,22 @@ public class SecurityService {
     UserRepository userRepository;
 
     public boolean isExistInOwners(String productId, Authentication authentication) {
-        Optional<Shop> shop = shopRepository.findById(productRepository.findById(productId).get().getId());
+        Optional<Product> product = productRepository.findById(productId);
+        if (product.isEmpty()) {
+            return false;
+        }
+        
+        Optional<Shop> shop = shopRepository.findById(product.get().getId());
+        if (shop.isEmpty()) {
+            return false;
+        }
 
-        return shop.get().getOwners().contains(userRepository.findByEmail(authentication.getName()).orElse(null));
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
+        if (user.isEmpty()) {
+            return false;
+        }
+
+        return shop.get().getOwners().contains(user.get());
     }
 
 }

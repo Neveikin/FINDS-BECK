@@ -3,19 +3,20 @@ package com.Finds.dev.Services;
 import com.Finds.dev.DTO.Auth.EmailConfirmDTO;
 import com.Finds.dev.Entity.Cart;
 import com.Finds.dev.Entity.User;
-import com.Finds.dev.Redis.RedisConfig;
 import com.Finds.dev.Redis.RedisService;
 import com.Finds.dev.Repositories.CartRepository;
 import com.Finds.dev.Repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.security.SecureRandom;
 
 @Service
@@ -45,26 +46,18 @@ public class MailConfirmService {
     }
 
 
-    public void sendCode(String to) throws Exception {
-        System.out.println("DEBUG: Starting sendCode for email: " + to);
+    @Transactional
+    public void sendCode(String to) {
         String code = generateCode();
-        System.out.println("DEBUG: Generated code: " + code);
         
-        System.out.println("DEBUG: Checking TTN key: comf:" + to + ":TTN");
-        if (redisService.exists("comf:" + to + ":TTN")) {
-            System.out.println("DEBUG: TTN key exists - throwing exception");
-            throw new Exception("Подождите чтобы получить новый код");
-        }
+        if (redisService.exists("comf:" + to + ":TTN"))
+            throw new IllegalArgumentException("Please wait to receive a new code");
 
-        System.out.println("DEBUG: Checking TTW key: comf:" + to + ":TTW");
         Object value = redisService.getValue("comf:" + to + ":TTW");
-        System.out.println("DEBUG: TTW value: " + value);
         if (value != null && value instanceof Integer && (Integer) value >= 5) {
-            System.out.println("DEBUG: TTW limit exceeded - throwing exception");
-            throw new Exception("Подождите 10 минут до повторной попытки подтверждения");
+            throw new IllegalArgumentException("Please wait 10 minutes before retrying confirmation");
         }
 
-        System.out.println("DEBUG: Creating HTML content");
         String htmlContent = "<html>" +
                 "<head>" +
                 "<style>" +
@@ -95,33 +88,28 @@ public class MailConfirmService {
                 "</body>" +
                 "</html>";
 
-        System.out.println("DEBUG: Preparing to send email");
         mailSender.send(new MimeMessagePreparator() {
-            public void prepare(MimeMessage mimeMessage) throws Exception {
-                System.out.println("DEBUG: Inside MimeMessagePreparator");
+            public void prepare(MimeMessage mimeMessage) throws MessagingException {
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
                 helper.setTo(to);
                 helper.setFrom("FINDS 🛍 <no-reply@finds-shop.ru>");
                 helper.setSubject("🔐 Код подтверждения FINDS");
                 helper.setText(htmlContent, true);
                 
-                System.out.println("DEBUG: Adding avatar image");
                 helper.addInline("avatar", new ClassPathResource("static/emailAvatar.jpeg"));
-                System.out.println("DEBUG: Email prepared successfully");
             }
         });
-
-        System.out.println("DEBUG: Email sent, saving to Redis");
+        
         redisService.saveValue("comf:" + to, code, RedisService.DurationType.M, 5);
 
         redisService.incrementValueWithTTL("comf:" + to + ":TTN", RedisService.DurationType.M, 1);
 
         redisService.incrementValueWithTTL("comf:" + to + ":TTW", RedisService.DurationType.M, 10);
-        System.out.println("DEBUG: sendCode completed successfully");
 
     }
 
-    public void confirm(EmailConfirmDTO emailConfirmDTO) throws Exception {
+    @Transactional
+    public void confirm(EmailConfirmDTO emailConfirmDTO) {
         String code = (String) redisService.getValue("comf:" + emailConfirmDTO.email());
 
         if (code != null && code.equals(emailConfirmDTO.code())) {
@@ -131,11 +119,10 @@ public class MailConfirmService {
             );
             user.setStatus(User.UserStatus.CONFIRMED);
 
-
             userRepository.save(user);
             cartRepository.save(new Cart(user));
         } else {
-            throw new Exception("Неверный код");
+            throw new IllegalArgumentException("Invalid confirmation code");
         }
 
         redisService.deleteValue("comf:" + emailConfirmDTO.email());

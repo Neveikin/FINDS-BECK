@@ -1,15 +1,14 @@
-package com.Finds.dev.DTO.Products;
+package com.Finds.dev.DTO.Review;
 
-import com.Finds.dev.Entity.Product;
-import com.Finds.dev.Entity.User;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDateTime;
-
-public record RewiewDTO(
+public record RewievUpdDTO(
+        @NotBlank(message = "Review ID cannot be empty")
+        String reviewId,
+        
         @NotNull(message = "Rating cannot be null")
         @Min(value = 1, message = "Rating must be at least 1")
         @Max(value = 5, message = "Rating must be at most 5")

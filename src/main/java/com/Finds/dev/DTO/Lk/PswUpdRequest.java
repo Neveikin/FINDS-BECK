@@ -1,60 +1,24 @@
 package com.Finds.dev.DTO.Lk;
 
-public class PswUpdRequest {
-    private String userId;
-    private String oldPsw;
-    private String newPsw;
-    private String token;
-    private String email;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-    public PswUpdRequest() {
-    }
-
-    public PswUpdRequest(String userId, String oldPsw, String newPsw, String token, String email) {
-        this.userId = userId;
-        this.oldPsw = oldPsw;
-        this.newPsw = newPsw;
-        this.token = token;
-        this.email = email;
-    }
-
-    public String getOldPsw() {
-        return oldPsw;
-    }
-
-    public void setOldPsw(String oldPsw) {
-        this.oldPsw = oldPsw;
-    }
-
-    public String getNewPsw() {
-        return newPsw;
-    }
-
-    public void setNewPsw(String newPsw) {
-        this.newPsw = newPsw;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-}
+public record PswUpdRequest(
+        @NotBlank(message = "User ID cannot be empty")
+        String userId,
+        
+        @NotBlank(message = "Old password cannot be empty")
+        String oldPsw,
+        
+        @NotBlank(message = "New password cannot be empty")
+        @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
+        String newPsw,
+        
+        @NotBlank(message = "Token cannot be empty")
+        String token,
+        
+        @NotBlank(message = "Email cannot be empty")
+        @Email(message = "Invalid email format")
+        String email
+) {}

@@ -4,10 +4,233 @@
     <mappings />
     <preferences />
   </component>
+  <component name="DBNavigator.Project.DataEditorManager">
+    <record-view-column-sorting-type value="BY_INDEX" />
+    <value-preview-text-wrapping value="true" />
+    <value-preview-pinned value="false" />
+  </component>
   <component name="DBNavigator.Project.DatabaseAssistantManager">
-    <assistants />
+    <assistants>
+      <assistant-state connection-id="6a76708d-c763-49a3-a89e-d06dd872b3d8" assistant-type="PUBLIC" default-profile-name="" selected-chat-id="47B1310264B146D9BBDA53C05E5DAC44" availability="AVAILABLE" acknowledgement="ENGAGED" selected="true">
+        <chats>
+          <chat id="47B1310264B146D9BBDA53C05E5DAC44" title="Create search indexes for repository queries" session-signature="" timestamp="1771780837659">
+            <messages>
+              <message id="aeaed9bc-490c-4b98-9bc3-d6a70399b022" type="NEUTRAL" author="USER" timestamp="1771780837659" folded="false">
+                <content><![CDATA[сделай индексы для запросов которые прописаны в репозиториях]]></content>
+                <context provider="MISTRAL_AI" profile="implicit-profile-25afd415-22ff-452d-ab8a-fa77373d79a8" model="CODESTRAL_2508" action="" interactive="true" />
+              </message>
+              <message id="d43c1a02-67d6-41d9-8c44-a1ba72f211e4" type="NEUTRAL" author="AGENT" timestamp="1771780838618" folded="false">
+                <content />
+                <context provider="MISTRAL_AI" profile="implicit-profile-25afd415-22ff-452d-ab8a-fa77373d79a8" model="CODESTRAL_2508" action="" interactive="true" />
+                <tools>
+                  <tool offset="0" request-id="hkmKR23Tk" tool-name="LOAD_DATABASE_INFORMATION" tool-option="" tool-status="COMPLETED">
+                    <tool-arguments><![CDATA[{}]]></tool-arguments>
+                    <tool-response><![CDATA[{
+  "type" : "POSTGRES",
+  "name" : "PostgreSQL",
+  "version" : "14.20 (Homebrew)"
+}]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="Z4gBxvcAU" tool-name="LIST_SCHEMA_NAMES" tool-option="" tool-status="COMPLETED">
+                    <tool-arguments><![CDATA[{"arg0":true,"arg1":false,"arg2":true}]]></tool-arguments>
+                    <tool-response><![CDATA[[ "public" ]]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="dQhyQUzHV" tool-name="REQUEST_USER_DECISION" tool-option="public" tool-status="COMPLETED">
+                    <tool-arguments><![CDATA[{"arg0":"Schema selection","arg1":"Select the schema to work with","arg2":["public"]}]]></tool-arguments>
+                    <tool-response><![CDATA[public]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="pLAkwLqDy" tool-name="LIST_TABLE_NAMES" tool-option="" tool-status="COMPLETED">
+                    <tool-arguments><![CDATA[{"arg0":"public","arg1":true,"arg2":false}]]></tool-arguments>
+                    <tool-response><![CDATA[[ "cart_items", "carts", "categories", "favorite_shop", "favorites", "flyway_schema_history", "news", "order_items", "orders", "product_images", "product_sizes", "products", "reviews", "shop_owners", "shops", "users" ]]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="4xB23FlRP" tool-name="REQUEST_USER_DECISION" tool-option="shops" tool-status="COMPLETED">
+                    <tool-arguments><![CDATA[{"arg0":"Table selection","arg1":"Select the table to work with","arg2":["cart_items","carts","categories","favorite_shop","favorites","flyway_schema_history","news","order_items","orders","product_images","product_sizes","products","reviews","shop_owners","shops","users"]}]]></tool-arguments>
+                    <tool-response><![CDATA[shops]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="x9p3fK48S" tool-name="LOAD_TABLE_DEFINITIONS" tool-option="" tool-status="CANCELLED">
+                    <tool-arguments><![CDATA[{"arg0":"public","arg1":["shops"],"arg2":true}]]></tool-arguments>
+                    <tool-response><![CDATA[User has cancelled the execution of this tool]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="39dJDlgOO" tool-name="REQUEST_USER_CONFIRMATION" tool-option="Yes" tool-status="COMPLETED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[true]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="5L5qHsA0W" tool-name="REQUEST_USER_DECISION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Select the column to create an index for","arg2":["id","name","description","address","phone","email","logo","created_at","updated_at","owner_id"]}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="b6J2w8YUJ" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="yuYu6hdwU" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="Y8rZwXxq5" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="uvjXHAxRy" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="veyYINZL8" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="fWQ9TgjX7" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="Kn1fI7gdi" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="HuNvMq4aY" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="hMhvUILel" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="4r2Ovx9tm" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="3dCuzlfLF" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="3JrL9xYQp" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="2dH8kq3JE" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="F8xR4C3Kk" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="UHQ9EjL3n" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="d3I6B8kj4" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="UZwGymXQg" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="kUPSXId9A" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="rCZ44BBJr" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="eO4eeP8yT" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="tTszjqW5v" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="gUuvRve7Y" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="Sezxew5Ur" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="lBaBQMK35" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="86XUcTphq" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="mVJAEQNrI" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="jFDB2dNUx" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="JMzvOfrT2" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="GPmu1TtnL" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="KWfzmRC93" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="6wMGW0JYA" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="C9NUcvmgO" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="4jT2mXGkd" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="tw6zzpN2q" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REJECTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                    <tool-response><![CDATA[User has not approved in time. Tool execution approval has timed out]]></tool-response>
+                  </tool>
+                  <tool offset="0" request-id="FlA0pH3lu" tool-name="REQUEST_USER_CONFIRMATION" tool-option="" tool-status="REQUESTED">
+                    <tool-arguments><![CDATA[{"arg0":"Index creation","arg1":"Do you want to create an index for the shops table?","arg2":"Yes","arg3":"No"}]]></tool-arguments>
+                  </tool>
+                </tools>
+              </message>
+              <message id="00b835ae-e584-43ff-a41b-5f5943d8f965" type="NEUTRAL" author="USER" timestamp="1771840472580" folded="false">
+                <content><![CDATA[урони все таблицы]]></content>
+                <context provider="MISTRAL_AI" profile="implicit-profile-25afd415-22ff-452d-ab8a-fa77373d79a8" model="CODESTRAL_2508" action="" interactive="true" />
+              </message>
+              <message id="b9f95fea-22a9-4ef2-834a-065bd78689a6" type="ERROR" author="SYSTEM" timestamp="1771840473516" folded="false">
+                <content><![CDATA[Failed to invoke Public LLM.
+
+Error details:
+HTTP 400: Bad Request (Request URL: https://api.mistral.ai/v1/chat/completions)
+{"object":"error","message":"Unexpected role 'system' after role 'tool'","type":"invalid_request_message_order","param":null,"code":"3230"}]]></content>
+                <context provider="MISTRAL_AI" profile="implicit-profile-25afd415-22ff-452d-ab8a-fa77373d79a8" model="CODESTRAL_2508" action="" interactive="true" />
+              </message>
+            </messages>
+            <context provider="MISTRAL_AI" profile="implicit-profile-25afd415-22ff-452d-ab8a-fa77373d79a8" model="CODESTRAL_2508" action="" interactive="true" />
+          </chat>
+        </chats>
+        <tools />
+      </assistant-state>
+      <assistant-state connection-id="2b0db35c-8e07-48d0-96e4-11a5065b56d8" assistant-type="SELECT_AI" default-profile-name="" selected-chat-id="" availability="UNAVAILABLE" acknowledgement="NONE">
+        <tools />
+      </assistant-state>
+      <assistant-state connection-id="2b0db35c-8e07-48d0-96e4-11a5065b56d8" assistant-type="PUBLIC" default-profile-name="" selected-chat-id="" availability="AVAILABLE" acknowledgement="NONE" selected="true">
+        <tools />
+      </assistant-state>
+    </assistants>
     <selection-state>
-      <model-selection />
+      <model-selection>
+        <assistant type="PUBLIC">
+          <selection provider-id="MISTRAL_AI" model-id="CODESTRAL_2508" />
+        </assistant>
+      </model-selection>
     </selection-state>
   </component>
   <component name="DBNavigator.Project.DatabaseBrowserManager">
@@ -16,11 +239,165 @@
     <show-object-properties value="true" />
     <loaded-nodes />
   </component>
+  <component name="DBNavigator.Project.DatabaseConsoleManager">
+    <connection id="6a76708d-c763-49a3-a89e-d06dd872b3d8">
+      <console name="Finds-connection" type="STANDARD" schema="marketplace" session="Main" />
+    </connection>
+  </component>
+  <component name="DBNavigator.Project.DatabaseEditorStateManager">
+    <last-used-providers />
+  </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files />
   </component>
+  <component name="DBNavigator.Project.DatabasePrerequisiteManager">
+    <prerequisites />
+  </component>
+  <component name="DBNavigator.Project.DatabaseSessionManager">
+    <connection id="6a76708d-c763-49a3-a89e-d06dd872b3d8" />
+  </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="6a76708d-c763-49a3-a89e-d06dd872b3d8" dataset="public.product_sizes" active-filter-id="" />
+  </component>
+  <component name="DBNavigator.Project.ExecutionManager">
+    <retain-sticky-names value="false" />
+  </component>
+  <component name="DBNavigator.Project.MethodExecutionManager">
+    <method-browser />
+    <execution-history>
+      <group-entries value="true" />
+      <execution-inputs />
+    </execution-history>
+    <execution-variables-cache />
+  </component>
+  <component name="DBNavigator.Project.ObjectQuickFilterManager">
+    <last-used-operator value="EQUAL" />
+    <filters />
+  </component>
   <component name="DBNavigator.Project.Settings">
-    <connections />
+    <connections>
+      <connection source-id="" id="6a76708d-c763-49a3-a89e-d06dd872b3d8" active="true" signed="true">
+        <database>
+          <name value="Finds-connection" />
+          <description value="" />
+          <database-type value="POSTGRES" />
+          <config-type value="BASIC" />
+          <database-version value="14.2" />
+          <driver-source value="BUNDLED" />
+          <driver-library value="" />
+          <driver value="" />
+          <url-type value="DATABASE" />
+          <host value="localhost" />
+          <port value="5432" />
+          <database value="marketplace" />
+          <tns-folder value="" />
+          <tns-profile value="" />
+          <server-type value="" />
+          <protocol value="" />
+          <url-parameters />
+          <type value="USER" />
+          <user value="ilanevejkin" />
+          <token-type value="" />
+          <token-config-file value="" />
+          <token-profile value="" />
+          <adb-compartment-ocid value="" />
+          <adb-database-ocid value="" />
+          <azure-token-database-id-uri value="" />
+          <azure-token-tenant-id value="" />
+          <azure-token-client-id value="" />
+          <azure-token-client-certificate-file value="" />
+          <session-user value="ilanevejkin" />
+        </database>
+        <properties>
+          <auto-commit value="false" />
+        </properties>
+        <ssh-settings>
+          <active value="false" />
+          <proxy-host value="" />
+          <proxy-port value="22" />
+          <proxy-user value="" />
+          <auth-type value="PASSWORD" />
+          <key-file value="" />
+        </ssh-settings>
+        <ssl-settings>
+          <active value="false" />
+          <certificate-authority-file value="" />
+          <client-certificate-file value="" />
+          <client-key-file value="" />
+        </ssl-settings>
+        <details>
+          <charset value="UTF-8" />
+          <session-management value="true" />
+          <ddl-file-binding value="true" />
+          <database-logging value="true" />
+          <connect-automatically value="true" />
+          <restore-workspace value="true" />
+          <restore-workspace-deep value="false" />
+          <environment-type value="default" />
+          <connectivity-timeout value="30" />
+          <idle-time-to-disconnect value="30" />
+          <idle-time-to-disconnect-pool value="5" />
+          <credential-expiry-time value="10" />
+          <max-connection-pool-size value="7" />
+          <alternative-statement-delimiter value="" />
+        </details>
+        <debugger>
+          <compile-dependencies value="true" />
+          <tcp-host-address value="" />
+          <tcp-port-from value="4000" />
+          <tcp-port-to value="4999" />
+          <jdwp-tunnel-type value="NONE" />
+          <debugger-type value="ASK" />
+          <reverse-ssh-tunnel>
+            <host value="" />
+            <port value="22" />
+            <bind-host value="127.0.0.1" />
+            <bind-port value="0" />
+            <auth-type value="PASSWORD" />
+            <user value="" />
+            <key-file value="" />
+          </reverse-ssh-tunnel>
+        </debugger>
+        <object-filters hide-empty-schemas="false" hide-pseudo-columns="false" hide-audit-columns="false">
+          <object-filters />
+          <object-type-filter use-master-settings="true">
+            <object-type name="SCHEMA" enabled="true" />
+            <object-type name="USER" enabled="true" />
+            <object-type name="ROLE" enabled="true" />
+            <object-type name="PRIVILEGE" enabled="true" />
+            <object-type name="CHARSET" enabled="true" />
+            <object-type name="TABLE" enabled="true" />
+            <object-type name="VIEW" enabled="true" />
+            <object-type name="JSON_VIEW" enabled="true" />
+            <object-type name="MATERIALIZED_VIEW" enabled="true" />
+            <object-type name="NESTED_TABLE" enabled="true" />
+            <object-type name="COLUMN" enabled="true" />
+            <object-type name="INDEX" enabled="true" />
+            <object-type name="CONSTRAINT" enabled="true" />
+            <object-type name="DATASET_TRIGGER" enabled="true" />
+            <object-type name="DATABASE_TRIGGER" enabled="true" />
+            <object-type name="SYNONYM" enabled="true" />
+            <object-type name="SEQUENCE" enabled="true" />
+            <object-type name="PROCEDURE" enabled="true" />
+            <object-type name="FUNCTION" enabled="true" />
+            <object-type name="PACKAGE" enabled="true" />
+            <object-type name="TYPE" enabled="true" />
+            <object-type name="TYPE_ATTRIBUTE" enabled="true" />
+            <object-type name="ARGUMENT" enabled="true" />
+            <object-type name="JAVA_CLASS" enabled="true" />
+            <object-type name="JAVA_FIELD" enabled="true" />
+            <object-type name="JAVA_METHOD" enabled="true" />
+            <object-type name="JAVA_RESOURCE" enabled="true" />
+            <object-type name="DIMENSION" enabled="true" />
+            <object-type name="CLUSTER" enabled="true" />
+            <object-type name="DBLINK" enabled="true" />
+            <object-type name="CREDENTIAL" enabled="true" />
+            <object-type name="AI_PROFILE" enabled="true" />
+            <object-type name="AI_MODEL" enabled="true" />
+          </object-type-filter>
+        </object-filters>
+      </connection>
+    </connections>
     <browser-settings>
       <general>
         <display-mode value="TABBED" />
@@ -170,6 +547,7 @@
           <content-type name="JSON" enabled="true" />
           <content-type name="JSON5" enabled="true" />
           <content-type name="Groovy" enabled="true" />
+          <content-type name="AIDL" enabled="true" />
           <content-type name="YAML" enabled="true" />
           <content-type name="Manifest" enabled="true" />
         </content-types>
@@ -424,7 +802,9 @@
     </ddl-file-settings>
     <assistant-settings>
       <credential-settings>
-        <credentials />
+        <credentials>
+          <credential id="25afd415-22ff-452d-ab8a-fa77373d79a8" name="Mistral AI" user="" provider="MISTRAL_AI" />
+        </credentials>
       </credential-settings>
       <profile-settings>
         <profiles />

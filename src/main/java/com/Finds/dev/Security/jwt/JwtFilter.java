@@ -3,6 +3,7 @@ package com.Finds.dev.Security.jwt;
 import com.Finds.dev.Entity.User;
 import com.Finds.dev.Security.CustomUserDetails;
 import com.Finds.dev.Security.CustomUserDetailsService;
+import com.Finds.dev.Security.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,11 +20,14 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtCore jwtCore;
     private final CustomUserDetailsService customUserDetailsService;
+    private final CookieUtils cookieUtils;
 
-    public JwtFilter(JwtCore jwtCore, CustomUserDetailsService customUserDetailsService) {
+    public JwtFilter(JwtCore jwtCore, CustomUserDetailsService customUserDetailsService, CookieUtils cookieUtils) {
         this.jwtCore = jwtCore;
         this.customUserDetailsService = customUserDetailsService;
+        this.cookieUtils = cookieUtils;
     }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getTokenFromRequest(request);
@@ -54,6 +58,12 @@ public class JwtFilter extends OncePerRequestFilter {
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
+        
+        String cookieToken = cookieUtils.getAccessTokenFromCookie(request);
+        if (cookieToken != null && !cookieToken.isEmpty()) {
+            return cookieToken;
+        }
+        
         return null;
     }
 }

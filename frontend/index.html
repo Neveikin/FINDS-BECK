@@ -2,155 +2,298 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <title>FINDS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FINDS - Маркетплейс</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .container h1 {
+            font-size: 64px;
+            color: #1da1f2;
+            font-weight: 600;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+
+        .container p {
+            margin-top: 12px;
+            font-size: 16px;
+            color: #000000;
+            font-weight: 400;
+            margin-bottom: 40px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: #1da1f2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1a91da;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: #1da1f2;
+            border: 2px solid #1da1f2;
+        }
+
+        .btn-outline:hover {
+            background-color: #1da1f2;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-google:hover {
+            background-color: #f8f9fa;
+            border-color: #d0d0d0;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-google svg {
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            display: none;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .user-info .user-email {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .logout-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        @media (max-width: 600px) {
+            .container h1 {
+                font-size: 42px;
+            }
+
+            .container p {
+                font-size: 14px;
+            }
+
+            .auth-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .btn {
+                width: 200px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .container h1 {
+                font-size: 36px;
+                letter-spacing: 2px;
+            }
+
+            .btn {
+                width: 180px;
+                padding: 12px 24px;
+                font-size: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Хедер -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <h1><a href="index.html">FINDS</a></h1>
-                </div>
-                <nav class="nav">
-                    <ul class="nav-list">
-                        <li><a href="shops.html" class="nav-link">Магазины</a></li>
-                        <li><a href="#" class="nav-link">Каталог</a></li>
-                        <li><a href="#" class="nav-link">О нас</a></li>
-                        <li><a href="#" class="nav-link">Контакты</a></li>
-                        <li><a href="admin.html" class="nav-link admin-link" style="display: none;">Админ панель</a></li>
-                    </ul>
-                </nav>
-                <div class="auth-section" id="auth-section">
-                    <!-- Динамически будет заменяться через JavaScript -->
-                    <div class="auth-buttons" id="auth-buttons">
-                        <a href="login.html" class="btn btn-outline">Sign In</a>
-                        <a href="register.html" class="btn btn-primary">Sign Up</a>
-                    </div>
-                    <div class="user-menu" id="user-menu" style="display: none;">
-                        <div class="user-avatar" id="user-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="user-dropdown" id="user-dropdown">
-                            <a href="dashboard.html" class="dropdown-item">
-                                <i class="fas fa-user-circle"></i> Личный кабинет
-                            </a>
-                            <a href="#" class="dropdown-item" id="logout-btn">
-                                <i class="fas fa-sign-out-alt"></i> Выход
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+<div class="container">
+    <h1>FINDS</h1>
+    <p>Добро пожаловать, 2026 КЦТ</p>
+    
+    <!-- Кнопки для неавторизованных пользователей -->
+    <div class="auth-buttons" id="authButtons">
+        <a href="register.html" class="btn btn-outline">Зарегистрироваться</a>
+        <a href="login.html" class="btn btn-primary">Войти</a>
+        <a href="http://localhost:8090/oauth2/authorization/google" class="btn btn-google">
+            <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#4285F4" d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7019-1.566 2.6836-3.874 2.6836-6.615z"/>
+                <path fill="#34A853" d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.859-3.0477.859-2.344 0-4.3282-1.583-5.036-3.7114H.9574v2.3316C2.4382 16.083 5.4818 18 9 18z"/>
+                <path fill="#FBBC05" d="M3.964 10.712c-.182-.54-.286-1.1168-.286-1.712s.104-1.172.286-1.712V4.9564H.9574A8.996 8.996 0 0 0 0 9c0 1.4523.3477 2.8268.9574 4.0436l3.0066-2.3316z"/>
+                <path fill="#EA4335" d="M9 3.5795c1.3213 0 2.5078.454 3.4405 1.347l2.5813-2.5813C13.4632.8916 11.426 0 9 0 5.4818 0 2.4382 1.9169.9574 4.9564l3.0066 2.3316c.7078-2.1284 2.692-3.7114 5.036-3.7114z"/>
+            </svg>
+            Войти через Google
+        </a>
+    </div>
+    
+    <!-- Информация для авторизованных пользователей -->
+    <div class="user-info" id="userInfo">
+        <div class="user-email" id="userEmail"></div>
+        <button class="logout-btn" onclick="logout()">Выйти</button>
+    </div>
+</div>
 
-    <!-- Основной контент -->
-    <main class="main">
-        <div class="container">
-            <!-- Hero секция -->
-            <section class="hero">
-                <div class="hero-content">
-                    <h2 class="hero-title">Добро пожаловать в FINDS</h2>
-                    <p class="hero-subtitle">Лучший маркетплейс для поиска и покупки товаров</p>
-                    <div class="hero-buttons">
-                        <a href="#" class="btn btn-large btn-primary">Начать покупки</a>
-                        <a href="#" class="btn btn-large btn-outline">Продавать на FINDS</a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Категории -->
-            <section class="categories">
-                <h3 class="section-title">Популярные категории</h3>
-                <div class="category-grid">
-                    <div class="category-card">
-                        <div class="category-icon">
-                            <i class="fas fa-laptop"></i>
-                        </div>
-                        <h4>Электроника</h4>
-                    </div>
-                    <div class="category-card">
-                        <div class="category-icon">
-                            <i class="fas fa-tshirt"></i>
-                        </div>
-                        <h4>Одежда</h4>
-                    </div>
-                    <div class="category-card">
-                        <div class="category-icon">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <h4>Дом и сад</h4>
-                    </div>
-                    <div class="category-card">
-                        <div class="category-icon">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <h4>Книги</h4>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Товары -->
-            <section class="featured-products">
-                <h3 class="section-title">Рекомендуемые товары</h3>
-                <div class="products-grid">
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="https://via.placeholder.com/200x200" alt="Товар">
-                        </div>
-                        <div class="product-info">
-                            <h4 class="product-title">Название товара</h4>
-                            <p class="product-price">1 500 ₽</p>
-                            <button class="btn btn-primary">В корзину</button>
-                        </div>
-                    </div>
-                    <!-- Добавьте еще товары по аналогии -->
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <!-- Футер -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>FINDS</h4>
-                    <p>Лучший маркетплейс для ваших покупок</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Покупателям</h4>
-                    <ul>
-                        <li><a href="#">Как заказать</a></li>
-                        <li><a href="#">Доставка</a></li>
-                        <li><a href="#">Возврат</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Продавцам</h4>
-                    <ul>
-                        <li><a href="#">Продавать на FINDS</a></li>
-                        <li><a href="#">Тарифы</a></li>
-                        <li><a href="#">Помощь</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакты</h4>
-                    <p>Email: info@finds.com</p>
-                    <p>Телефон: +7 (999) 123-45-67</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 FINDS. Все права защищены.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="config.js"></script>
-    <script src="main.js"></script>
+<script>
+    console.log('🔥 About to load config.js');
+</script>
+<script src="config.js"></script>
+<script>
+    console.log('🔥 config.js loaded');
+</script>
+<script src="cookie-utils.js"></script>
+<script>
+    console.log('🔥 cookie-utils.js loaded');
+    console.log('🚀 SCRIPT STARTED');
+    
+    // Проверяем авторизацию при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('=== Cookie Check Started ===');
+        
+        const authButtons = document.getElementById('authButtons');
+        const userInfo = document.getElementById('userInfo');
+        const userEmail = document.getElementById('userEmail');
+        
+        // Debug: Проверяем все cookie
+        console.log('All cookies:', document.cookie);
+        
+        // Debug: Проверяем каждый cookie отдельно
+        const accessToken = CookieManager.getCookie('accessToken');
+        const refreshToken = CookieManager.getCookie('refreshToken');
+        const userEmailCookie = CookieManager.getCookie('user');
+        
+        console.log('=== Cookie Data Retrieved ===');
+        console.log('accessToken:', accessToken);
+        console.log('refreshToken:', refreshToken);
+        console.log('userEmail:', userEmailCookie);
+        
+        const isAuthenticated = CookieManager.isAuthenticated();
+        console.log('isAuthenticated result:', isAuthenticated);
+        console.log('=== Cookie Check Completed ===');
+        
+        if (isAuthenticated) {
+            // Показываем информацию о пользователе
+            const displayEmail = CookieManager.getUserEmail();
+            userEmail.textContent = `Вы вошли как: ${displayEmail}`;
+            authButtons.style.display = 'none';
+            userInfo.style.display = 'block';
+            console.log('✅ User is authenticated, showing user info');
+            console.log('Display email:', displayEmail);
+        } else {
+            // Показываем кнопки авторизации
+            authButtons.style.display = 'flex';
+            userInfo.style.display = 'none';
+            console.log('❌ User is not authenticated, showing auth buttons');
+        }
+    });
+    
+    // Добавим проверку при каждом обращении к CookieManager
+    const originalGetCookie = CookieManager.getCookie;
+    CookieManager.getCookie = function(name) {
+        console.log(`🍪 Getting cookie: ${name}`);
+        const result = originalGetCookie.call(this, name);
+        console.log(`🍪 Cookie ${name}:`, result);
+        return result;
+    };
+    
+    const originalIsAuthenticated = CookieManager.isAuthenticated;
+    CookieManager.isAuthenticated = function() {
+        console.log('🔐 Checking authentication status...');
+        const result = originalIsAuthenticated.call(this);
+        console.log('🔐 Authentication result:', result);
+        return result;
+    };
+    
+    // Функция выхода
+    async function logout() {
+        try {
+            // Вызываем logout endpoint на бэкенде для очистки cookie
+            await fetch(`${API_BASE}/auth/logout`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+        } catch (error) {
+            console.error('Ошибка при выходе:', error);
+        }
+        
+        // Очищаем cookie на фронтенде
+        CookieManager.logout();
+        
+        // Перезагружаем страницу
+        window.location.reload();
+    }
+</script>
+<script>
+    console.log('🔥 END OF BODY SCRIPT');
+</script>
 </body>
 </html>

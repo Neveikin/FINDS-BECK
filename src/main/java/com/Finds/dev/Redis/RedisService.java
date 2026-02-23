@@ -19,6 +19,8 @@ public class RedisService {
         return "user" + ":" + email + ":" + "UNCONFIRMED";
     }
 
+
+
     public void saveValue(String key, Object value, DurationType durationType, int duration) {
         Duration ttl;
 
@@ -58,6 +60,10 @@ public class RedisService {
     
     public boolean exists(String key) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+    
+    public Long getTtl(String key) {
+        return redisTemplate.getExpire(key);
     }
 
     public enum DurationType {

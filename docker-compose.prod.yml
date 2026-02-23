@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Бэкенд Spring Boot приложение
+  app:
+    build: .
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_LIFETIME=${JWT_LIFETIME}
+    restart: unless-stopped
+    networks:
+      - finds-network
+    volumes:
+      - ./logs:/app/logs
+
+  # Nginx для фронтенда и SSL
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/nginx.conf
+      - ./frontend:/usr/share/nginx/html
+      - ./ssl:/etc/nginx/ssl
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - finds-network
+
+volumes:
+  logs:
+
+networks:
+  finds-network:
+    driver: bridge

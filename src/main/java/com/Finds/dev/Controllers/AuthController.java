@@ -2,19 +2,17 @@ package com.Finds.dev.Controllers;
 
 import com.Finds.dev.DTO.Auth.*;
 import com.Finds.dev.Services.AuthService;
-import com.Finds.dev.Entity.User;
 import com.Finds.dev.Repositories.UserRepository;
 import com.Finds.dev.Services.MailConfirmService;
+import com.Finds.dev.Security.CookieUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Map;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -30,9 +28,16 @@ public class AuthController {
     @Autowired
     private MailConfirmService mailConfirmService;
 
+    @Autowired
+    private CookieUtils cookieUtils;
+
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@RequestBody @Valid UserCredentialsDto userCredentials) {
-        return ResponseEntity.ok(authService.signin(userCredentials));
+    public ResponseEntity<?> signin(@RequestBody @Valid UserCredentialsDto userCredentials, HttpServletResponse response) {
+        JwtAuth jwtAuth = authService.signin(userCredentials);
+        
+        cookieUtils.setAuthCookies(response, jwtAuth.getAccesToken(), jwtAuth.getRefershToken(), userCredentials.email());
+        
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/signup")
@@ -53,17 +58,22 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        cookieUtils.clearAuthCookies(response);
+        return ResponseEntity.ok().build();
+    }
 
-      @PostMapping("/email-confirm/{email}")
-      public ResponseEntity<?> email_confirm(@PathVariable String email) {
-          mailConfirmService.sendCode(email);
-          return ResponseEntity.ok("Проверьте почту");
-      }
+    @PostMapping("/email-confirm/{email}")
+    public ResponseEntity<?> email_confirm(@PathVariable String email) {
+        mailConfirmService.sendCode(email);
+        return ResponseEntity.ok("Проверьте почту");
+    }
       
-      @PostMapping("/confirm-email")
-      public ResponseEntity<?> confirmEmail(@RequestBody @Valid EmailConfirmDTO emailConfirmDTO) {
-          mailConfirmService.confirm(emailConfirmDTO);
-          return ResponseEntity.ok("Email подтвержден");
-      }
+    @PostMapping("/confirm-email")
+    public ResponseEntity<?> confirmEmail(@RequestBody @Valid EmailConfirmDTO emailConfirmDTO) {
+        mailConfirmService.confirm(emailConfirmDTO);
+        return ResponseEntity.ok("Email подтвержден");
+    }
 
 }

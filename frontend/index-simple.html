@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>FINDS</title>
+</head>
+<body>
+<div class="container">
+    <h1>FINDS</h1>
+    <p>Добро пожаловать, 2026 КЦТ</p>
+    
+    <div class="auth-buttons" id="authButtons">
+        <a href="http://localhost:8090/oauth2/authorization/google" class="btn btn-google">
+            Войти через Google
+        </a>
+    </div>
+    
+    <div class="user-info" id="userInfo" style="display: none;">
+        <div class="user-email" id="userEmail"></div>
+        <button onclick="logout()">Выйти</button>
+    </div>
+</div>
+
+<script>
+    console.log('🚀 INDEX HTML STARTED');
+    
+    // Проверяем авторизацию при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('=== Cookie Check Started ===');
+        
+        const authButtons = document.getElementById('authButtons');
+        const userInfo = document.getElementById('userInfo');
+        const userEmail = document.getElementById('userEmail');
+        
+        console.log('Elements found:', authButtons, userInfo, userEmail);
+        
+        // Проверяем все cookie
+        console.log('All cookies:', document.cookie);
+        
+        // Простая проверка cookie
+        const accessToken = document.cookie.split('; ').find(row => row.startsWith('accessToken='));
+        const userCookie = document.cookie.split('; ').find(row => row.startsWith('user='));
+        
+        console.log('accessToken found:', accessToken);
+        console.log('userCookie found:', userCookie);
+        
+        if (accessToken && userCookie) {
+            const userEmailValue = userCookie.split('=')[1];
+            userEmail.textContent = `Вы вошли как: ${userEmailValue}`;
+            authButtons.style.display = 'none';
+            userInfo.style.display = 'block';
+            console.log('✅ User is authenticated');
+        } else {
+            authButtons.style.display = 'flex';
+            userInfo.style.display = 'none';
+            console.log('❌ User is not authenticated');
+        }
+    });
+    
+    function logout() {
+        document.cookie = 'accessToken=; max-age=0; path=/';
+        document.cookie = 'refreshToken=; max-age=0; path=/';
+        document.cookie = 'user=; max-age=0; path=/';
+        window.location.reload();
+    }
+</script>
+</body>
+</html>

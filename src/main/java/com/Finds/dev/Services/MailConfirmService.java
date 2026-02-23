@@ -50,8 +50,9 @@ public class MailConfirmService {
     public void sendCode(String to) {
         String code = generateCode();
         
-        if (redisService.exists("comf:" + to + ":TTN"))
-            throw new IllegalArgumentException("Please wait to receive a new code");
+        if (redisService.exists("comf:" + to + ":TTN")) {
+            throw new IllegalArgumentException("Please wait " + redisService.getTtl("comf:" + to + ":TTN") + "s to receive a new code");
+        }
 
         Object value = redisService.getValue("comf:" + to + ":TTW");
         if (value != null && value instanceof Integer && (Integer) value >= 5) {
@@ -113,13 +114,12 @@ public class MailConfirmService {
         String code = (String) redisService.getValue("comf:" + emailConfirmDTO.email());
 
         if (code != null && code.equals(emailConfirmDTO.code())) {
-            User user = objectMapper.convertValue(
-                    redisService.getValue(redisService.getUserConfKey(emailConfirmDTO.email())),
-                    User.class
-            );
+            User user = userRepository.findByEmail(emailConfirmDTO.email())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            
             user.setStatus(User.UserStatus.CONFIRMED);
-
             userRepository.save(user);
+            
             cartRepository.save(new Cart(user));
         } else {
             throw new IllegalArgumentException("Invalid confirmation code");

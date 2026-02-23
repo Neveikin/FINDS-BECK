@@ -2,121 +2,339 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <title>Регистрация - FINDS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FINDS - Регистрация</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 32px;
+            color: #1da1f2;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1da1f2;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            background-color: #1da1f2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1a91da;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: #1da1f2;
+            border: 2px solid #1da1f2;
+        }
+
+        .btn-outline:hover {
+            background-color: #1da1f2;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .back-link {
+            color: #1da1f2;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 20px;
+            display: inline-block;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #1a91da;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .logo {
+                font-size: 28px;
+            }
+
+            .form-group input {
+                padding: 10px 14px;
+                font-size: 16px;
+            }
+
+            .btn {
+                padding: 12px 18px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 25px 15px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Хедер -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <h1><a href="index.html">FINDS</a></h1>
-                </div>
-                <nav class="nav">
-                    <ul class="nav-list">
-                        <li><a href="index.html" class="nav-link">Главная</a></li>
-                        <li><a href="#" class="nav-link">Каталог</a></li>
-                        <li><a href="#" class="nav-link">О нас</a></li>
-                    </ul>
-                </nav>
-                <div class="auth-section" id="auth-buttons">
-                    <a href="login.html" class="btn btn-outline">Вход</a>
-                </div>
-                <div class="user-menu" id="user-menu" style="display: none;">
-                    <div class="user-avatar" id="user-avatar"></div>
-                    <div class="user-dropdown" id="user-dropdown" style="display: none;">
-                        <a href="dashboard.html">Личный кабинет</a>
-                        <a href="#" id="logout-btn">Выйти</a>
-                    </div>
-                </div>
+    <div class="container">
+        <div class="logo">FINDS</div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="name">Имя</label>
+                <input type="text" id="name" name="name" required>
             </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Подтвердите пароль</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+        </form>
+        
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+        
+        <!-- Форма подтверждения email -->
+        <div id="emailConfirmation" style="display: none;">
+            <h3 style="margin-bottom: 20px; color: #333;">Подтвердите email</h3>
+            <div class="form-group">
+                <label for="confirmationCode">Код подтверждения</label>
+                <input type="text" id="confirmationCode" name="confirmationCode" placeholder="Введите 5-значный код" maxlength="5" required>
+            </div>
+            
+            <button type="button" class="btn btn-primary" onclick="confirmEmail()">Подтвердить</button>
+            <button type="button" class="btn btn-outline" onclick="resendCode()">Отправить код повторно</button>
+            
+            <div class="error-message" id="confirmErrorMessage"></div>
+            <div class="success-message" id="confirmSuccessMessage"></div>
         </div>
-    </header>
-
-    <!-- Основной контент -->
-    <main class="main">
-        <div class="container">
-            <div class="auth-container">
-                <div class="auth-header">
-                    <h1>Регистрация в FINDS</h1>
-                    <p>Создайте аккаунт для доступа ко всем возможностям</p>
-                </div>
-                
-                <form id="registerForm" class="auth-form">
-                    <div class="form-group">
-                        <label for="name">Имя</label>
-                        <input type="text" id="name" name="name" required placeholder="Введите ваше имя">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required placeholder="Введите ваш email">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Пароль</label>
-                        <input type="password" id="password" name="password" required placeholder="Введите пароль (минимум 6 символов)">
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmPassword">Подтвердите пароль</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Повторите пароль">
-                    </div>
-                    <div class="form-group">
-                        <label for="role">Тип аккаунта</label>
-                        <select id="role" name="role" required>
-                            <option value="USER">Покупатель</option>
-                            <option value="SELLER">Продавец</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">Зарегистрироваться</button>
-                </form>
-                
-                <div class="auth-footer">
-                    <p>Уже есть аккаунт? <a href="login.html">Войдите</a></p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Футер -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>FINDS</h4>
-                    <p>Лучший маркетплейс для ваших покупок</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Покупателям</h4>
-                    <ul>
-                        <li><a href="#">Как заказать</a></li>
-                        <li><a href="#">Доставка</a></li>
-                        <li><a href="#">Возврат</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Продавцам</h4>
-                    <ul>
-                        <li><a href="#">Продавать на FINDS</a></li>
-                        <li><a href="#">Тарифы</a></li>
-                        <li><a href="#">Помощь</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакты</h4>
-                    <p>Email: info@finds.com</p>
-                    <p>Телефон: +7 (999) 123-45-67</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 FINDS. Все права защищены.</p>
-            </div>
-        </div>
-    </footer>
+        
+        <a href="index.html" class="back-link">← Назад на главную</a>
+    </div>
 
     <script src="config.js"></script>
-    <script src="script.js"></script>
-    <script src="main.js"></script>
+    <script>
+        let currentUserEmail = '';
+        
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                confirmPassword: formData.get('confirmPassword'),
+                role: 'USER'
+            };
+            
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    successMessage.textContent = 'Регистрация успешна! Пожалуйста, подтвердите ваш email.';
+                    successMessage.style.display = 'block';
+                    
+                    // Сохраняем email для подтверждения
+                    currentUserEmail = data.email;
+                    
+                    // Скрываем форму регистрации и показываем форму подтверждения
+                    document.getElementById('registerForm').style.display = 'none';
+                    document.getElementById('emailConfirmation').style.display = 'block';
+                    
+                    // Очищаем форму
+                    e.target.reset();
+                } else {
+                    const errorData = await response.json();
+                    errorMessage.textContent = errorData.message || 'Ошибка регистрации';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Ошибка соединения с сервером';
+                errorMessage.style.display = 'block';
+            }
+        });
+        
+        // Функция подтверждения email
+        async function confirmEmail() {
+            const code = document.getElementById('confirmationCode').value;
+            const errorMessage = document.getElementById('confirmErrorMessage');
+            const successMessage = document.getElementById('confirmSuccessMessage');
+            
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/confirm-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: currentUserEmail,
+                        code: code
+                    })
+                });
+                
+                if (response.ok) {
+                    successMessage.textContent = 'Email успешно подтвержден! Перенаправление на страницу входа...';
+                    successMessage.style.display = 'block';
+                    
+                    // Через 2 секунды перенаправляем на страницу входа
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    const errorData = await response.json();
+                    errorMessage.textContent = errorData.message || 'Ошибка подтверждения';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Ошибка соединения с сервером';
+                errorMessage.style.display = 'block';
+            }
+        }
+        
+        // Функция повторной отправки кода
+        async function resendCode() {
+            const errorMessage = document.getElementById('confirmErrorMessage');
+            const successMessage = document.getElementById('confirmSuccessMessage');
+            
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/email-confirm/${currentUserEmail}`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    successMessage.textContent = 'Код отправлен повторно';
+                    successMessage.style.display = 'block';
+                } else {
+                    const errorData = await response.json();
+                    errorMessage.textContent = errorData.message || 'Ошибка отправки кода';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Ошибка соединения с сервером';
+                errorMessage.style.display = 'block';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -5,7 +5,9 @@ import com.Finds.dev.DTO.Auth.UpdateNameDto;
 import com.Finds.dev.DTO.Auth.UpdatePasswordDto;
 import com.Finds.dev.DTO.Auth.UserProfileDto;
 import com.Finds.dev.DTO.Auth.TokenResponseDto;
+import com.Finds.dev.Entity.AuthProvider;
 import com.Finds.dev.Entity.User;
+import com.Finds.dev.Repositories.AuthProviderRepository;
 import com.Finds.dev.Repositories.UserRepository;
 import com.Finds.dev.Security.CustomUserDetails;
 import com.Finds.dev.Security.jwt.JwtCore;
@@ -20,10 +22,15 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+@Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AuthProviderRepository authProviderRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -33,20 +40,24 @@ public class UserService {
 
     public String getCurrentUserId() {
         try {
-            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder
-                    .getContext().getAuthentication().getPrincipal();
-            return userDetails.getUser().getId();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null) {
+                return authentication.getName();
+            }
         } catch (Exception e) {
             return null;
         }
+        return null;
     }
 
     public User getCurrentUser() {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (userDetails == null || userDetails.getUser() == null) {
+        String email = getCurrentUserId();
+        if (email == null) {
             throw new EntityNotFoundException("Пользователь не аутентифицирован");
         }
-        return userDetails.getUser();
+        
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
     }
 
     public User getUserProfile() {
@@ -93,12 +104,17 @@ public class UserService {
             throw new IllegalArgumentException("New password must be different from current password");
         }
 
-        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+        AuthProvider localAuthProvider = authProviderRepository.findByUserAndProvider(user, AuthProvider.Provider.LOCAL)
+                .orElseThrow(() -> new EntityNotFoundException("Локальная аутентификация не найдена"));
+
+        String currentPasswordHash = authProviderRepository.findPasswordHashByUserAndProvider(user.getId(), AuthProvider.Provider.LOCAL);
+        if (currentPasswordHash == null || !passwordEncoder.matches(currentPassword, currentPasswordHash)) {
             throw new IllegalArgumentException("Current password is incorrect");
         }
 
-        user.setPasswordHash(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+        String newPasswordHash = passwordEncoder.encode(newPassword);
+        authProviderRepository.updatePasswordHashByUserAndProvider(user.getId(), newPasswordHash, AuthProvider.Provider.LOCAL);
+        
         return new UserProfileDto(user);
     }
 

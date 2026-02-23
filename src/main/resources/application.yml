@@ -25,11 +25,25 @@ spring:
     compose:
       enabled: false
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1019073291684-f8q7dlkj8od60eeqpn1t94027pdlnmbv.apps.googleusercontent.com
+            client-secret: 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
+            scope: email, profile
+            redirect-uri: http://localhost:8090/login/oauth2/code/google
+            authorization-grant-type: authorization_code
+        provider:
+          google:
+            user-name-attribute: email
+
   mail:
     host: smtp-relay.brevo.com
     port: 587
     username: a2bbf8001@smtp-brevo.com
-    password: xsmtpsib-a86ad33e80a7975bf8883c9c2dc89daceb4bd90efeab6b81ca00e8538be36f9f-BatvMXORiiNxgtsd
+    password: xsmtpsib-a86ad33e80a7975bf8883c9c2dc89daceb4bd90efeab6b81ca00e8538be36f9f-W7Qf4tSNITBeIS2J
     protocol: smtp
     properties:
       mail:
@@ -47,7 +61,10 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+
+cors:
+  allowed-origins: http://localhost:3001,http://localhost:3000
 
 server:
   port: 8090

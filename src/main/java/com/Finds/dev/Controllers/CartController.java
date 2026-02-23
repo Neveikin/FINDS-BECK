@@ -5,8 +5,6 @@ import com.Finds.dev.Repositories.CartItemRepository;
 import com.Finds.dev.Repositories.CartRepository;
 import com.Finds.dev.Services.CartService;
 import com.Finds.dev.Services.UserService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

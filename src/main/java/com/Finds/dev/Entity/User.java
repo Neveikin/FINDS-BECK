@@ -21,9 +21,6 @@ public class User {
     @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;
     
-    @Column(name = "password_hash", nullable = false, length = 255)
-    private String passwordHash;
-    
     @Column(name = "name", length = 100)
     private String name;
     
@@ -50,6 +47,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AuthProvider> authProviders = new ArrayList<>();
+
     public enum UserRole {
         USER, ADMIN, SELLER
     }
@@ -66,9 +66,6 @@ public class User {
     
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    
-    public String getPasswordHash() { return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
     
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -93,4 +90,7 @@ public class User {
     
     public UserStatus getStatus() { return status; }
     public void setStatus(UserStatus status) { this.status = status; }
+    
+    public List<AuthProvider> getAuthProviders() { return authProviders; }
+    public void setAuthProviders(List<AuthProvider> authProviders) { this.authProviders = authProviders; }
 }

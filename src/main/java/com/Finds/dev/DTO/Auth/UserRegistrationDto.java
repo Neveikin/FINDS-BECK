@@ -17,7 +17,5 @@ public record UserRegistrationDto(
         String name,
 
         @NotBlank(message = "Password confirmation is required")
-        String confirmPassword,
-
-        String role
+        String confirmPassword
 ) {}

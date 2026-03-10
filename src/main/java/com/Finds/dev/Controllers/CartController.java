@@ -1,6 +1,5 @@
 package com.Finds.dev.Controllers;
 
-import com.Finds.dev.Entity.Cart;
 import com.Finds.dev.Repositories.CartItemRepository;
 import com.Finds.dev.Repositories.CartRepository;
 import com.Finds.dev.Services.CartService;

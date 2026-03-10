@@ -26,7 +26,6 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtCore jwtCore;
     private final CookieUtils cookieUtils;
-
     private final CustomOAuth2UserService customOAuth2UserService;
 
     @Value("${cors.allowed-origins}")
@@ -74,6 +73,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/lk/me/**").authenticated()
                         .requestMatchers("/favorites/**").authenticated()
                         .requestMatchers("/cart/**").authenticated()
+                        .requestMatchers("/order/**").authenticated()
                         .anyRequest().permitAll())
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo ->
@@ -83,7 +83,6 @@ public class SecurityConfig {
                     OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
                     customOAuth2UserService.handleOAuth2Authentication(oauth2User, response);
                     
-                    // Redirect to frontend
                     response.sendRedirect("http://localhost:3000");
                 })
                 )

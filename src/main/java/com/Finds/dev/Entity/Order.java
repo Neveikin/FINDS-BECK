@@ -18,7 +18,7 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 30)
     private OrderStatus status = OrderStatus.CREATED;
@@ -31,6 +31,9 @@ public class Order {
     
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderItem> items;
+
+    @Column(name = "adress")
+    private String adress;
     
     public Order() {}
     
@@ -65,8 +68,16 @@ public class Order {
     
     public List<OrderItem> getItems() { return items; }
     public void setItems(List<OrderItem> items) { this.items = items; }
-    
+
+    public String getAdress() {
+        return adress;
+    }
+
+    public void setAdress(String adress) {
+        this.adress = adress;
+    }
+
     public enum OrderStatus {
-        CREATED, PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED, REFUNDED
+        CREATED, CONFIRMED, SHIPPED, DELIVERED, CANCELLED, REFUNDED
     }
 }

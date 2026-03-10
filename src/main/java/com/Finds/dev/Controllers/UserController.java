@@ -7,8 +7,10 @@ import com.Finds.dev.DTO.Auth.UpdatePasswordDto;
 import com.Finds.dev.DTO.Auth.UserProfileDto;
 import com.Finds.dev.Services.UserService;
 import com.Finds.dev.Security.jwt.JwtCore;
+import com.Finds.dev.Security.CookieUtils;
 import com.Finds.dev.Entity.User;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,9 @@ public class UserController {
     
     @Autowired
     private JwtCore jwtCore;
+    
+    @Autowired
+    private CookieUtils cookieUtils;
 
     @GetMapping()
     public ResponseEntity<User> getUserProfile() {
@@ -37,15 +42,21 @@ public class UserController {
     }
 
     @PatchMapping("/email")
-    public ResponseEntity<?> updateEmail(@RequestBody @Valid UpdateEmailDto updateEmailDto) {
-        TokenResponseDto response = userService.updateEmail(updateEmailDto);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> updateEmail(@RequestBody @Valid UpdateEmailDto updateEmailDto, 
+                                       @CookieValue(name = "user", required = false) String currentUserEmail, HttpServletResponse response) {
+
+        TokenResponseDto tokenResponse = userService.updateEmail(updateEmailDto);
+        cookieUtils.setAuthCookies(response, tokenResponse.getAccesToken(), tokenResponse.getRefershToken(), tokenResponse.getUser().getEmail());
+        return ResponseEntity.ok(tokenResponse.getUser());
     }
 
     @PatchMapping("/name")
-    public ResponseEntity<?> updateName(@RequestBody @Valid UpdateNameDto updateNameDto) {
-        TokenResponseDto response = userService.updateName(updateNameDto);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> updateName(@RequestBody @Valid UpdateNameDto updateNameDto,
+                                      @CookieValue(name = "user", required = false) String currentUserEmail, HttpServletResponse response) {
+
+        TokenResponseDto tokenResponse = userService.updateName(updateNameDto);
+        cookieUtils.setAuthCookies(response, tokenResponse.getAccesToken(), tokenResponse.getRefershToken(), tokenResponse.getUser().getEmail());
+        return ResponseEntity.ok(tokenResponse.getUser());
     }
 
     @PatchMapping("/password")

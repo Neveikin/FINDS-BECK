@@ -1,18 +1,11 @@
 package com.Finds.dev.Controllers;
 
-import com.Finds.dev.Entity.Favorite;
 import com.Finds.dev.Repositories.FavoriteRepository;
 import com.Finds.dev.Repositories.FavoriteShopRepository;
 import com.Finds.dev.Services.FavoriteService;
 import com.Finds.dev.Services.UserService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/favorites")

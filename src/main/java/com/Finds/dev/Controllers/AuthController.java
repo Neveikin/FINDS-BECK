@@ -21,9 +21,6 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
-    
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private MailConfirmService mailConfirmService;
@@ -34,7 +31,6 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody @Valid UserCredentialsDto userCredentials, HttpServletResponse response) {
         JwtAuth jwtAuth = authService.signin(userCredentials);
-        
         cookieUtils.setAuthCookies(response, jwtAuth.getAccesToken(), jwtAuth.getRefershToken(), userCredentials.email());
         
         return ResponseEntity.ok().build();
@@ -47,8 +43,19 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody @Valid RefreshTokenDto refreshTokenDto) {
-        return ResponseEntity.ok(authService.refresh(refreshTokenDto));
+    public ResponseEntity<?> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken, 
+                                   @CookieValue(name = "user", required = false) String userEmail,
+                                   HttpServletResponse response) {
+
+        if (refreshToken == null) {
+            return ResponseEntity.badRequest().body("Refresh token not found in cookies");
+        }
+        
+        RefreshTokenDto refreshTokenDto = new RefreshTokenDto(refreshToken);
+        JwtAuth jwtAuth = authService.refresh(refreshTokenDto);
+        cookieUtils.setAuthCookies(response, jwtAuth.getAccesToken(), jwtAuth.getRefershToken(), userEmail);
+        
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/update-role")

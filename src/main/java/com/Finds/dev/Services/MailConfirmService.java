@@ -1,9 +1,11 @@
 package com.Finds.dev.Services;
 
 import com.Finds.dev.DTO.Auth.EmailConfirmDTO;
+import com.Finds.dev.Entity.AuthProvider;
 import com.Finds.dev.Entity.Cart;
 import com.Finds.dev.Entity.User;
 import com.Finds.dev.Redis.RedisService;
+import com.Finds.dev.Repositories.AuthProviderRepository;
 import com.Finds.dev.Repositories.CartRepository;
 import com.Finds.dev.Repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +23,9 @@ import java.security.SecureRandom;
 
 @Service
 public class MailConfirmService {
+    @Autowired
+    AuthProviderRepository authProviderRepository;
+
     @Autowired
     RedisService redisService;
 
@@ -111,16 +116,20 @@ public class MailConfirmService {
 
     @Transactional
     public void confirm(EmailConfirmDTO emailConfirmDTO) {
-        String code = (String) redisService.getValue("comf:" + emailConfirmDTO.email());
+        String email =  emailConfirmDTO.email();
+
+        String code = (String) redisService.getValue("comf:" + email);
 
         if (code != null && code.equals(emailConfirmDTO.code())) {
-            User user = userRepository.findByEmail(emailConfirmDTO.email())
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
-            
+            User user = (User) redisService.getValue("user" + ":" + email + ":" + "UNCONFIRMED");
+            AuthProvider authProvider = (AuthProvider) redisService.getValue("authProvider" + ":" + email + ":" + "UNCONFIRMED");
+
             user.setStatus(User.UserStatus.CONFIRMED);
-            userRepository.save(user);
-            
-            cartRepository.save(new Cart(user));
+
+            User savedUser = userRepository.save(user);
+            authProvider.setUser(savedUser);
+            authProviderRepository.save(authProvider);
+            cartRepository.save(new Cart(savedUser));
         } else {
             throw new IllegalArgumentException("Invalid confirmation code");
         }

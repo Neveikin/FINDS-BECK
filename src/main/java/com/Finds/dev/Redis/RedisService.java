@@ -15,12 +15,6 @@ public class RedisService {
         this.redisTemplate = redisTemplate;
     }
 
-    public String getUserConfKey(String email) {
-        return "user" + ":" + email + ":" + "UNCONFIRMED";
-    }
-
-
-
     public void saveValue(String key, Object value, DurationType durationType, int duration) {
         Duration ttl;
 

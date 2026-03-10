@@ -95,12 +95,10 @@ public class AuthService {
         user.setCreatedAt(LocalDateTime.now());
         user.setStatus(User.UserStatus.UNCONFIRMED);
 
-        User savedUser = userRepository.save(user);
+        AuthProvider authProvider = new AuthProvider(user, AuthProvider.Provider.LOCAL, email, passwordEncoder.encode(password));
 
-        AuthProvider authProvider = new AuthProvider(savedUser, AuthProvider.Provider.LOCAL, email, passwordEncoder.encode(password));
-        authProviderRepository.save(authProvider);
-
-        redisService.saveValue(redisService.getUserConfKey(email), savedUser, RedisService.DurationType.D, 7);
+        redisService.saveValue("user" + ":" + email + ":" + "UNCONFIRMED", user, RedisService.DurationType.D, 7);
+        redisService.saveValue("authProvider" + ":" + email + ":" + "UNCONFIRMED", authProvider, RedisService.DurationType.D, 7);
     }
 
     public JwtAuth refresh(RefreshTokenDto refreshTokenDto) {

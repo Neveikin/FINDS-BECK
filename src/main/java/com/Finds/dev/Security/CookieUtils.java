@@ -21,11 +21,12 @@ public class CookieUtils {
 
     public void setAuthCookies(HttpServletResponse response, String accessToken, String refreshToken, String userEmail) {
         Cookie accessCookie = new Cookie(ACCESS_TOKEN_COOKIE, accessToken);
-        accessCookie.setHttpOnly(true);
+        accessCookie.setHttpOnly(false); // Изменено чтобы фронтенд мог прочитать токен
         accessCookie.setSecure(false);
         accessCookie.setPath("/");
         accessCookie.setDomain("localhost");
         accessCookie.setMaxAge((int) (jwtAccessExpiration / 1000));
+        accessCookie.setAttribute("SameSite", "None"); // Добавлено для CORS
         response.addCookie(accessCookie);
 
         Cookie refreshCookie = new Cookie(REFRESH_TOKEN_COOKIE, refreshToken);

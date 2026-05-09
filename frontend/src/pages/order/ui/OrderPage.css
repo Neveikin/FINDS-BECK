@@ -1,0 +1,325 @@
+.order-main {
+  background-color: #f5f5f5;
+  padding: 40px;
+  min-height: calc(100vh - 300px - 100px);
+}
+
+.order-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+}
+
+.back-button:hover {
+  color: rgba(18, 35, 93, 1);
+}
+
+.order-details-card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.order-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.order-number {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.order-date {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #999;
+  margin: 0;
+}
+
+.order-status-badge {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 16px;
+  border-radius: 30px;
+}
+
+.status-pending {
+  background: #fff3e0;
+  color: #f39c12;
+}
+
+.status-processing {
+  background: #e3f2fd;
+  color: #2196f3;
+}
+
+.status-shipped {
+  background: #e8f5e9;
+  color: #4caf50;
+}
+
+.status-delivered {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-cancelled {
+  background: #ffebee;
+  color: #f44336;
+}
+
+.order-info-section {
+  margin-bottom: 32px;
+}
+
+.order-info-section h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  margin: 0 0 16px 0;
+}
+
+.info-grid {
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.info-row {
+  display: flex;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #666;
+  width: 140px;
+  flex-shrink: 0;
+}
+
+.info-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  flex: 1;
+}
+
+.order-items-section {
+  margin-bottom: 32px;
+}
+
+.order-items-section h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  margin: 0 0 16px 0;
+}
+
+.order-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-item-detail {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.order-item-detail:hover {
+  background: #f0f0f0;
+  transform: translateX(4px);
+}
+
+.order-item-image {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.order-item-detail-info {
+  flex: 1;
+}
+
+.order-item-name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.order-item-brand {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 8px;
+}
+
+.order-item-price {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: rgba(18, 35, 93, 1);
+}
+
+.order-summary {
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.order-summary .summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #666;
+  padding: 8px 0;
+}
+
+.order-summary .summary-row.total {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 8px;
+  padding-top: 16px;
+}
+
+.order-summary .summary-row.total span:last-child {
+  color: rgba(18, 35, 93, 1);
+}
+
+.continue-shopping {
+  width: 100%;
+  padding: 14px;
+  background: rgba(18, 35, 93, 1);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.continue-shopping:hover {
+  background: rgba(18, 35, 93, 0.85);
+}
+
+.order-not-found {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.not-found-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px;
+}
+
+.not-found-content h1 {
+  font-family: 'Inter', sans-serif;
+  font-size: 32px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.not-found-content button {
+  padding: 12px 30px;
+  background: rgba(18, 35, 93, 1);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.not-found-content button:hover {
+  background: rgba(18, 35, 93, 0.85);
+}
+
+@media (max-width: 768px) {
+  .order-main {
+    padding: 20px;
+  }
+  
+  .order-details-card {
+    padding: 20px;
+  }
+  
+  .order-number {
+    font-size: 20px;
+  }
+  
+  .info-row {
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 0;
+  }
+  
+  .info-label {
+    width: auto;
+  }
+  
+  .order-item-detail {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .order-item-image {
+    width: 100px;
+    height: 100px;
+  }
+}

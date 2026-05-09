@@ -25,6 +25,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, com.Finds.de
     @Query("SELECT ci.quantity FROM CartItem ci WHERE ci.cart.id = :cartId AND ci.product.id = :productId")
     Integer getQuantityByCartIdAndProductId(@Param("cartId") String cartId, @Param("productId") String productId);
     
+    @Modifying
     @Query("UPDATE CartItem ci SET ci.quantity = :quantity WHERE ci.cart.id = :cartId AND ci.product.id = :productId")
     void updateQuantity(@Param("cartId") String cartId, @Param("productId") String productId, @Param("quantity") Integer quantity);
     

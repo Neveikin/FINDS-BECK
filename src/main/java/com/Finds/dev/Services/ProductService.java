@@ -36,13 +36,20 @@ public class ProductService {
                 productEditDTO.availableSizes());
     }
 
-    public List getProducts(String id) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userRole = auth.getAuthorities().iterator().next().getAuthority();
+    public Object getProducts(String id) {
+        if (id != null) {
+            // Return single product by ID
+            return productRepository.findProductById(id);
+        } else {
+            // Return all products
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userRole = auth.getAuthorities().iterator().next().getAuthority();
+            String userId = auth.getName();
 
-        if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_SELLER"))
-            return productRepository.findAllProductsWithFavoriteAndImage(id);
-        else
-            return productRepository.findActiveProductsWithFavoriteAndImage(id);
+            if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_SELLER"))
+                return productRepository.findAllProductsWithFavoriteAndImage(userId);
+            else
+                return productRepository.findActiveProductsWithFavoriteAndImage(userId);
+        }
     }
 }

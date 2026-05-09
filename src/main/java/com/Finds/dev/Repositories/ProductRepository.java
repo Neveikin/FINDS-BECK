@@ -29,7 +29,8 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         p.id,
         p.name,
         CASE WHEN f.id IS NOT NULL THEN TRUE ELSE FALSE END AS is_favorite,
-        pi.url AS image_url,
+        pi.image_url AS image_url,
+        p.price,
         p.material,
         (SELECT ARRAY_AGG(size_code) FROM product_sizes WHERE product_id = p.id) AS available_sizes
     FROM products p
@@ -37,7 +38,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         ON f.product_id = p.id
         AND f.user_id = :userId
     LEFT JOIN LATERAL (
-        SELECT url
+        SELECT image_url
         FROM product_images
         WHERE product_id = p.id
         ORDER BY id
@@ -53,7 +54,8 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         p.id,
         p.name,
         CASE WHEN f.id IS NOT NULL THEN TRUE ELSE FALSE END AS is_favorite,
-        pi.url AS image_url,
+        pi.image_url AS image_url,
+        p.price,
         p.material,
         (SELECT ARRAY_AGG(size_code) FROM product_sizes WHERE product_id = p.id) AS available_sizes
     FROM products p
@@ -61,7 +63,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
         ON f.product_id = p.id
         AND f.user_id = :userId
     LEFT JOIN LATERAL (
-        SELECT url
+        SELECT image_url
         FROM product_images
         WHERE product_id = p.id
         ORDER BY id
@@ -70,5 +72,26 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     ORDER BY p.name
 """, nativeQuery = true)
     List<ProductResponse> findAllProductsWithFavoriteAndImage(@Param("userId") String userId);
+
+    @Query(value = """
+    SELECT
+        p.id,
+        p.name,
+        false AS is_favorite,
+        pi.image_url AS image_url,
+        p.price,
+        p.material,
+        (SELECT ARRAY_AGG(size_code) FROM product_sizes WHERE product_id = p.id) AS available_sizes
+    FROM products p
+    LEFT JOIN LATERAL (
+        SELECT image_url
+        FROM product_images
+        WHERE product_id = p.id
+        ORDER BY id
+        LIMIT 1
+    ) pi ON true
+    WHERE p.id = :productId
+""", nativeQuery = true)
+    ProductResponse findProductById(@Param("productId") String productId);
 
 }

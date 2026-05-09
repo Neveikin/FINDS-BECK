@@ -1,0 +1,2 @@
+export { BrandsSlider } from "./BrandsSlider";
+

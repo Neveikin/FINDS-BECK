@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,10 +29,26 @@ public class ProductController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<?> getProducts(@RequestParam String id) {
-        return ResponseEntity.ok(productService.getProducts(id));
+    public ResponseEntity<?> getProducts(@RequestParam(required = false) String id) {
+        if (id != null) {
+            return ResponseEntity.ok(productService.getProducts(id));
+        } else {
+            // Вернуть все товары
+            return ResponseEntity.ok(productRepository.findAll());
+        }
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<?> getPopularProducts(@RequestParam(required = false) Integer limit) {
+        List<Product> allProducts = productRepository.findAll();
+        // Пока просто вернем все товары, позже можно добавить логику популярности
+        if (limit != null && limit > 0) {
+            return ResponseEntity.ok(allProducts.stream().limit(limit).toList());
+        }
+        return ResponseEntity.ok(allProducts);
+    }
+
+    
     @PostMapping("/add/{shopId}")
     @PreAuthorize("hasRole('ADMIN') or @securityService.isExistInOwners(#shopId, authentication)")
     public ResponseEntity<?> addProduct(@RequestBody @Valid Product product, @PathVariable String shopId) {

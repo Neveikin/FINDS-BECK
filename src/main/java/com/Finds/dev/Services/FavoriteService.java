@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -31,6 +32,12 @@ public class FavoriteService {
     ShopRepository shopRepository;
 
     public void addFavorite(String userId, String productId) {
+        // Check if favorite already exists
+        Optional<Favorite> existingFavorite = favoriteRepository.findByUserIdAndProductId(userId, productId);
+        if (existingFavorite.isPresent()) {
+            return; // Don't add duplicate
+        }
+        
         Favorite favorite = new Favorite();
         favorite.setUser(userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found")));

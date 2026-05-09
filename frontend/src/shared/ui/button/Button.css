@@ -1,0 +1,28 @@
+.button {
+  font-family: 'Inter', sans-serif;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button--primary {
+  background: rgba(18, 35, 93, 1);
+  color: white;
+}
+
+.button--primary:hover {
+  background: rgba(18, 35, 93, 0.85);
+  transform: translateY(-2px);
+}
+
+.button--secondary {
+  background: transparent;
+  color: rgba(18, 35, 93, 1);
+  border: 1px solid rgba(18, 35, 93, 1);
+}
+
+.button--medium {
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+}

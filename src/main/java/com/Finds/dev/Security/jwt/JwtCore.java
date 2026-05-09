@@ -58,12 +58,16 @@ public class JwtCore {
     
     public boolean validateToken(String token) {
         try {
+            System.out.println("JWT Core - Validating token: " + token.substring(0, Math.min(token.length(), 20)) + "...");
             Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token);
+            System.out.println("JWT Core - Token validation successful");
             return true;
         } catch (Exception e) {
+            System.out.println("JWT Core - Token validation failed: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

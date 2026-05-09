@@ -41,9 +41,9 @@ spring:
 
   mail:
     host: smtp-relay.brevo.com
-    port: 587
+    port: 2525
     username: a2bbf8001@smtp-brevo.com
-    password: xsmtpsib-a86ad33e80a7975bf8883c9c2dc89daceb4bd90efeab6b81ca00e8538be36f9f-ojwfi8dCh5fHs1lP
+    password: xsmtpsib-a86ad33e80a7975bf8883c9c2dc89daceb4bd90efeab6b81ca00e8538be36f9f-iExsNwI4JXAaThHB
     protocol: smtp
     properties:
       mail:
@@ -61,7 +61,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 cors:
   allowed-origins: http://localhost:3001,http://localhost:3000

@@ -1,5 +1,7 @@
 package com.Finds.dev.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -21,9 +23,11 @@ public class Category {
     private Category parent;
     
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Category> children;
     
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Product> products;
     
     public Category() {}

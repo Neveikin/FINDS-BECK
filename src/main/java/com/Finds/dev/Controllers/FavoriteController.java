@@ -5,6 +5,7 @@ import com.Finds.dev.Repositories.FavoriteShopRepository;
 import com.Finds.dev.Services.FavoriteService;
 import com.Finds.dev.Services.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,8 +32,16 @@ public class FavoriteController {
 
     @PostMapping("/add/product/{productId}")
     public ResponseEntity<?> addFavorite(@PathVariable String productId) {
-        favoriteService.addFavorite(userService.getCurrentUserId(), productId);
-        return ResponseEntity.ok().build();
+        System.out.println("FavoriteController - Adding favorite: " + productId);
+        try {
+            String userId = userService.getCurrentUserId();
+            System.out.println("FavoriteController - User ID: " + userId);
+            favoriteService.addFavorite(userId, productId);
+            return ResponseEntity.ok("{\"success\":true,\"message\":\"Product added to favorites\"}");
+        } catch (Exception e) {
+            System.out.println("FavoriteController - Error: " + e.getMessage());
+            throw e;
+        }
     }
 
     @PostMapping("/add/shop/{productId}")
@@ -48,6 +57,7 @@ public class FavoriteController {
     }
 
     @DeleteMapping("/product/{favoriteId}")
+    @Transactional
     public ResponseEntity<?> deleteFavorite(@PathVariable String favoriteId) {
         favoriteRepository.deleteByUserIdAndProductId(userService.getCurrentUserId(), favoriteId);
         return ResponseEntity.ok().build();

@@ -2,6 +2,7 @@ package com.Finds.dev.Services;
 
 import com.Finds.dev.DTO.Auth.JwtAuth;
 import com.Finds.dev.DTO.Auth.RefreshTokenDto;
+import com.Finds.dev.DTO.Auth.SignInResponseDto;
 import com.Finds.dev.DTO.Auth.UserCredentialsDto;
 import com.Finds.dev.DTO.Auth.UserRegistrationDto;
 import com.Finds.dev.Entity.AuthProvider;
@@ -45,7 +46,7 @@ public class AuthService {
     @Autowired
     private RedisService redisService;
 
-    public JwtAuth signin(UserCredentialsDto userCredentials) {
+    public SignInResponseDto signin(UserCredentialsDto userCredentials) {
         String email = userCredentials.email();
         String password = userCredentials.password();
 
@@ -70,7 +71,18 @@ public class AuthService {
             throw new IllegalArgumentException("Invalid password");
         }
 
-        return jwtCore.generateAuthToken(email, user.getId(), user.getRole().name());
+        JwtAuth jwtAuth = jwtCore.generateAuthToken(email, user.getId(), user.getRole().name());
+        
+        return new SignInResponseDto(
+            jwtAuth.getAccesToken(),
+            jwtAuth.getRefershToken(),
+            new SignInResponseDto.UserData(
+                user.getId().toString(),
+                user.getEmail(),
+                user.getName(),
+                user.getRole().name()
+            )
+        );
     }
 
     @Transactional

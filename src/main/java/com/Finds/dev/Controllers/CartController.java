@@ -32,8 +32,16 @@ public class CartController {
 
     @PatchMapping("/addItems/{productId}")
     public ResponseEntity<?> addItems(@PathVariable String productId) {
-        cartService.addItems(userService.getCurrentUser().getCart(), productId);
-        return ResponseEntity.ok().build();
+        System.out.println("CartController - Adding item: " + productId);
+        try {
+            var user = userService.getCurrentUser();
+            System.out.println("CartController - User found: " + user.getEmail());
+            cartService.addItems(user.getCart(), productId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            System.out.println("CartController - Error: " + e.getMessage());
+            throw e;
+        }
     }
 
     @PatchMapping("/decrease/{productId}")

@@ -41,22 +41,28 @@ public class UserService {
     public String getCurrentUserId() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null) {
-                return authentication.getName();
+            System.out.println("UserService - Authentication: " + authentication);
+            if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
+                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+                String userId = String.valueOf(userDetails.getId());
+                System.out.println("UserService - User ID from authentication: " + userId);
+                return userId;
             }
         } catch (Exception e) {
+            System.out.println("UserService - Exception getting current user: " + e.getMessage());
             return null;
         }
+        System.out.println("UserService - Authentication is null or not CustomUserDetails");
         return null;
     }
 
     public User getCurrentUser() {
-        String email = getCurrentUserId();
-        if (email == null) {
+        String userId = getCurrentUserId();
+        if (userId == null) {
             throw new EntityNotFoundException("Пользователь не аутентифицирован");
         }
         
-        return userRepository.findByEmail(email)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
     }
 

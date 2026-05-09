@@ -22,6 +22,10 @@ public class CustomUserDetails implements UserDetails {
         return user;
     }
 
+    public String getId() {
+        return user != null ? user.getId() : null;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (user != null && user.getRole() != null) {

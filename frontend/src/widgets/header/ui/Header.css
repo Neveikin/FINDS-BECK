@@ -1,0 +1,368 @@
+.header {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: visible !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.header-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  filter: brightness(85%);
+}
+
+.home-icon-left {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  display: flex;
+  z-index: 100;
+}
+
+.home-icon-left svg {
+  width: 32px !important;
+  height: 32px !important;
+  fill: white !important;
+  opacity: 0.9;
+  transition: all 0.2s ease;
+}
+
+.home-icon-left svg:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  fill: white !important;
+}
+
+.nav-icons {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  display: flex;
+  gap: 20px;
+  z-index: 100;
+}
+
+.icon-wrapper {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  font-family: 'Inter', sans-serif;
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.nav-icons svg {
+  width: 28px;
+  height: 28px;
+  fill: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.9;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-icons svg:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  fill: rgba(18, 35, 93, 1);
+}
+
+
+.online-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background: #4caf50;
+  border-radius: 50%;
+  border: 2px solid white;
+  z-index: 2;
+}
+
+.user-menu {
+  position: fixed;
+  top: 70px;
+  right: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: auto;
+  min-width: 200px;
+  max-width: 260px;
+  z-index: 1000;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+.user-info {
+  padding: 15px 16px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-name {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.menu-item {
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-item svg {
+  width: 16px;
+  height: 16px;
+  color: #666;
+}
+
+.menu-item:hover {
+  background: #f5f5f5;
+  color: rgba(18, 35, 93, 1);
+}
+
+.menu-item:hover svg {
+  color: rgba(18, 35, 93, 1);
+}
+
+.menu-item.logout {
+  color: #f44336;
+  border-top: 1px solid #eee;
+  margin-top: 4px;
+}
+
+.menu-item.logout svg {
+  color: #f44336;
+}
+
+.menu-item.logout:hover {
+  background: #ffebee;
+}
+
+.menu-badge {
+  margin-left: auto;
+  background: rgba(18, 35, 93, 1);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.header-only-nav {
+  height: 80px !important;
+  background: white !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.header-only-nav .header-image {
+  display: none;
+}
+
+.header-only-nav .home-icon-left {
+  top: 50%;
+  left: 30px;
+  transform: translateY(-50%);
+  position: absolute;
+}
+
+.header-only-nav .nav-icons {
+  top: 50%;
+  transform: translateY(-50%);
+  position: absolute;
+}
+
+.header-only-nav .home-icon-left svg {
+  fill: #333 !important;
+}
+
+.header-only-nav .nav-icons svg {
+  fill: #333 !important;
+}
+
+.header-only-nav .nav-icons svg:hover {
+  fill: rgba(18, 35, 93, 1) !important;
+}
+.header-text-overlay {
+  position: absolute;
+  width: 530px;
+  height: 33px;
+  left: 50%;
+  top: calc(50% + 60px);
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.36);
+  filter: blur(2.25px);
+  border-radius: 7px;
+  z-index: 1;
+}
+
+.header-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 900;
+  color: white;
+  font-size: clamp(48px, 10vw, 128px);
+  line-height: 1;
+  font-family: 'Inter', sans-serif;
+  z-index: 2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+}
+
+.header-subtitle {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 60px);
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: clamp(18px, 3vw, 24px);
+  color: #FFFFFF;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .home-icon-left {
+    top: 20px;
+    left: 20px;
+  }
+  
+  .nav-icons {
+    top: 20px;
+    right: 20px;
+    gap: 15px;
+  }
+  
+  .nav-icons svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .user-menu {
+    top: 60px;
+    right: 20px;
+    min-width: 180px;
+  }
+  
+  .menu-item {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+  
+  .user-info {
+    padding: 10px 14px;
+  }
+  
+  .user-avatar {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .user-name {
+    font-size: 13px;
+  }
+  
+  .badge {
+    top: -6px;
+    right: -6px;
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .nav-icons {
+    gap: 12px;
+  }
+  
+  .nav-icons svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .user-menu {
+    min-width: 160px;
+    max-width: 200px;
+  }
+  
+  .badge {
+    top: -5px;
+    right: -5px;
+    min-width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+}

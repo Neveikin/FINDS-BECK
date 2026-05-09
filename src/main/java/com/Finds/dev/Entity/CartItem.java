@@ -1,5 +1,6 @@
 package com.Finds.dev.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -14,11 +15,13 @@ public class CartItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("cartId")
     @JoinColumn(name = "cart_id", nullable = false)
+    @JsonIgnore
     private Cart cart;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("productId")
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnore
     private Product product;
     
     @Column(name = "quantity", nullable = false)

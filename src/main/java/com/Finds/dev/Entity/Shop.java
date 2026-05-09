@@ -1,5 +1,6 @@
 package com.Finds.dev.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -36,6 +37,7 @@ public class Shop {
     private LocalDateTime createdAt;
     
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Product> products = new ArrayList<>();
     
     @PrePersist

@@ -2,6 +2,7 @@ package com.Finds.dev.Services;
 
 import com.Finds.dev.Entity.Cart;
 import com.Finds.dev.Entity.CartItem;
+import com.Finds.dev.Entity.User;
 import com.Finds.dev.Repositories.CartItemRepository;
 import com.Finds.dev.Repositories.CartRepository;
 import com.Finds.dev.Repositories.ProductRepository;
@@ -29,8 +30,13 @@ public class CartService {
     ProductRepository productRepository;
 
     public List getUserCart() {
-        Cart cart = cartRepository.findByUserId(userService.getCurrentUserId())
-                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+        User user = userService.getCurrentUser();
+        Cart cart = cartRepository.findByUserId(user.getId())
+                .orElseGet(() -> {
+                    Cart newCart = new Cart();
+                    newCart.setUser(user);
+                    return cartRepository.save(newCart);
+                });
         return cart.getItems();
     }
 

@@ -1,6 +1,7 @@
 package com.Finds.dev.Entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class User {
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private String id = UUID.randomUUID().toString();
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "owners", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Shop> shops = new ArrayList<>();
     
@@ -35,18 +37,23 @@ public class User {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
+    @JsonIgnore
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Cart cart;
     
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
     
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Favorite> favorites = new ArrayList<>();
     
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AuthProvider> authProviders = new ArrayList<>();
 

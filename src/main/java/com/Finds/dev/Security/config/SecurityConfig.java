@@ -27,15 +27,17 @@ public class SecurityConfig {
     private final JwtCore jwtCore;
     private final CookieUtils cookieUtils;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final JwtFilter jwtFilter;
 
     @Value("${cors.allowed-origins}")
     private String allowedOrigins;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtCore jwtCore, CookieUtils cookieUtils, CustomOAuth2UserService customOAuth2UserService) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JwtCore jwtCore, CookieUtils cookieUtils, CustomOAuth2UserService customOAuth2UserService, JwtFilter jwtFilter) {
         this.customUserDetailsService = customUserDetailsService;
         this.jwtCore = jwtCore;
         this.cookieUtils = cookieUtils;
         this.customOAuth2UserService = customOAuth2UserService;
+        this.jwtFilter = jwtFilter;
     }
 
     @Bean
@@ -50,10 +52,7 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    @Bean
-    public JwtFilter jwtFilter() {
-        return new JwtFilter(jwtCore, customUserDetailsService, cookieUtils);
-    }
+    // JwtFilter будет автоматически зарегистрирован как @Component
 
     @Bean
     public CustomOAuth2UserService oAuth2UserService() {
@@ -67,10 +66,14 @@ public class SecurityConfig {
                 .httpBasic(org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/shops/**").permitAll()
                         .requestMatchers("/api/lk/me/**").authenticated()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/shops/**").permitAll()
+                        .requestMatchers("/lk/me/**").authenticated()
                         .requestMatchers("/favorites/**").authenticated()
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/order/**").authenticated()
@@ -111,7 +114,7 @@ public class SecurityConfig {
         List<String> allowedOriginsList = Arrays.asList(allowedOrigins.split(","));
         config.setAllowedOrigins(allowedOriginsList);
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowCredentials(true);
         config.setExposedHeaders(Arrays.asList("Authorization"));
         config.setMaxAge(3600L);

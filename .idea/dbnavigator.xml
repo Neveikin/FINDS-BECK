@@ -282,7 +282,7 @@ HTTP 400: Bad Request (Request URL: https://api.mistral.ai/v1/chat/completions)
           <description value="" />
           <database-type value="POSTGRES" />
           <config-type value="BASIC" />
-          <database-version value="14.2" />
+          <database-version value="15.15" />
           <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />

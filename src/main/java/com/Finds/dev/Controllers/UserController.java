@@ -36,9 +36,15 @@ public class UserController {
     private CookieUtils cookieUtils;
 
     @GetMapping()
-    public ResponseEntity<User> getUserProfile() {
+    public ResponseEntity<?> getUserProfile() {
         User profile = userService.getUserProfile();
-        return ResponseEntity.ok(profile);
+        Map<String, Object> response = Map.of(
+            "id", profile.getId(),
+            "email", profile.getEmail(),
+            "name", profile.getName(),
+            "roles", profile.getRole() != null ? new String[]{profile.getRole().name()} : new String[0]
+        );
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/email")

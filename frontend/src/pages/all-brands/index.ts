@@ -1,0 +1,1 @@
+export { AllBrandsPage } from './ui/AllBrandsPage';

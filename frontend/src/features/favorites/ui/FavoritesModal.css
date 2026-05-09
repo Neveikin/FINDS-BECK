@@ -1,0 +1,20 @@
+.favorites-modal {
+  max-width: 500px;
+}
+
+.favorites-items {
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.favorite-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.favorite-item:last-child {
+  border-bottom: none;
+}

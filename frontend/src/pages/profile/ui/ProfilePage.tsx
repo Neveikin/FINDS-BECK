@@ -71,7 +71,7 @@ export const ProfilePage: React.FC = () => {
     try {
       await addToCart(product);
       console.log('ProfilePage - Successfully added to cart, removing from favorites');
-      removeFromFavorites(product.id);
+      await removeFromFavorites(product.id);
     } catch (error) {
       console.error('ProfilePage - Failed to add to cart:', error);
     }

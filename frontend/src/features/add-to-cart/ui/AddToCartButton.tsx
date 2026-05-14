@@ -17,11 +17,14 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   const { addToCart } = useCart();
   const [isAdded, setIsAdded] = useState(false);
 
-  const handleAddToCart = () => {
-    addToCart(product);
-    setIsAdded(true);
-    
-    setTimeout(() => setIsAdded(false), 2000);
+  const handleAddToCart = async () => {
+    try {
+      await addToCart(product);
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 2000);
+    } catch {
+      /* ошибка уже залогирована в CartProvider */
+    }
   };
 
   return (

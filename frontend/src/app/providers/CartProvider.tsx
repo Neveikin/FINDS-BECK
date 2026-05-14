@@ -71,6 +71,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await loadCart();
       } catch (error) {
         console.error('Failed to add to cart:', error);
+        throw error;
       }
     } else {
       console.log('CartProvider - Adding to localStorage cart');

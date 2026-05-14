@@ -4,15 +4,12 @@ import { Header } from '../../../widgets/header';
 import { Footer } from '../../../widgets/footer/ui/Footer';
 import { useSimpleAuth } from '../../../app/providers/SimpleAuthProvider';
 import { useFavorites } from '../../../app/providers/FavoritesProvider';
-import { useCart } from '../../../app/providers/CartProvider';
 import { useOrders } from '../../../app/providers/OrdersProvider';
-import { AddToCartButton } from '../../../features/add-to-cart/ui/AddToCartButton';
 import './ProfilePage.css';
 
 export const ProfilePage: React.FC = () => {
   const { user, logout } = useSimpleAuth();
   const { favorites, removeFromFavorites } = useFavorites();
-  const { addToCart } = useCart();
   const { orders } = useOrders();
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,17 +61,6 @@ export const ProfilePage: React.FC = () => {
 
   const handleGoHome = () => {
     navigate('/');
-  };
-
-  const handleAddToCartFromFavorites = async (product: any) => {
-    console.log('ProfilePage - Adding to cart from favorites:', product.id);
-    try {
-      await addToCart(product);
-      console.log('ProfilePage - Successfully added to cart, removing from favorites');
-      await removeFromFavorites(product.id);
-    } catch (error) {
-      console.error('ProfilePage - Failed to add to cart:', error);
-    }
   };
 
   const renderContent = () => {
@@ -273,12 +259,6 @@ export const ProfilePage: React.FC = () => {
                   <p className="favorite-name">{product.name}</p>
                 </div>
                 <p className="favorite-price">{product.price.toLocaleString()} ₽</p>
-                <button 
-                  className="add-to-cart-favorite"
-                  onClick={() => handleAddToCartFromFavorites(product)}
-                >
-                  В корзину
-                </button>
               </div>
               <button 
                 className="remove-favorite"
@@ -324,13 +304,25 @@ export const ProfilePage: React.FC = () => {
                 </div>
               </div>
               <div className="order-items">
-                {order.items.slice(0, 3).map(item => (
-                  <div key={item.id} className="order-item">
+                {order.items.slice(0, 3).map((item, idx) => (
+                  <div key={`${item.id}-${item.size}-${item.color}-${idx}`} className="order-item">
                     <img src={item.image} alt={item.name} className="order-item-image" />
                     <div className="order-item-info">
                       <div className="order-item-name">{item.name}</div>
                       <div className="order-item-brand">{item.brand}</div>
-                      <div className="order-item-price">{item.price.toLocaleString()} ₽</div>
+                      {(item.quantity != null && item.quantity > 1) || item.size || item.color ? (
+                        <div className="order-item-meta">
+                          {item.quantity != null && item.quantity > 1 ? `${item.quantity} × ` : null}
+                          {item.price.toLocaleString()} ₽
+                          {(item.size || item.color) ? (
+                            <span className="order-item-variant-mini">
+                              {item.size ? ` · ${item.size}` : ''}{item.color ? ` · ${item.color}` : ''}
+                            </span>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <div className="order-item-price">{item.price.toLocaleString()} ₽</div>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -1,12 +1,50 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product } from '../../shared/types';
-import { cartApi } from '../../shared/api/cart';
+import { Product, CartLine, cartLineKey } from '../../shared/types';
+import { cartApi, cartLineRequestFromLine } from '../../shared/api/cart';
 import { useSimpleAuth } from './SimpleAuthProvider';
 
+function normalizeProduct(p: any): Product {
+  const priceRaw = p?.price;
+  const price =
+    typeof priceRaw === 'number' ? priceRaw : parseFloat(String(priceRaw ?? '0')) || 0;
+  const shop = p?.shop;
+  const brandName =
+    typeof p?.brand === 'string'
+      ? p.brand
+      : shop?.name != null
+        ? String(shop.name)
+        : '';
+  return {
+    id: String(p?.id ?? ''),
+    name: String(p?.name ?? ''),
+    brand: brandName,
+    brandId: p?.brandId ?? shop?.id,
+    price,
+    image: String(p?.image ?? p?.imageUrl ?? ''),
+    description: String(p?.description ?? ''),
+    category: String(p?.category ?? p?.categoryId ?? ''),
+    shopId: p?.shopId ?? shop?.id,
+    createdAt: p?.createdAt,
+    updatedAt: p?.updatedAt,
+  };
+}
+
+function mapDtoToLine(raw: any): CartLine | null {
+  if (!raw?.product?.id) return null;
+  return {
+    product: normalizeProduct(raw.product),
+    quantity: Math.max(1, Number(raw.quantity) || 1),
+    size: String(raw.sizeCode ?? raw.size ?? ''),
+    color: String(raw.color ?? ''),
+  };
+}
+
 interface CartContextType {
-  cart: Product[];
-  addToCart: (product: Product) => Promise<void>;
-  removeFromCart: (productId: string) => Promise<void>;
+  cart: CartLine[];
+  addToCart: (product: Product, variant: { size: string; color: string }) => Promise<void>;
+  increaseQuantity: (line: CartLine) => Promise<void>;
+  decreaseQuantity: (line: CartLine) => Promise<void>;
+  removeFromCart: (line: CartLine) => Promise<void>;
   clearCart: () => Promise<void>;
   cartCount: number;
   cartTotal: number;
@@ -25,7 +63,7 @@ export const useCart = () => {
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading: authLoading } = useSimpleAuth();
-  const [cart, setCart] = useState<Product[]>([]);
+  const [cart, setCart] = useState<CartLine[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -35,7 +73,32 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         const savedCart = localStorage.getItem('cart');
         if (savedCart) {
-          setCart(JSON.parse(savedCart));
+          try {
+            const parsed = JSON.parse(savedCart);
+            if (Array.isArray(parsed)) {
+              if (parsed.length === 0) {
+                setCart([]);
+              } else if (parsed[0] && typeof parsed[0] === 'object' && 'product' in parsed[0]) {
+                setCart(
+                  (parsed as CartLine[]).filter(
+                    (l) => l?.product?.id && typeof l.quantity === 'number' && l.quantity > 0
+                  )
+                );
+              } else {
+                const legacy = parsed as Product[];
+                setCart(
+                  legacy.map((p) => ({
+                    product: p,
+                    quantity: 1,
+                    size: '',
+                    color: '',
+                  }))
+                );
+              }
+            }
+          } catch {
+            setCart([]);
+          }
         }
       }
     }
@@ -45,14 +108,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       const response = await cartApi.getCart();
-      if (response && response.items && Array.isArray(response.items)) {
-        setCart(response.items.map(item => item.product));
-      } else {
-        setCart([]);
-      }
+      const list = Array.isArray(response) ? response : [];
+      const lines = list
+        .map(mapDtoToLine)
+        .filter((l): l is CartLine => l != null);
+      setCart(lines);
     } catch (error) {
-      // Don't log 401 errors as they're expected when user is not authenticated
-      if (error instanceof Error && !error.message.includes('401') && !error.message.includes('Пользователь не авторизован')) {
+      if (
+        error instanceof Error &&
+        !error.message.includes('401') &&
+        !error.message.includes('Пользователь не авторизован')
+      ) {
         console.error('Failed to load cart:', error);
       }
       setCart([]);
@@ -61,46 +127,111 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const addToCart = async (product: Product) => {
-    console.log('CartProvider - Adding to cart:', product.id, 'Authenticated:', isAuthenticated);
+  const mergeGuestLine = (
+    lines: CartLine[],
+    product: Product,
+    size: string,
+    color: string,
+    delta: number
+  ): CartLine[] => {
+    const s = size?.trim() ?? '';
+    const c = color?.trim() ?? '';
+    const idx = lines.findIndex(
+      (l) => l.product.id === product.id && l.size === s && l.color === c
+    );
+    if (idx >= 0) {
+      const next = [...lines];
+      const q = next[idx].quantity + delta;
+      if (q <= 0) next.splice(idx, 1);
+      else next[idx] = { ...next[idx], quantity: q };
+      return next;
+    }
+    if (delta > 0) {
+      return [...lines, { product, quantity: delta, size: s, color: c }];
+    }
+    return lines;
+  };
+
+  const addToCart = async (product: Product, variant: { size: string; color: string }) => {
+    const size = variant.size?.trim() ?? '';
+    const color = variant.color?.trim() ?? '';
+    console.log('CartProvider - Adding to cart:', product.id, size, color, 'auth:', isAuthenticated);
     if (isAuthenticated) {
       try {
-        console.log('CartProvider - Calling API to add item:', product.id);
-        await cartApi.addItem(product.id);
-        console.log('CartProvider - API call successful, reloading cart');
+        await cartApi.addItem({ productId: product.id, size, color });
         await loadCart();
       } catch (error) {
         console.error('Failed to add to cart:', error);
         throw error;
       }
     } else {
-      console.log('CartProvider - Adding to localStorage cart');
-      const newCart = [...cart, product];
-      setCart(newCart);
-      localStorage.setItem('cart', JSON.stringify(newCart));
+      setCart((prev) => {
+        const next = mergeGuestLine(prev, product, size, color, 1);
+        localStorage.setItem('cart', JSON.stringify(next));
+        return next;
+      });
     }
   };
 
-  const removeFromCart = async (productId: string) => {
+  const increaseQuantity = async (line: CartLine) => {
     if (isAuthenticated) {
       try {
-        await cartApi.removeItem(productId);
+        await cartApi.addItem(cartLineRequestFromLine(line));
+        await loadCart();
+      } catch (error) {
+        console.error('Failed to increase quantity:', error);
+        throw error;
+      }
+    } else {
+      setCart((prev) => {
+        const next = mergeGuestLine(prev, line.product, line.size, line.color, 1);
+        localStorage.setItem('cart', JSON.stringify(next));
+        return next;
+      });
+    }
+  };
+
+  const decreaseQuantity = async (line: CartLine) => {
+    if (isAuthenticated) {
+      try {
+        await cartApi.decreaseItem(cartLineRequestFromLine(line));
+        await loadCart();
+      } catch (error) {
+        console.error('Failed to decrease quantity:', error);
+        throw error;
+      }
+    } else {
+      setCart((prev) => {
+        const next = mergeGuestLine(prev, line.product, line.size, line.color, -1);
+        localStorage.setItem('cart', JSON.stringify(next));
+        return next;
+      });
+    }
+  };
+
+  const removeFromCart = async (line: CartLine) => {
+    if (isAuthenticated) {
+      try {
+        await cartApi.removeItem(cartLineRequestFromLine(line));
         await loadCart();
       } catch (error) {
         console.error('Failed to remove from cart:', error);
       }
     } else {
-      const newCart = cart.filter(item => item.id !== productId);
-      setCart(newCart);
-      localStorage.setItem('cart', JSON.stringify(newCart));
+      setCart((prev) => {
+        const next = prev.filter((l) => cartLineKey(l) !== cartLineKey(line));
+        localStorage.setItem('cart', JSON.stringify(next));
+        return next;
+      });
     }
   };
 
   const clearCart = async () => {
     if (isAuthenticated) {
       try {
-        for (const item of cart) {
-          await cartApi.removeItem(item.id);
+        const snapshot = [...cart];
+        for (const line of snapshot) {
+          await cartApi.removeItem(cartLineRequestFromLine(line));
         }
         await loadCart();
       } catch (error) {
@@ -112,19 +243,23 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const cartCount = cart.length;
-  const cartTotal = cart.reduce((sum, item) => sum + item.price, 0);
+  const cartCount = cart.reduce((sum, line) => sum + line.quantity, 0);
+  const cartTotal = cart.reduce((sum, line) => sum + line.product.price * line.quantity, 0);
 
   return (
-    <CartContext.Provider value={{
-      cart,
-      addToCart,
-      removeFromCart,
-      clearCart,
-      cartCount,
-      cartTotal,
-      loading
-    }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        addToCart,
+        increaseQuantity,
+        decreaseQuantity,
+        removeFromCart,
+        clearCart,
+        cartCount,
+        cartTotal,
+        loading,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

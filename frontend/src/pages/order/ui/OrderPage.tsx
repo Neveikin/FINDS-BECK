@@ -121,13 +121,27 @@ export const OrderPage: React.FC = () => {
             <div className="order-items-section">
               <h3>Состав заказа</h3>
               <div className="order-items-list">
-                {order.items.map(item => (
-                  <div key={item.id} className="order-item-detail" onClick={() => navigate(`/product/${item.id}`)}>
+                {order.items.map((item, idx) => (
+                  <div
+                    key={`${item.id}-${item.size ?? ''}-${item.color ?? ''}-${idx}`}
+                    className="order-item-detail"
+                    onClick={() => navigate(`/product/${item.id}`)}
+                  >
                     <img src={item.image} alt={item.name} className="order-item-image" />
                     <div className="order-item-detail-info">
                       <div className="order-item-name">{item.name}</div>
                       <div className="order-item-brand">{item.brand}</div>
-                      <div className="order-item-price">{item.price.toLocaleString()} ₽</div>
+                      {(item.size || item.color) && (
+                        <div className="order-item-variant">
+                          {item.size ? <>Размер: {item.size}</> : null}
+                          {item.size && item.color ? ' · ' : null}
+                          {item.color ? <>Цвет: {item.color}</> : null}
+                        </div>
+                      )}
+                      <div className="order-item-price">
+                        {(item.quantity ?? 1)} × {item.price.toLocaleString()} ₽ ={' '}
+                        {(item.price * (item.quantity ?? 1)).toLocaleString()} ₽
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -136,8 +150,10 @@ export const OrderPage: React.FC = () => {
 
             <div className="order-summary">
               <div className="summary-row">
-                <span>Товары ({order.items.length})</span>
-                <span>{order.items.reduce((sum, item) => sum + item.price, 0).toLocaleString()} ₽</span>
+                <span>Товары ({order.items.reduce((n, i) => n + (i.quantity ?? 1), 0)} шт.)</span>
+                <span>
+                  {order.items.reduce((sum, item) => sum + item.price * (item.quantity ?? 1), 0).toLocaleString()} ₽
+                </span>
               </div>
               <div className="summary-row">
                 <span>Доставка</span>

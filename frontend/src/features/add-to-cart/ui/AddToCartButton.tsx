@@ -5,12 +5,16 @@ import './AddToCartButton.css';
 
 interface AddToCartButtonProps {
   product: Product;
+  size: string;
+  color: string;
   className?: string;
   showIcon?: boolean;
 }
 
 export const AddToCartButton: React.FC<AddToCartButtonProps> = ({ 
   product, 
+  size,
+  color,
   className = '',
   showIcon = true 
 }) => {
@@ -19,7 +23,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
 
   const handleAddToCart = async () => {
     try {
-      await addToCart(product);
+      await addToCart(product, { size, color });
       setIsAdded(true);
       setTimeout(() => setIsAdded(false), 2000);
     } catch {

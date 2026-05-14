@@ -142,6 +142,49 @@
   margin: 0;
 }
 
+.item-variant {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #555;
+  margin: 0 0 8px;
+}
+
+.variant-sep {
+  margin: 0 6px;
+  color: #bbb;
+}
+
+.item-qty-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: #333;
+}
+
+.qty-btn:hover {
+  border-color: rgba(18, 35, 93, 1);
+  color: rgba(18, 35, 93, 1);
+}
+
+.qty-value {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 15px;
+}
+
 .remove-btn {
   background: none;
   border: none;

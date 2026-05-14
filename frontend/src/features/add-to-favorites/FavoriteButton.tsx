@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFavorites } from '../../app/providers/FavoritesProvider';
 import { useSimpleAuth } from '../../app/providers/SimpleAuthProvider';
@@ -11,24 +11,21 @@ interface FavoriteButtonProps {
   showText?: boolean;
 }
 
-export const FavoriteButton: React.FC<FavoriteButtonProps> = ({ 
-  product, 
+export const FavoriteButton: React.FC<FavoriteButtonProps> = ({
+  product,
   className = '',
-  showText = false 
+  showText = false
 }) => {
   const navigate = useNavigate();
   const { user } = useSimpleAuth();
-  const { addToFavorites, removeFromFavorites, isInFavorites } = useFavorites();
-  const isFavorite = isInFavorites(product.id);
+  const { addToFavorites, removeFromFavorites, isInFavorites, favorites } = useFavorites();
+
+  // Use useMemo to recalculate when favorites change
+  const isFavorite = useMemo(() => isInFavorites(product.id), [product.id, favorites]);
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    if (!user) {
-      navigate('/profile?tab=favorites');
-      return;
-    }
-    
+
     if (isFavorite) {
       removeFromFavorites(product.id);
     } else {
@@ -37,8 +34,8 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({
   };
 
   return (
-    <button 
-      className={`favorite-btn ${className} ${isFavorite ? 'active' : ''}`} 
+    <button
+      className={`favorite-btn ${className} ${isFavorite ? 'active' : ''}`}
       onClick={handleToggleFavorite}
       aria-label={isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
     >

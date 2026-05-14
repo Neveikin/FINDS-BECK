@@ -1,0 +1,2 @@
+org.springframework.context.ApplicationContextInitializer=\
+com.Finds.dev.Config.DotenvConfig

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Header } from '../../../widgets/header';
 import { Footer } from '../../../widgets/footer/ui/Footer';
-import { AddToCartButton } from '../../../features/add-to-cart/ui/AddToCartButton';
 import { FavoriteButton } from '../../../features/add-to-favorites/FavoriteButton';
 import { ProductCard } from '../../../entities/product';
 import { brandApi } from '../../../shared/api/brand';

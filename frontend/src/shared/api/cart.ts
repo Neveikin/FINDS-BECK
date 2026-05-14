@@ -1,27 +1,35 @@
 import { apiClient } from './apiClient';
-import { Product } from '../types';
+import { Product, CartLine } from '../types';
 
-export interface CartItem {
-  product: Product;
-  quantity: number;
+export interface CartLineRequest {
+  productId: string;
+  size: string;
+  color: string;
 }
 
-export interface CartResponse {
-  id: string;
-  items: CartItem[];
-  total: number;
+export interface CartItemDto {
+  product: Product;
+  quantity: number;
+  sizeCode?: string;
+  color?: string;
 }
 
 export const cartApi = {
   getCart: () =>
-    apiClient.get<CartResponse>('/cart/get'),
+    apiClient.get<CartItemDto[]>('/cart/get'),
 
-  addItem: (productId: string) =>
-    apiClient.patch(`/cart/addItems/${productId}`),
+  addItem: (body: CartLineRequest) =>
+    apiClient.patch('/cart/add', body),
 
-  decreaseItem: (productId: string) =>
-    apiClient.patch(`/cart/decrease/${productId}`),
+  decreaseItem: (body: CartLineRequest) =>
+    apiClient.patch('/cart/decrease', body),
 
-  removeItem: (productId: string) =>
-    apiClient.delete(`/cart/delete/${productId}`),
+  removeItem: (body: CartLineRequest) =>
+    apiClient.post('/cart/remove', body),
 };
+
+export const cartLineRequestFromLine = (line: CartLine): CartLineRequest => ({
+  productId: line.product.id,
+  size: line.size,
+  color: line.color,
+});

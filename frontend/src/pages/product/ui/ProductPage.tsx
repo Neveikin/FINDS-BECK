@@ -151,7 +151,7 @@ export const ProductPage: React.FC = () => {
 
               <div className="product-actions">
                 <FavoriteButton product={product} className="product-page-favorite" />
-                <AddToCartButton product={product} />
+                <AddToCartButton product={product} size={selectedSize} color={selectedColor} />
               </div>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../app/providers/CartProvider';
+import { cartLineKey } from '../../../shared/types';
 import './CartModal.css';
 
 interface CartModalProps {
@@ -8,8 +9,8 @@ interface CartModalProps {
 }
 
 export const CartModal: React.FC<CartModalProps> = ({ onClose }) => {
-  const { cart, removeFromCart, clearCart, cartTotal } = useCart();
   const navigate = useNavigate();
+  const { cart, removeFromCart, clearCart, cartTotal, increaseQuantity, decreaseQuantity } = useCart();
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -28,14 +29,40 @@ export const CartModal: React.FC<CartModalProps> = ({ onClose }) => {
           <>
             <div className="cart-items">
               {cart.map(item => (
-                <div key={item.id} className="cart-item">
-                  <img src={item.image} alt={item.name} className="item-image" />
+                <div key={cartLineKey(item)} className="cart-item">
+                  <img src={item.product.image} alt={item.product.name} className="item-image" />
                   <div className="item-details">
-                    <h4>{item.name}</h4>
-                    <p className="item-brand">{item.brand}</p>
-                    <p className="item-price">{item.price.toLocaleString()} ₽</p>
+                    <h4>{item.product.name}</h4>
+                    <p className="item-brand">{item.product.brand}</p>
+                    {(item.size || item.color) && (
+                      <div className="item-variant">
+                        {item.size ? <span>Размер: {item.size}</span> : null}
+                        {item.size && item.color ? <span className="variant-sep">·</span> : null}
+                        {item.color ? <span>Цвет: {item.color}</span> : null}
+                      </div>
+                    )}
+                    <p className="item-price">{item.product.price.toLocaleString()} ₽ / шт.</p>
+                    <div className="item-qty-row">
+                      <button
+                        type="button"
+                        className="qty-btn"
+                        aria-label="Уменьшить"
+                        onClick={() => void decreaseQuantity(item)}
+                      >
+                        −
+                      </button>
+                      <span className="qty-value">{item.quantity}</span>
+                      <button
+                        type="button"
+                        className="qty-btn"
+                        aria-label="Увеличить"
+                        onClick={() => void increaseQuantity(item)}
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                  <button className="remove-btn" onClick={() => removeFromCart(item.id)}>×</button>
+                  <button className="remove-btn" onClick={() => void removeFromCart(item)}>×</button>
                 </div>
               ))}
             </div>
@@ -46,7 +73,7 @@ export const CartModal: React.FC<CartModalProps> = ({ onClose }) => {
                 <span className="total-price">{cartTotal.toLocaleString()} ₽</span>
               </div>
               <div className="cart-actions">
-                <button className="clear-btn" onClick={clearCart}>Очистить</button>
+                <button className="clear-btn" onClick={() => void clearCart()}>Очистить</button>
                 <button className="checkout-btn" onClick={() => {
                   onClose();
                   navigate('/checkout');

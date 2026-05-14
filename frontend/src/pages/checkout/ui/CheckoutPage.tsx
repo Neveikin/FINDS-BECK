@@ -9,7 +9,7 @@ import './CheckoutPage.css';
 
 export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
-  const { cart, cartTotal, clearCart } = useCart();
+  const { cart, cartTotal, clearCart, cartCount } = useCart();
   const { user, isAuthenticated } = useSimpleAuth();
   const { addOrder } = useOrders();
 
@@ -48,7 +48,12 @@ export const CheckoutPage: React.FC = () => {
     }
     
     addOrder({
-      items: cart,
+      items: cart.map((line) => ({
+        ...line.product,
+        quantity: line.quantity,
+        size: line.size,
+        color: line.color,
+      })),
       total: totalWithDelivery,
       status: 'pending',
       deliveryMethod: deliveryMethod === 'courier' ? 'Курьером' : deliveryMethod === 'pickup' ? 'Самовывоз' : 'Почтой России',
@@ -314,20 +319,29 @@ export const CheckoutPage: React.FC = () => {
             <div className="checkout-summary">
               <h3>Ваш заказ</h3>
               <div className="summary-items">
-                {cart.map(item => (
-                  <div key={item.id} className="summary-item">
-                    <img src={item.image} alt={item.name} />
+                {cart.map(line => (
+                  <div key={`${line.product.id}-${line.size}-${line.color}`} className="summary-item">
+                    <img src={line.product.image} alt={line.product.name} />
                     <div className="summary-item-info">
-                      <div className="summary-item-name">{item.name}</div>
-                      <div className="summary-item-brand">{item.brand}</div>
-                      <div className="summary-item-price">{item.price.toLocaleString()} ₽</div>
+                      <div className="summary-item-name">{line.product.name}</div>
+                      <div className="summary-item-brand">{line.product.brand}</div>
+                      {(line.size || line.color) && (
+                        <div className="summary-item-variant">
+                          {line.size ? <>Размер: {line.size}</> : null}
+                          {line.size && line.color ? ' · ' : null}
+                          {line.color ? <>Цвет: {line.color}</> : null}
+                        </div>
+                      )}
+                      <div className="summary-item-qty-price">
+                        {line.quantity} × {line.product.price.toLocaleString()} ₽
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
               <div className="summary-total">
                 <div className="summary-row">
-                  <span>Товары ({cart.length})</span>
+                  <span>Товары ({cartCount} шт.)</span>
                   <span>{cartTotal.toLocaleString()} ₽</span>
                 </div>
                 <div className="summary-row">

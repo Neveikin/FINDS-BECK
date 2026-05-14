@@ -1,2 +1,19 @@
+# Environment variables
 .env
+.env.local
+.env.*.local
+
+# Build artifacts
 target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+dump.rdb
+
+# Logs
+*.log

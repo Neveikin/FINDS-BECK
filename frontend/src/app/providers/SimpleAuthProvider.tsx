@@ -7,6 +7,14 @@ interface User {
   email: string;
   avatar?: string;
   roles: string[];
+  firstName?: string;
+  lastName?: string;
+  birthDate?: string;
+  gender?: string;
+  city?: string;
+  street?: string;
+  house?: string;
+  phone?: string;
 }
 
 interface AuthContextType {
@@ -16,6 +24,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   register: (name: string, email: string, password: string, confirmPassword: string) => Promise<boolean>;
+  updateUser: (userData: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -124,6 +133,10 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
+  const updateUser = (userData: Partial<User>) => {
+    setUser(prev => prev ? { ...prev, ...userData } : null);
+  };
+
   if (loading) {
     return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Загрузка...</div>;
   }
@@ -135,7 +148,8 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       loading,
       login,
       logout,
-      register
+      register,
+      updateUser
     }}>
       {children}
     </AuthContext.Provider>

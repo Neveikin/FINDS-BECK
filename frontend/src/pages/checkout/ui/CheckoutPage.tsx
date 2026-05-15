@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../../../widgets/header';
 import { Footer } from '../../../widgets/footer/ui/Footer';
@@ -28,6 +28,20 @@ export const CheckoutPage: React.FC = () => {
 
   const deliveryPrice = deliveryMethod === 'courier' ? 350 : deliveryMethod === 'pickup' ? 0 : 500;
   const totalWithDelivery = cartTotal + deliveryPrice;
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: user.firstName || user.name || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: user.phone || '+7',
+        city: user.city || '',
+        address: user.street && user.house ? `${user.street}, ${user.house}` : user.street || user.house || ''
+      }));
+    }
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -316,11 +330,11 @@ export const CheckoutPage: React.FC = () => {
               <div className="summary-items">
                 {cart.map(item => (
                   <div key={item.id} className="summary-item">
-                    <img src={item.image} alt={item.name} />
+                    <img src={item.product.image} alt={item.product.name} />
                     <div className="summary-item-info">
-                      <div className="summary-item-name">{item.name}</div>
-                      <div className="summary-item-brand">{item.brand}</div>
-                      <div className="summary-item-price">{item.price.toLocaleString()} ₽</div>
+                      <div className="summary-item-name">{item.product.name}</div>
+                      <div className="summary-item-brand">{item.product.brand}</div>
+                      <div className="summary-item-price">{(item.product.price || 0).toLocaleString()} ₽</div>
                     </div>
                   </div>
                 ))}

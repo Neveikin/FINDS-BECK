@@ -12,6 +12,8 @@ import { CategoryPage } from '../pages/categories';
 import { ProductPage } from '../pages/product';
 import { CheckoutPage } from '../pages/checkout';
 import { OrderPage } from '../pages/order';
+import { AdminPanel } from '../pages/admin';
+import { StoreDashboard } from '../pages/store-dashboard';
 import './styles/global.css';
 
 function App() {
@@ -30,6 +32,8 @@ function App() {
                 <Route path="/product/:productId" element={<ProductPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/order/:orderId" element={<OrderPage />} />
+                <Route path="/admin" element={<AdminPanel />} />
+                <Route path="/store-dashboard" element={<StoreDashboard />} />
               </Routes>
             </BrowserRouter>
           </OrdersProvider>

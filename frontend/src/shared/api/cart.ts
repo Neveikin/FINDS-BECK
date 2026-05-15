@@ -16,12 +16,27 @@ export const cartApi = {
   getCart: () =>
     apiClient.get<CartResponse>('/cart/get'),
 
-  addItem: (productId: string) =>
-    apiClient.patch(`/cart/addItems/${productId}`),
+  addItem: (productId: string, size?: string, color?: string) => {
+    const params = new URLSearchParams();
+    if (size) params.append('size', size);
+    if (color) params.append('color', color);
+    const queryString = params.toString();
+    return apiClient.patch(`/cart/addItems/${productId}${queryString ? `?${queryString}` : ''}`);
+  },
 
-  decreaseItem: (productId: string) =>
-    apiClient.patch(`/cart/decrease/${productId}`),
+  decreaseItem: (productId: string, size?: string, color?: string) => {
+    const params = new URLSearchParams();
+    if (size) params.append('size', size);
+    if (color) params.append('color', color);
+    const queryString = params.toString();
+    return apiClient.patch(`/cart/decrease/${productId}${queryString ? `?${queryString}` : ''}`);
+  },
 
-  removeItem: (productId: string) =>
-    apiClient.delete(`/cart/delete/${productId}`),
+  removeItem: (productId: string, size?: string, color?: string) => {
+    const params = new URLSearchParams();
+    if (size) params.append('size', size);
+    if (color) params.append('color', color);
+    const queryString = params.toString();
+    return apiClient.delete(`/cart/delete/${productId}${queryString ? `?${queryString}` : ''}`);
+  },
 };

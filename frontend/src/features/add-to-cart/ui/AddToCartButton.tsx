@@ -7,19 +7,23 @@ interface AddToCartButtonProps {
   product: Product;
   className?: string;
   showIcon?: boolean;
+  size?: string;
+  color?: string;
 }
 
 export const AddToCartButton: React.FC<AddToCartButtonProps> = ({ 
   product, 
   className = '',
-  showIcon = true 
+  showIcon = true,
+  size,
+  color
 }) => {
   const { addToCart } = useCart();
   const [isAdded, setIsAdded] = useState(false);
 
   const handleAddToCart = async () => {
     try {
-      await addToCart(product);
+      await addToCart(product, size, color);
       setIsAdded(true);
       setTimeout(() => setIsAdded(false), 2000);
     } catch {

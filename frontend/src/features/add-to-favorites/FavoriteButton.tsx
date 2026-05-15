@@ -24,11 +24,7 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    if (!user) {
-      navigate('/profile?tab=favorites');
-      return;
-    }
-    
+    // All users can toggle favorites (local storage if not authenticated)
     if (isFavorite) {
       removeFromFavorites(product.id);
     } else {

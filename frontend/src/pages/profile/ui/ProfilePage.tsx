@@ -7,16 +7,24 @@ import { useFavorites } from '../../../app/providers/FavoritesProvider';
 import { useCart } from '../../../app/providers/CartProvider';
 import { useOrders } from '../../../app/providers/OrdersProvider';
 import { AddToCartButton } from '../../../features/add-to-cart/ui/AddToCartButton';
+import { orderApi } from '../../../shared/api/order';
+import { adminApi } from '../../../shared/api/adminApi';
+import { apiClient } from '../../../shared/api/apiClient';
 import './ProfilePage.css';
 
 export const ProfilePage: React.FC = () => {
-  const { user, logout } = useSimpleAuth();
+  const { user, logout, updateUser } = useSimpleAuth();
   const { favorites, removeFromFavorites } = useFavorites();
   const { addToCart } = useCart();
   const { orders } = useOrders();
   const navigate = useNavigate();
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
+  const [myShops, setMyShops] = useState<any[]>([]);
+  const [isEditingAddress, setIsEditingAddress] = useState<string | null>(null);
+  const [newAddress, setNewAddress] = useState('');
+  const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   
   const getTabFromUrl = () => {
     const params = new URLSearchParams(location.search);
@@ -28,6 +36,52 @@ export const ProfilePage: React.FC = () => {
   useEffect(() => {
     setActiveTab(getTabFromUrl());
   }, [location.search]);
+
+  useEffect(() => {
+    if (user) {
+      fetchMyShops();
+      setFormData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        birthDate: user.birthDate || '',
+        gender: user.gender || '',
+        city: user.city || '',
+        street: user.street || '',
+        house: user.house || '',
+        phone: user.phone || ''
+      });
+    }
+  }, [user]);
+
+  const fetchMyShops = async () => {
+    try {
+      const response = await apiClient.get<any[]>('/api/shops/my');
+      setMyShops(response);
+    } catch (error) {
+      console.error('Failed to fetch shops:', error);
+    }
+  };
+
+  const handleUpdateAddress = async (orderId: string) => {
+    try {
+      await orderApi.updateAddress(orderId, newAddress);
+      setIsEditingAddress(null);
+      // Reload orders
+      window.location.reload(); 
+    } catch (error) {
+      console.error('Failed to update address:', error);
+    }
+  };
+
+  const handleCancelOrder = async (orderId: string) => {
+    if (!window.confirm('Вы уверены, что хотите отменить заказ?')) return;
+    try {
+      await orderApi.cancelOrder(orderId);
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to cancel order:', error);
+    }
+  };
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -49,8 +103,16 @@ export const ProfilePage: React.FC = () => {
     setFormData(prev => ({ ...prev, gender }));
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      const response = await apiClient.put<any>('/api/lk/me', formData);
+      updateUser(response);
+      setIsEditing(false);
+      alert('Данные успешно сохранены!');
+    } catch (error) {
+      console.error('Failed to save profile:', error);
+      alert('Ошибка при сохранении данных');
+    }
   };
 
   const handleLogout = () => {
@@ -272,13 +334,7 @@ export const ProfilePage: React.FC = () => {
                   <h3 className="favorite-brand">{product.brand}</h3>
                   <p className="favorite-name">{product.name}</p>
                 </div>
-                <p className="favorite-price">{product.price.toLocaleString()} ₽</p>
-                <button 
-                  className="add-to-cart-favorite"
-                  onClick={() => handleAddToCartFromFavorites(product)}
-                >
-                  В корзину
-                </button>
+                <p className="favorite-price">{product.price?.toLocaleString() ?? 0} ₽</p>
               </div>
               <button 
                 className="remove-favorite"
@@ -308,29 +364,30 @@ export const ProfilePage: React.FC = () => {
         </div>
       ) : (
         <div className="orders-list">
-          {orders.map(order => (
+          {Array.isArray(orders) && orders.map(order => (
             <div key={order.id} className="order-card">
               <div className="order-header">
                 <div className="order-info">
                   <span className="order-number">Заказ #{order.id.slice(-6)}</span>
-                  <span className="order-date">{new Date(order.date).toLocaleDateString('ru-RU')}</span>
+                  <span className="order-date">{new Date(order.date || (order as any).createdAt).toLocaleDateString('ru-RU')}</span>
                 </div>
                 <div className={`order-status status-${order.status}`}>
-                  {order.status === 'pending' && 'Ожидает оплаты'}
-                  {order.status === 'processing' && 'В обработке'}
-                  {order.status === 'shipped' && 'Отправлен'}
-                  {order.status === 'delivered' && 'Доставлен'}
-                  {order.status === 'cancelled' && 'Отменен'}
+                  {(order.status === 'pending' || order.status === 'CREATED') && 'Ожидает оплаты'}
+                  {(order.status === 'processing' || order.status === 'CONFIRMED') && 'В работе'}
+                  {(order.status === 'shipped' || order.status === 'SHIPPED') && 'Отправлен'}
+                  {(order.status === 'delivered' || order.status === 'DELIVERED') && 'Доставлен'}
+                  {(order.status === 'cancelled' || order.status === 'CANCELLED') && 'Отменен'}
+                  {order.status === 'REFUNDED' && 'Возврат'}
                 </div>
               </div>
               <div className="order-items">
                 {order.items.slice(0, 3).map(item => (
                   <div key={item.id} className="order-item">
-                    <img src={item.image} alt={item.name} className="order-item-image" />
+                    <img src={item.product.image} alt={item.product.name} className="order-item-image" />
                     <div className="order-item-info">
-                      <div className="order-item-name">{item.name}</div>
-                      <div className="order-item-brand">{item.brand}</div>
-                      <div className="order-item-price">{item.price.toLocaleString()} ₽</div>
+                      <div className="order-item-name">{item.product.name}</div>
+                      <div className="order-item-brand">{item.product.brand}</div>
+                      <div className="order-item-price">{(item.product.price || 0).toLocaleString()} ₽</div>
                     </div>
                   </div>
                 ))}
@@ -341,7 +398,43 @@ export const ProfilePage: React.FC = () => {
               <div className="order-footer">
                 <div className="order-total">
                   <span>Итого:</span>
-                  <span>{order.total.toLocaleString()} ₽</span>
+                  <span>{(order.total || (order as any).totalPrice || 0).toLocaleString()} ₽</span>
+                </div>
+                <div className="order-actions-customer">
+                  {isEditingAddress === order.id ? (
+                    <div className="address-edit-form">
+                      <input 
+                        type="text" 
+                        value={newAddress} 
+                        onChange={(e) => setNewAddress(e.target.value)}
+                        placeholder="Новый адрес"
+                      />
+                      <button onClick={() => handleUpdateAddress(order.id)}>ОК</button>
+                      <button onClick={() => setIsEditingAddress(null)}>Отмена</button>
+                    </div>
+                  ) : (
+                    <>
+                      {['CREATED', 'CONFIRMED', 'pending', 'processing'].includes(order.status) && (
+                        <button 
+                          className="edit-address-btn"
+                          onClick={() => {
+                            setIsEditingAddress(order.id);
+                            setNewAddress(order.adress || order.address || '');
+                          }}
+                        >
+                          Изменить адрес
+                        </button>
+                      )}
+                      {['CREATED', 'pending'].includes(order.status) && (
+                        <button 
+                          className="cancel-order-btn"
+                          onClick={() => handleCancelOrder(order.id)}
+                        >
+                          Отменить заказ
+                        </button>
+                      )}
+                    </>
+                  )}
                 </div>
                 <button className="order-details-btn" onClick={() => navigate(`/order/${order.id}`)}>
                   Подробнее
@@ -367,10 +460,11 @@ export const ProfilePage: React.FC = () => {
           <div className="profile-section">
             <h2 className="section-title">Стать продавцом</h2>
             <div className="empty-state">
-              <p>Заполните форму чтобы стать продавцом</p>
             </div>
           </div>
         );
+      case 'shop-dashboard':
+        return null;
       default:
         return null;
     }
@@ -440,6 +534,33 @@ export const ProfilePage: React.FC = () => {
                   </svg>
                   Стать продавцом
                 </button>
+
+                {myShops.length > 0 && (
+                  <button 
+                    className="menu-item"
+                    onClick={() => navigate('/store-dashboard')}
+                    style={{ marginTop: '10px', color: '#10b981', fontWeight: 'bold' }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                      <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    Кабинет магазина
+                  </button>
+                )}
+
+                {(user?.roles?.includes('ADMIN') || user?.roles?.includes('SELLER')) && (
+                  <button 
+                    className="menu-item admin-link"
+                    onClick={() => navigate('/admin')}
+                    style={{ marginTop: '10px', color: '#6366f1', fontWeight: 'bold' }}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    Админ панель
+                  </button>
+                )}
               </div>
 
               <button className="logout-btn" onClick={handleLogout}>

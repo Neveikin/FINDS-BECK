@@ -45,7 +45,7 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setLoading(true);
       console.log('OrdersProvider - Loading orders for user:', user.id);
       const response = await orderApi.getUserOrders(user.id);
-      setOrders(response);
+      setOrders(Array.isArray(response) ? response : []);
     } catch (error) {
       // Don't log 401 errors as they're expected when user is not authenticated
       if (error instanceof Error && !error.message.includes('401') && !error.message.includes('Пользователь не авторизован')) {
@@ -57,11 +57,15 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const addOrder = async (orderData: Omit<Order, 'id' | 'date'>) => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
       try {
         await orderApi.createOrder({
-          shippingAddress: orderData.address,
-          paymentMethod: orderData.paymentMethod
+          orderItems: orderData.items.map(item => ({
+            productId: item.product.id.trim(),
+            quantity: item.quantity
+          })),
+          adress: orderData.address,
+          userEmail: user.email
         });
         await loadOrders();
       } catch (error) {

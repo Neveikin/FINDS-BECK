@@ -8,7 +8,7 @@ interface CartModalProps {
 }
 
 export const CartModal: React.FC<CartModalProps> = ({ onClose }) => {
-  const { cart, removeFromCart, clearCart, cartTotal } = useCart();
+  const { cart, removeFromCart, updateQuantity, clearCart, cartTotal } = useCart();
   const navigate = useNavigate();
 
   return (
@@ -29,13 +29,33 @@ export const CartModal: React.FC<CartModalProps> = ({ onClose }) => {
             <div className="cart-items">
               {cart.map(item => (
                 <div key={item.id} className="cart-item">
-                  <img src={item.image} alt={item.name} className="item-image" />
+                  <img src={item.product.image} alt={item.product.name} className="item-image" />
                   <div className="item-details">
-                    <h4>{item.name}</h4>
-                    <p className="item-brand">{item.brand}</p>
-                    <p className="item-price">{item.price.toLocaleString()} ₽</p>
+                    <h4>{item.product.name}</h4>
+                    <p className="item-brand">{item.product.brand}</p>
+                    <div className="item-variants">
+                      {item.size && <span className="variant">Размер: {item.size}</span>}
+                      {item.color && <span className="variant">Цвет: {item.color}</span>}
+                    </div>
+                    <p className="item-price">{(item.product.price || 0).toLocaleString()} ₽</p>
+                    
+                    <div className="quantity-controls">
+                      <button 
+                        className="qty-btn" 
+                        onClick={() => updateQuantity(item.product.id, -1, item.size, item.color)}
+                      >
+                        -
+                      </button>
+                      <span className="qty-value">{item.quantity}</span>
+                      <button 
+                        className="qty-btn" 
+                        onClick={() => updateQuantity(item.product.id, 1, item.size, item.color)}
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                  <button className="remove-btn" onClick={() => removeFromCart(item.id)}>×</button>
+                  <button className="remove-btn" onClick={() => removeFromCart(item.product.id, item.size, item.color)}>×</button>
                 </div>
               ))}
             </div>
@@ -43,7 +63,7 @@ export const CartModal: React.FC<CartModalProps> = ({ onClose }) => {
             <div className="cart-footer">
               <div className="cart-total">
                 <span>Итого:</span>
-                <span className="total-price">{cartTotal.toLocaleString()} ₽</span>
+                <span className="total-price">{(cartTotal || 0).toLocaleString()} ₽</span>
               </div>
               <div className="cart-actions">
                 <button className="clear-btn" onClick={clearCart}>Очистить</button>

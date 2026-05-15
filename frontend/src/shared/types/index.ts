@@ -10,6 +10,16 @@ export interface Product {
   shopId?: string;
   createdAt?: string;
   updatedAt?: string;
+  size?: string;
+  color?: string;
+}
+
+export interface CartItem {
+  id: string; // This will be product.id + size + color for uniqueness in local cart
+  product: Product;
+  quantity: number;
+  size?: string;
+  color?: string;
 }
 
 export interface Brand {
@@ -30,10 +40,12 @@ export interface Category {
 export interface Order {
   id: string;
   date: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'CREATED' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
   total: number;
-  items: Product[];
+  totalPrice?: number;
+  items: any[];
   deliveryMethod: string;
   paymentMethod: string;
   address: string;
+  adress?: string;
 }

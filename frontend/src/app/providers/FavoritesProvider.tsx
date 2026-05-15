@@ -75,8 +75,9 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const addToFavorites = async (product: Product) => {
     // Check if product is already in favorites
+    const cleanProductId = product.id?.trim();
     const currentFavorites = Array.isArray(favorites) ? favorites : [];
-    const isAlreadyFavorite = currentFavorites.some(fav => fav.id === product.id);
+    const isAlreadyFavorite = currentFavorites.some(fav => fav.id?.trim() === cleanProductId);
     
     if (isAlreadyFavorite) {
       return; // Don't add if already exists
@@ -84,23 +85,24 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     
     if (isAuthenticated) {
       try {
-        await favoritesApi.addProduct(product.id);
+        await favoritesApi.addProduct(cleanProductId);
         await loadFavorites();
       } catch (error) {
         console.error('Failed to add to favorites:', error);
       }
     } else {
-      const newFavorites = [...currentFavorites, product];
+      const newFavorites = [...currentFavorites, { ...product, id: cleanProductId }];
       setFavorites(newFavorites);
       localStorage.setItem('favorites', JSON.stringify(newFavorites));
     }
   };
 
   const removeFromFavorites = async (productId: string) => {
+    const cleanProductId = productId?.trim();
     if (isAuthenticated) {
       try {
         const currentFavorites = Array.isArray(favorites) ? favorites : [];
-        const favorite = currentFavorites.find(f => f.id === productId);
+        const favorite = currentFavorites.find(f => f.id?.trim() === cleanProductId);
         if (favorite) {
           await favoritesApi.removeProduct(favorite.id);
           await loadFavorites();
@@ -110,7 +112,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }
     } else {
       const currentFavorites = Array.isArray(favorites) ? favorites : [];
-      const newFavorites = currentFavorites.filter(item => item.id !== productId);
+      const newFavorites = currentFavorites.filter(item => item.id?.trim() !== cleanProductId);
       setFavorites(newFavorites);
       localStorage.setItem('favorites', JSON.stringify(newFavorites));
     }
@@ -120,7 +122,8 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (!Array.isArray(favorites)) {
       return false;
     }
-    return favorites.some(item => item.id === productId);
+    const cleanProductId = productId?.trim();
+    return favorites.some(item => item.id?.trim() === cleanProductId);
   };
 
   const favoritesCount = Array.isArray(favorites) ? favorites.length : 0;

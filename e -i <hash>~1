@@ -1,0 +1,25 @@
+[33m350a7003[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m hfro
+[33m0a4d9ccc[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m FFF UPDDD
+[33m248cc960[m Merge pull request #1 from Neveikin/cart-error-async
+[33m4e649b15[m Enhance cart functionality with error handling and async operations. Updated CartProvider to throw errors on add failure, modified AddToCartButton to handle async addToCart, and ensured ProfilePage waits for removeFromFavorites to complete.
+[33m58dcf80b[m GLOBAL UPD
+[33m165c50cc[m Order logic add
+[33m63916874[m google auth logic
+[33mbdcfb17b[m logging and Exception update
+[33mdd818415[m news logic add
+[33maa1cb509[m feat: Update configuration with environment variables and fix AuthService
+[33m2fdd3962[m merge secure-config
+[33m566ed2da[m feat: Merge clean-main branch with target exclusion
+[33m250c5848[m feat: Update .gitignore to exclude target directory
+[33m2876e8b8[m feat: Add secure configuration with environment variables
+[33mef6a71f9[m feat: Add secure configuration with environment variables
+[33mf3aa84df[m news logic add
+[33meba811aa[m feat: Add .env to gitignore for security
+[33m8b30cd9e[m feat: Add environment variables support with secure defaults
+[33m6bcc6d36[m News Logic add
+[33m61eb0309[m Cart And Favorits Logic
+[33m604b8e6a[m Merge branch 'main' of https://github.com/Neveikin/FINDS-BECK
+[33m7b079be7[m Restore frontend pages and update gitignore
+[33m416bc182[m Remove frontend folder from tracking
+[33m93ceca7b[m Product Logic upd
+[33mf14b618e[m upd

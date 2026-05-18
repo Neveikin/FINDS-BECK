@@ -78,3 +78,48 @@
 .toggle-btn:hover {
   color: rgba(18, 35, 93, 1);
 }
+
+/* Mobile responsiveness */
+@media (max-width: 576px) {
+  .auth-modal {
+    max-width: 100%;
+    width: 95%;
+  }
+
+  .auth-form {
+    padding: 24px 20px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .form-group input {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .submit-btn {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .error-message {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .auth-form {
+    padding: 20px 16px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .submit-btn {
+    font-size: 14px;
+  }
+}

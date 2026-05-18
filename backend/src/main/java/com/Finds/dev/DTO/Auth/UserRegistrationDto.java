@@ -17,5 +17,8 @@ public record UserRegistrationDto(
         String name,
 
         @NotBlank(message = "Password confirmation is required")
-        String confirmPassword
+        String confirmPassword,
+
+        @NotBlank(message = "reCAPTCHA token is required")
+        String recaptchaToken
 ) {}

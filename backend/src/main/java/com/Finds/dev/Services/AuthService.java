@@ -46,6 +46,9 @@ public class AuthService {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private RecaptchaService recaptchaService;
+
     public SignInResponseDto signin(UserCredentialsDto userCredentials) {
         String email = userCredentials.email();
         String password = userCredentials.password();
@@ -91,6 +94,12 @@ public class AuthService {
         String password = registrationDto.password();
         String name = registrationDto.name();
         String confirmPassword = registrationDto.confirmPassword();
+        String recaptchaToken = registrationDto.recaptchaToken();
+
+        // Verify reCAPTCHA token
+        if (!recaptchaService.verifyRecaptcha(recaptchaToken)) {
+            throw new IllegalArgumentException("reCAPTCHA verification failed");
+        }
 
         if (!password.equals(confirmPassword)) {
             throw new IllegalArgumentException("Passwords do not match");

@@ -10,6 +10,7 @@ export interface RegisterRequest {
   password: string;
   name: string;
   confirmPassword: string;
+  recaptchaToken: string;
 }
 
 export interface AuthResponse {

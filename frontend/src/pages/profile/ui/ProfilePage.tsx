@@ -549,8 +549,8 @@ export const ProfilePage: React.FC = () => {
                   </button>
                 )}
 
-                {(user?.roles?.includes('ADMIN') || user?.roles?.includes('SELLER')) && (
-                  <button 
+                {(user?.role === 'ADMIN' || user?.role === 'SELLER') && (
+                  <button
                     className="menu-item admin-link"
                     onClick={() => navigate('/admin')}
                     style={{ marginTop: '10px', color: '#6366f1', fontWeight: 'bold' }}

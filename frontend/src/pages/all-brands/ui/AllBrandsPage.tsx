@@ -19,7 +19,15 @@ export const AllBrandsPage: React.FC = () => {
       try {
         setLoading(true);
         const brandsData = await brandApi.getAllBrands();
-        setAllBrands(brandsData);
+
+        // Проверяем, что получили массив
+        if (Array.isArray(brandsData)) {
+          setAllBrands(brandsData);
+        } else {
+          console.error('Invalid brands data format:', brandsData);
+          setError('Получены некорректные данные от сервера');
+          setAllBrands([]);
+        }
       } catch (err) {
         console.error('Failed to load brands:', err);
         setError('Не удалось загрузить бренды');

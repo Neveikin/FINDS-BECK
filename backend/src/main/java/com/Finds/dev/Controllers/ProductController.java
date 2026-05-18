@@ -44,7 +44,10 @@ public class ProductController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<?> getProducts(@RequestParam(required = false) String id, @RequestParam(required = false) String shopId) {
+    public ResponseEntity<?> getProducts(
+            @RequestParam(required = false) String id,
+            @RequestParam(required = false) String shopId,
+            @RequestParam(required = false) String category) {
         if (id != null) {
             Object result = productService.getProducts(id);
             if (result instanceof Product p) {
@@ -53,6 +56,9 @@ public class ProductController {
             return ResponseEntity.ok(result);
         } else if (shopId != null) {
             List<Product> products = productRepository.findByShopId(shopId);
+            return ResponseEntity.ok(products.stream().map(this::constructProductResponse).toList());
+        } else if (category != null && !category.isBlank()) {
+            List<Product> products = productRepository.findByCategoryName(category);
             return ResponseEntity.ok(products.stream().map(this::constructProductResponse).toList());
         } else {
             List<Product> products = productRepository.findAll();

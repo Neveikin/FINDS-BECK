@@ -226,8 +226,10 @@ export const StoreDashboard: React.FC = () => {
                           <select value={productFormData.categoryName} onChange={e => setProductFormData({...productFormData, categoryName: e.target.value})}>
                             <option value="ФУТБОЛКИ">ФУТБОЛКИ</option>
                             <option value="ЗИПКИ">ЗИПКИ</option>
-                            <option value="ХУДИ">ХУДИ</option>
+                            <option value="СВИТЕРЫ">СВИТЕРЫ</option>
                             <option value="ШТАНЫ">ШТАНЫ</option>
+                            <option value="КУРТКИ">КУРТКИ</option>
+                            <option value="АКССЕСУАРЫ">АКССЕСУАРЫ</option>
                           </select>
                         </div>
                         <div className="modal-actions">

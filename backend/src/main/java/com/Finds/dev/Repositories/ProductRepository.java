@@ -96,4 +96,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     List<Product> findByShopId(String shopId);
 
+    @Query("SELECT p FROM Product p WHERE p.category.name = :categoryName AND p.isActive = true")
+    List<Product> findByCategoryName(@Param("categoryName") String categoryName);
+
+    @Query("SELECT p FROM Product p WHERE p.category.name = :categoryName")
+    List<Product> findAllByCategoryName(@Param("categoryName") String categoryName);
+
 }

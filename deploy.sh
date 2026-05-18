@@ -1,47 +1,60 @@
 #!/bin/bash
 
-# Скрипт деплоя для finds-shop.ru
+# Quick deployment script for FINDS-BECK
+# Usage: ./deploy.sh
 
 set -e
 
-echo "🚀 Начинаем деплой FINDS на finds-shop.ru"
+echo "🚀 Starting deployment..."
 
-# Проверяем наличие .env файла
+# Check if .env exists
 if [ ! -f .env ]; then
-    echo "❌ Файл .env не найден. Создайте его на основе .env.example"
+    echo "❌ Error: .env file not found!"
+    echo "Please copy .env.production to .env and fill in the values"
     exit 1
 fi
 
-# Загружаем переменные окружения
+# Load environment variables
 source .env
 
-echo "📦 Сборка Docker образов..."
-docker-compose -f docker-compose.prod.yml build --no-cache
+# Check required variables
+required_vars=("DATABASE_PASSWORD" "REDIS_PASSWORD" "JWT_SECRET" "RECAPTCHA_SECRET" "APP_URL")
+for var in "${required_vars[@]}"; do
+    if [ -z "${!var}" ]; then
+        echo "❌ Error: $var is not set in .env"
+        exit 1
+    fi
+done
 
-echo "🔄 Остановка старых контейнеров..."
-docker-compose -f docker-compose.prod.yml down
+echo "✅ Environment variables validated"
 
-echo "🚀 Запуск новых контейнеров..."
-docker-compose -f docker-compose.prod.yml up -d
+# Stop existing containers
+echo "🛑 Stopping existing containers..."
+docker compose -f docker-compose.prod.yml down
 
-echo "⏳ Ожидание запуска приложений..."
-sleep 30
+# Build images
+echo "🔨 Building Docker images..."
+docker compose -f docker-compose.prod.yml build --no-cache
 
-echo "🔍 Проверка статуса..."
-docker-compose -f docker-compose.prod.yml ps
+# Start containers
+echo "🚀 Starting containers..."
+docker compose -f docker-compose.prod.yml up -d
 
-echo "🧪 Проверка работоспособности API..."
-curl -f https://finds-shop.ru/api/auth/signin || {
-    echo "❌ API недоступен"
-    docker-compose -f docker-compose.prod.yml logs app
-    exit 1
-}
+# Wait for services to be healthy
+echo "⏳ Waiting for services to be healthy..."
+sleep 10
 
-echo "✅ Деплой успешно завершен!"
-echo "🌐 Сайт доступен по адресу: https://finds-shop.ru"
+# Check status
+echo "📊 Checking container status..."
+docker compose -f docker-compose.prod.yml ps
 
-# Показываем логи если есть ошибки
-if docker-compose -f docker-compose.prod.yml ps | grep -q "Exit"; then
-    echo "⚠️ Некоторые контейнеры завершились с ошибкой:"
-    docker-compose -f docker-compose.prod.yml logs --tail=50
-fi
+# Show logs
+echo "📝 Recent logs:"
+docker compose -f docker-compose.prod.yml logs --tail=50
+
+echo ""
+echo "✅ Deployment complete!"
+echo "🌐 Your application should be available at: $APP_URL"
+echo ""
+echo "To view logs: docker compose -f docker-compose.prod.yml logs -f"
+echo "To stop: docker compose -f docker-compose.prod.yml stop"

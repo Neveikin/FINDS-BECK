@@ -293,6 +293,10 @@ export const AdminPanel: React.FC = () => {
                         <option value="">Категория</option>
                         <option value="ФУТБОЛКИ">ФУТБОЛКИ</option>
                         <option value="ЗИПКИ">ЗИПКИ</option>
+                        <option value="СВИТЕРЫ">СВИТЕРЫ</option>
+                        <option value="ШТАНЫ">ШТАНЫ</option>
+                        <option value="КУРТКИ">КУРТКИ</option>
+                        <option value="АКССЕСУАРЫ">АКССЕСУАРЫ</option>
                       </select>
                       <div className="form-actions">
                         <button type="submit">Сохранить</button>

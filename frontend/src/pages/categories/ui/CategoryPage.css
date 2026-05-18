@@ -384,16 +384,49 @@
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .category-page .header-title {
     font-size: 28px !important;
   }
-  
+
   .product-name {
     font-size: 14px;
   }
-  
+
   .product-price {
     font-size: 20px;
+  }
+
+  .category-products {
+    padding: 0 16px;
+  }
+
+  .category-main {
+    padding: 16px;
+  }
+}
+
+/* Extra small devices (320px - 360px) */
+@media (max-width: 360px) {
+  .category-page .header-title {
+    font-size: 24px !important;
+  }
+
+  .category-products {
+    padding: 0 12px;
+  }
+
+  .category-main {
+    padding: 12px;
+  }
+
+  .filter-button,
+  .sort-button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .products-grid {
+    gap: 16px;
   }
 }

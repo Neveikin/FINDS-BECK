@@ -124,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (name: string, email: string, password: string, confirmPassword: string): Promise<boolean> => {
     try {
-      await authApi.register({ name, email, password, confirmPassword });
+      await authApi.register({ name, email, password, confirmPassword, recaptchaToken: '' });
       return true;
     } catch (error) {
       console.error('Registration failed:', error);

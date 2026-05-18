@@ -23,7 +23,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
-  register: (name: string, email: string, password: string, confirmPassword: string) => Promise<boolean>;
+  register: (name: string, email: string, password: string, confirmPassword: string, recaptchaToken: string) => Promise<boolean>;
   updateUser: (userData: Partial<User>) => void;
 }
 
@@ -114,18 +114,18 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
-  const register = async (name: string, email: string, password: string, confirmPassword: string): Promise<boolean> => {
+  const register = async (name: string, email: string, password: string, confirmPassword: string, recaptchaToken: string): Promise<boolean> => {
     try {
       console.log('SimpleAuthProvider - Starting registration for:', email);
-      
+
       // Call the original auth signup endpoint
-      await apiClient.post('/api/auth/signup', { name, email, password, confirmPassword });
+      await apiClient.post('/api/auth/signup', { name, email, password, confirmPassword, recaptchaToken });
       console.log('SimpleAuthProvider - Signup successful');
-      
+
       // After successful registration, send confirmation code
       await apiClient.post(`/api/auth/email-confirm/${email}`);
       console.log('SimpleAuthProvider - Confirmation code sent');
-      
+
       return true;
     } catch (error) {
       console.error('SimpleAuthProvider - Registration failed:', error);

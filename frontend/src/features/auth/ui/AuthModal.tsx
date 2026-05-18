@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSimpleAuth } from '../../../app/providers/SimpleAuthProvider';
 import { EmailConfirmationModal } from './EmailConfirmationModal';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import './AuthModal.css';
 
 interface AuthModalProps {
@@ -15,8 +16,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
-  
+
   const { login, register } = useSimpleAuth();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const handleEmailConfirmationSuccess = () => {
     setShowEmailConfirmation(false);
@@ -39,12 +41,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
         setError('Пароли не совпадают');
         return;
       }
-      console.log('Registration data:', { name, email, password, confirmPassword });
-      const success = await register(name, email, password, confirmPassword);
-      if (success) {
-        setShowEmailConfirmation(true);
-      } else {
-        setError('Ошибка при регистрации');
+
+      if (!executeRecaptcha) {
+        setError('reCAPTCHA не загружена');
+        return;
+      }
+
+      try {
+        const recaptchaToken = await executeRecaptcha('register');
+        console.log('Registration data:', { name, email, password, confirmPassword, recaptchaToken });
+        const success = await register(name, email, password, confirmPassword, recaptchaToken);
+        if (success) {
+          setShowEmailConfirmation(true);
+        } else {
+          setError('Ошибка при регистрации');
+        }
+      } catch (err) {
+        setError('Ошибка проверки reCAPTCHA');
       }
     }
   };

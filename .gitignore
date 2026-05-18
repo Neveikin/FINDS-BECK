@@ -1,2 +1,40 @@
+# Environment files
 .env
+.env.local
+.env.production
+.env.*.local
+
+
+# Build artifacts
 target/
+
+# SSL certificates
+nginx/ssl/*.pem
+nginx/ssl/*.key
+nginx/ssl/*.crt
+
+# Logs
+*.log
+logs/
+
+# Database backups
+*.sql
+backups/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Frontend
+frontend/build/
+frontend/node_modules/
+
+# Docker volumes
+postgres_data/
+redis_data/

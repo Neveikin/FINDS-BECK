@@ -1,25 +1,26 @@
-# Используем официальный образ OpenJDK 17
-FROM openjdk:17-jdk-slim
+# Multi-stage build for Spring Boot application
+FROM maven:3.9-eclipse-temurin-21 AS build
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем Maven wrapper и pom.xml
-COPY mvnw .
-COPY .mvn .mvn
+# Copy pom.xml and download dependencies
 COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Скачиваем зависимости
-RUN ./mvnw dependency:go-offline
-
-# Копируем исходный код
+# Copy source code and build
 COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Собираем приложение
-RUN ./mvnw clean package -DskipTests
+# Runtime stage
+FROM eclipse-temurin:21-jre-alpine
 
-# Открываем порт 8090
+WORKDIR /app
+
+# Copy jar from build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose port
 EXPOSE 8090
 
-# Запускаем приложение
-CMD ["java", "-jar", "target/FINDS-BECK-0.0.1-SNAPSHOT.jar"]
+# Run application
+ENTRYPOINT ["java", "-jar", "app.jar"]

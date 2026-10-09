@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "product_images")
+@Table(name = "product_images", indexes = {
+    @Index(name = "idx_product_image_prod_main", columnList = "product_id, is_main"),
+    @Index(name = "idx_product_image_product_id", columnList = "product_id")
+})
 public class ProductImage {
     
     @Id

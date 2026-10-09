@@ -14,6 +14,7 @@ export interface ProductFilters {
   maxPrice?: number;
   sortBy?: 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'popular';
   search?: string;
+  limit?: number;
 }
 
 export const productApi = {
@@ -26,6 +27,7 @@ export const productApi = {
     if (filters?.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
     if (filters?.sortBy) params.append('sortBy', filters.sortBy);
     if (filters?.search) params.append('search', filters.search);
+    if (filters?.limit) params.append('limit', filters.limit.toString());
     
     const queryString = params.toString();
     const url = queryString ? `/product/get?${queryString}` : '/product/get';

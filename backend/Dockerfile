@@ -3,13 +3,10 @@ FROM maven:3.9-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-# Copy pom.xml and download dependencies
+# Copy everything and build in one step
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
-
-# Copy source code and build
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -Dmaven.repo.local=/root/.m2/repository
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine

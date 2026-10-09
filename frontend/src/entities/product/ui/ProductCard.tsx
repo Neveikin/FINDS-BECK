@@ -21,7 +21,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="product-image-wrapper">
         <FavoriteButton product={product} className="product-favorite-btn" />
         <div className="product-image" onClick={handleImageClick}>
-          <img src={product.image} alt={product.name} />
+          <img
+            src={product.image}
+            alt={product.name}
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </div>
       <div className="product-info">

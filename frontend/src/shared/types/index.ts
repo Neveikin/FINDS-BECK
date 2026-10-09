@@ -1,15 +1,36 @@
+export interface ProductImage {
+  id: string;
+  url: string;
+  order: number;
+}
+
+export interface ProductVariant {
+  id: string;
+  color: string;
+  colorHex?: string;
+  images: ProductImage[];
+  sizes: ProductSize[];
+}
+
+export interface ProductSize {
+  size: string;
+  stock: number;
+}
+
 export interface Product {
   id: string;
   name: string;
   brand: string;
   brandId?: string;
   price: number;
-  image: string;
+  image: string; // Main image for preview
   description: string;
   category: string;
   shopId?: string;
   createdAt?: string;
   updatedAt?: string;
+  variants?: ProductVariant[]; // New: color variants with images and sizes
+  // Legacy fields for backward compatibility
   size?: string;
   color?: string;
 }

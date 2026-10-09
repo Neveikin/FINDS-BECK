@@ -6,6 +6,9 @@ import { useSimpleAuth } from '../../../app/providers/SimpleAuthProvider';
 import { orderApi } from '../../../shared/api/order';
 import { adminApi } from '../../../shared/api/adminApi';
 import { apiClient } from '../../../shared/api/apiClient';
+import { uploadApi } from '../../../shared/api/uploadApi';
+import { ProductVariant } from '../../../shared/types';
+import { ProductVariantsForm } from '../../admin/ui/ProductVariantsForm';
 import './StoreDashboard.css';
 
 export const StoreDashboard: React.FC = () => {
@@ -25,6 +28,7 @@ export const StoreDashboard: React.FC = () => {
     imageUrl: '',
     categoryName: 'ФУТБОЛКИ'
   });
+  const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -83,7 +87,8 @@ export const StoreDashboard: React.FC = () => {
       price: parseInt(productFormData.price),
       stock: 100,
       material: 'Cotton',
-      isActive: true
+      isActive: true,
+      variants: productVariants
     };
 
     try {
@@ -95,6 +100,7 @@ export const StoreDashboard: React.FC = () => {
       fetchShopProducts(selectedShopId);
       setIsAddingProduct(false);
       setEditingProduct(null);
+      setProductVariants([]);
     } catch (error) {
       console.error('Failed to save product:', error);
     }
@@ -109,34 +115,39 @@ export const StoreDashboard: React.FC = () => {
       imageUrl: product.image || '',
       categoryName: typeof product.category === 'string' ? product.category : product.category?.name || 'ФУТБОЛКИ'
     });
+    setProductVariants(product.variants || []);
     setIsAddingProduct(true);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
+      try {
+        const imageUrl = await uploadApi.uploadProductImage(file);
         setProductFormData(prev => ({
           ...prev,
-          imageUrl: reader.result as string
+          imageUrl
         }));
-      };
-      reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Failed to upload image:', error);
+        alert('Не удалось загрузить изображение');
+      }
     }
   };
 
   return (
     <div className="store-dashboard-page">
-      <Header 
-        title="КАБИНЕТ МАГАЗИНА" 
-        subtitle="Управление вашими продажами" 
-        backgroundImage="/images-main/admin-header.jpg" 
-        showOverlay={true} 
+      <Header
+        showOnlyNav={true}
       />
       
       <main className="dashboard-main">
         <div className="dashboard-container">
+          <div className="dashboard-header">
+            <h1>Кабинет Магазина</h1>
+            <p>Управление вашими продажами</p>
+          </div>
+
           <div className="dashboard-nav">
              <button className="back-btn" onClick={() => navigate('/profile')}>
                 ← В профиль
@@ -213,7 +224,7 @@ export const StoreDashboard: React.FC = () => {
                           <textarea value={productFormData.description} onChange={e => setProductFormData({...productFormData, description: e.target.value})} />
                         </div>
                         <div className="form-group">
-                          <label>Фото товара</label>
+                          <label>Фото товара (основное)</label>
                           <input type="file" accept="image/*" onChange={handleImageChange} />
                           {productFormData.imageUrl && (
                             <div className="image-preview">
@@ -232,6 +243,12 @@ export const StoreDashboard: React.FC = () => {
                             <option value="АКССЕСУАРЫ">АКССЕСУАРЫ</option>
                           </select>
                         </div>
+
+                        <ProductVariantsForm
+                          variants={productVariants}
+                          onChange={setProductVariants}
+                        />
+
                         <div className="modal-actions">
                           <button type="submit" className="save-btn">Сохранить</button>
                           <button type="button" className="cancel-btn" onClick={() => setIsAddingProduct(false)}>Отмена</button>

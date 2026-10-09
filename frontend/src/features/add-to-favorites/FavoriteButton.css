@@ -21,7 +21,6 @@
 
 .favorite-btn.active svg {
   fill: #ff0000 !important;
-  stroke: #ff0000 !important;
 }
 
 .favorite-btn svg {

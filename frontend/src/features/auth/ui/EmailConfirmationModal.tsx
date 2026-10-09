@@ -43,9 +43,17 @@ export const EmailConfirmationModal: React.FC<EmailConfirmationModalProps> = ({
       const response = await authApi.resendVerificationCode({ email });
       console.log('Code resent successfully:', response);
       setError('Код отправлен повторно');
-    } catch (error) {
-      console.error('Resend code failed:', error);
-      setError('Ошибка при отправке кода');
+    } catch (err: any) {
+      console.error('Resend code failed:', err);
+      let errMsg = err?.message || 'Ошибка при отправке кода';
+      if (errMsg.includes('Please wait') && errMsg.includes('receive a new code')) {
+        const match = errMsg.match(/\d+/);
+        const seconds = match ? match[0] : 'некоторое время';
+        errMsg = `Пожалуйста, подождите ${seconds} сек. перед повторной отправкой кода`;
+      } else if (errMsg.includes('Please wait 10 minutes')) {
+        errMsg = 'Пожалуйста, подождите 10 минут перед следующей попыткой';
+      }
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }

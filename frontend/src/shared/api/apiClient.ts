@@ -60,10 +60,10 @@ class ApiClient {
       try {
         error = responseText ? JSON.parse(responseText) : {};
       } catch (parseError) {
-        error = { error: 'Failed to parse error response' };
+        error = { error: responseText || 'Failed to parse error response' };
       }
       
-      throw new Error(error.message || error.error || `API Error: ${response.status}`);
+      throw new Error(error.message || error.message_text || error.mesage || error.error || `API Error: ${response.status}`);
     }
 
     const responseText = await response.text();

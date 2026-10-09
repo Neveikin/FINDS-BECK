@@ -1,44 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Header } from '../../../widgets/header';
 import { Footer } from '../../../widgets/footer/ui/Footer';
 import { BrandCard } from '../../../entities/brand/ui/BrandCard';
-import { useNavigate } from 'react-router-dom';
 import { Brand } from '../../../shared/types';
 import { brandApi } from '../../../shared/api/brand';
-import './AllBrandsPage.css'
+import './AllBrandsPage.css';
 
 export const AllBrandsPage: React.FC = () => {
   const navigate = useNavigate();
-  const [allBrands, setAllBrands] = useState<Brand[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Загрузка брендов
-  useEffect(() => {
-    const loadBrands = async () => {
-      try {
-        setLoading(true);
-        const brandsData = await brandApi.getAllBrands();
-
-        // Проверяем, что получили массив
-        if (Array.isArray(brandsData)) {
-          setAllBrands(brandsData);
-        } else {
-          console.error('Invalid brands data format:', brandsData);
-          setError('Получены некорректные данные от сервера');
-          setAllBrands([]);
-        }
-      } catch (err) {
-        console.error('Failed to load brands:', err);
-        setError('Не удалось загрузить бренды');
-        setAllBrands([]);
-      } finally {
-        setLoading(false);
+  // Use React Query for caching
+  const { data: allBrands = [], isLoading, error } = useQuery({
+    queryKey: ['brands'],
+    queryFn: async () => {
+      const brandsData = await brandApi.getAllBrands();
+      if (Array.isArray(brandsData)) {
+        return brandsData;
       }
-    };
-
-    loadBrands();
-  }, []);
+      return [];
+    },
+    staleTime: 10 * 60 * 1000, // Cache for 10 minutes (brands change rarely)
+  });
 
   const handleBrandClick = (brand: Brand) => {
     navigate(`/brand/${brand.id}`);
@@ -46,17 +30,17 @@ export const AllBrandsPage: React.FC = () => {
 
   return (
     <>
-      <Header title="БРЕНДЫ" subtitle="Все бренды в одном месте" />
-      
+      <Header title="БРЕНДЫ" subtitle="Все бренды в одном месте" backgroundImage="/images-main/kodex-header.png" />
+
       <main className="all-brands-content">
-        {loading ? (
+        {isLoading ? (
           <div className="loading-brands">
             <div className="loading-spinner">Загрузка брендов...</div>
           </div>
         ) : error ? (
           <div className="error-brands">
             <h2>Ошибка загрузки брендов</h2>
-            <p>{error}</p>
+            <p>{error instanceof Error ? error.message : 'Неизвестная ошибка'}</p>
             <button onClick={() => window.location.reload()} className="retry-button">
               Попробовать снова
             </button>
@@ -69,16 +53,16 @@ export const AllBrandsPage: React.FC = () => {
         ) : (
           <div className="brands-grid">
             {allBrands.map(brand => (
-              <BrandCard 
-                key={brand.id} 
-                brand={brand} 
+              <BrandCard
+                key={brand.id}
+                brand={brand}
                 onClick={() => handleBrandClick(brand)}
               />
             ))}
           </div>
         )}
       </main>
-      
+
       <Footer />
     </>
   );

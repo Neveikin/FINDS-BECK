@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "favorites")
+@Table(name = "favorites", indexes = {
+    @Index(name = "idx_favorite_user_product", columnList = "user_id, product_id")
+})
 public class Favorite {
 
     @Id

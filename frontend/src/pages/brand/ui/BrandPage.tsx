@@ -110,9 +110,9 @@ export const BrandPage: React.FC = () => {
 
   return (
     <>
-      <Header 
-        title={brand.name} 
-        subtitle={brand.description} 
+      <Header
+        title={brand.name}
+        subtitle="Коллекция бренда"
         backgroundImage={brand.coverImage}
         showOverlay={true}
       />
@@ -170,7 +170,7 @@ export const BrandPage: React.FC = () => {
         <div className="brand-products">
           {sortedProducts.length === 0 ? (
             <div className="empty-products">
-              <h2>Товары бренда暂时 отсутствуют</h2>
+              <h2>Товары бренда пока отсутствуют</h2>
               <p>Скоро здесь появятся товары бренда {brand.name}</p>
             </div>
           ) : (

@@ -13,21 +13,16 @@ export const CheckoutPage: React.FC = () => {
   const { user, isAuthenticated } = useSimpleAuth();
   const { addOrder } = useOrders();
 
-  const [deliveryMethod, setDeliveryMethod] = useState('courier');
-  const [paymentMethod, setPaymentMethod] = useState('card');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     phone: '+7',
-    address: '',
-    city: '',
-    postalCode: '',
     comment: ''
   });
 
-  const deliveryPrice = deliveryMethod === 'courier' ? 350 : deliveryMethod === 'pickup' ? 0 : 500;
-  const totalWithDelivery = cartTotal + deliveryPrice;
+  const deliveryPrice = 0;
+  const totalWithDelivery = cartTotal;
 
   useEffect(() => {
     if (user) {
@@ -36,9 +31,7 @@ export const CheckoutPage: React.FC = () => {
         firstName: user.firstName || user.name || '',
         lastName: user.lastName || '',
         email: user.email || '',
-        phone: user.phone || '+7',
-        city: user.city || '',
-        address: user.street && user.house ? `${user.street}, ${user.house}` : user.street || user.house || ''
+        phone: user.phone || '+7'
       }));
     }
   }, [user]);
@@ -61,13 +54,17 @@ export const CheckoutPage: React.FC = () => {
       return;
     }
     
+    const userAddress = user && (user.city || user.street || user.house)
+      ? `${user.city || ''} ${user.street || ''} ${user.house || ''}`.trim()
+      : '-';
+    
     addOrder({
       items: cart,
       total: totalWithDelivery,
       status: 'pending',
-      deliveryMethod: deliveryMethod === 'courier' ? 'Курьером' : deliveryMethod === 'pickup' ? 'Самовывоз' : 'Почтой России',
-      paymentMethod: paymentMethod === 'card' ? 'Банковская карта' : paymentMethod === 'cash' ? 'Наличными' : 'СБП',
-      address: `${formData.city}, ${formData.address}`
+      deliveryMethod: 'Самовывоз',
+      paymentMethod: 'При получении',
+      address: userAddress
     });
     
     alert('Заказ оформлен!');
@@ -147,169 +144,56 @@ export const CheckoutPage: React.FC = () => {
         <div className="checkout-container">
           <div className="checkout-grid">
             <div className="checkout-form">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="form-section">
                   <h3>Контактные данные</h3>
                   <div className="form-row">
                     <div className="form-group">
-                      <label>Имя *</label>
+                      <label>Имя</label>
                       <input
                         type="text"
                         name="firstName"
                         value={formData.firstName}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Введите имя"
+                        disabled
+                        placeholder="Имя из профиля"
                       />
                     </div>
                     <div className="form-group">
-                      <label>Фамилия *</label>
+                      <label>Фамилия</label>
                       <input
                         type="text"
                         name="lastName"
                         value={formData.lastName}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Введите фамилию"
+                        disabled
+                        placeholder="Фамилия из профиля"
                       />
                     </div>
                   </div>
                   <div className="form-row">
                     <div className="form-group">
-                      <label>Email *</label>
+                      <label>Email</label>
                       <input
                         type="email"
                         name="email"
                         value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="example@mail.ru"
+                        disabled
+                        placeholder="Email из профиля"
                       />
                     </div>
                     <div className="form-group">
-                      <label>Телефон *</label>
+                      <label>Телефон</label>
                       <input
                         type="tel"
                         name="phone"
                         value={formData.phone}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="+7 (___) ___-__-__"
+                        disabled
+                        placeholder="Телефон из профиля"
                       />
                     </div>
                   </div>
-                </div>
-
-                <div className="form-section">
-                  <h3>Доставка</h3>
-                  <div className="delivery-options">
-                    <label className="radio-label">
-                      <input
-                        type="radio"
-                        name="delivery"
-                        value="courier"
-                        checked={deliveryMethod === 'courier'}
-                        onChange={() => setDeliveryMethod('courier')}
-                      />
-                      <span>Курьером</span>
-                      <span className="delivery-price">350 ₽</span>
-                    </label>
-                    <label className="radio-label">
-                      <input
-                        type="radio"
-                        name="delivery"
-                        value="pickup"
-                        checked={deliveryMethod === 'pickup'}
-                        onChange={() => setDeliveryMethod('pickup')}
-                      />
-                      <span>Самовывоз</span>
-                      <span className="delivery-price">Бесплатно</span>
-                    </label>
-                    <label className="radio-label">
-                      <input
-                        type="radio"
-                        name="delivery"
-                        value="post"
-                        checked={deliveryMethod === 'post'}
-                        onChange={() => setDeliveryMethod('post')}
-                      />
-                      <span>Почтой России</span>
-                      <span className="delivery-price">500 ₽</span>
-                    </label>
-                  </div>
-
-                  {(deliveryMethod === 'courier' || deliveryMethod === 'post') && (
-                    <>
-                      <div className="form-group">
-                        <label>Город *</label>
-                        <input
-                          type="text"
-                          name="city"
-                          value={formData.city}
-                          onChange={handleInputChange}
-                          required
-                          placeholder="Введите город"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label>Адрес *</label>
-                        <input
-                          type="text"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleInputChange}
-                          required
-                          placeholder="Улица, дом, квартира"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label>Почтовый индекс</label>
-                        <input
-                          type="text"
-                          name="postalCode"
-                          value={formData.postalCode}
-                          onChange={handleInputChange}
-                          placeholder="123456"
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <div className="form-section">
-                  <h3>Оплата</h3>
-                  <div className="payment-options">
-                    <label className="radio-label">
-                      <input
-                        type="radio"
-                        name="payment"
-                        value="card"
-                        checked={paymentMethod === 'card'}
-                        onChange={() => setPaymentMethod('card')}
-                      />
-                      <span>Банковская карта</span>
-                    </label>
-                    <label className="radio-label">
-                      <input
-                        type="radio"
-                        name="payment"
-                        value="cash"
-                        checked={paymentMethod === 'cash'}
-                        onChange={() => setPaymentMethod('cash')}
-                      />
-                      <span>Наличными при получении</span>
-                    </label>
-                    <label className="radio-label">
-                      <input
-                        type="radio"
-                        name="payment"
-                        value="sbp"
-                        checked={paymentMethod === 'sbp'}
-                        onChange={() => setPaymentMethod('sbp')}
-                      />
-                      <span>СБП</span>
-                    </label>
-                  </div>
+                  <p className="educational-note" style={{ fontSize: '13px', color: '#86868b', marginTop: '15px', fontStyle: 'italic' }}>
+                    * Это учебный проект, мы не собираем персональные данные, поэтому их заполнение невозможно.
+                  </p>
                 </div>
 
                 <div className="form-section">
@@ -322,6 +206,7 @@ export const CheckoutPage: React.FC = () => {
                     rows={3}
                   />
                 </div>
+
               </form>
             </div>
 
@@ -346,7 +231,7 @@ export const CheckoutPage: React.FC = () => {
                 </div>
                 <div className="summary-row">
                   <span>Доставка</span>
-                  <span>{deliveryPrice === 0 ? 'Бесплатно' : deliveryPrice.toLocaleString() + ' ₽'}</span>
+                  <span>Бесплатно</span>
                 </div>
                 <div className="summary-row total">
                   <span>Итого</span>

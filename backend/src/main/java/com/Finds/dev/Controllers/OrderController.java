@@ -4,6 +4,11 @@ import com.Finds.dev.DTO.Order.OrderCreateDTO;
 import com.Finds.dev.Repositories.OrderItemsRepository;
 import com.Finds.dev.Repositories.OrderRepository;
 import com.Finds.dev.Services.OrderService;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -30,8 +35,91 @@ public class OrderController {
 
     @GetMapping("/get/{userId}")
     public ResponseEntity<?> getOrders(@PathVariable String userId) {
-        List<com.Finds.dev.Entity.Order> orders = orderService.getOrders(userId);
-        return ResponseEntity.ok().body(orders.stream().map(this::constructOrderResponse).toList());
+        List<Map<String, Object>> responseList = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(
+                System.getenv("DATABASE_URL"),
+                System.getenv("DATABASE_USERNAME"),
+                System.getenv("DATABASE_PASSWORD"))) {
+
+            String sql = "SELECT o.id, o.created_at, o.status, o.total_price, o.adress " +
+                         "FROM orders o " +
+                         "LEFT JOIN users u ON o.user_id = u.id " +
+                         "WHERE o.user_id = ? OR u.email = ? " +
+                         "ORDER BY o.created_at DESC";
+
+            Map<String, Map<String, Object>> ordersMap = new java.util.LinkedHashMap<>();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, userId);
+                stmt.setString(2, userId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        String orderId = rs.getString("id");
+                        Map<String, Object> orderMap = new HashMap<>();
+                        orderMap.put("id", orderId);
+                        orderMap.put("createdAt", rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null);
+                        orderMap.put("date", rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null);
+                        orderMap.put("status", rs.getString("status"));
+                        orderMap.put("totalPrice", rs.getBigDecimal("total_price"));
+                        orderMap.put("total", rs.getBigDecimal("total_price"));
+                        orderMap.put("adress", rs.getString("adress"));
+                        orderMap.put("address", rs.getString("adress"));
+                        orderMap.put("items", new ArrayList<Map<String, Object>>());
+                        ordersMap.put(orderId, orderMap);
+                    }
+                }
+            }
+
+            if (!ordersMap.isEmpty()) {
+                String orderIds = String.join(",", ordersMap.keySet().stream()
+                    .map(id -> "'" + id + "'").toList());
+
+                String itemsSql = "SELECT " +
+                                  "  oi.order_id, " +
+                                  "  oi.product_id, " +
+                                  "  oi.quantity, " +
+                                  "  oi.price_at_purchase, " +
+                                  "  p.name AS product_name, " +
+                                  "  p.price AS product_price, " +
+                                  "  s.name AS shop_name, " +
+                                  "  (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id AND pi.is_main = true LIMIT 1) AS image_url " +
+                                  "FROM order_items oi " +
+                                  "JOIN products p ON oi.product_id = p.id " +
+                                  "LEFT JOIN shops s ON p.shop_id = s.id " +
+                                  "WHERE oi.order_id IN (" + orderIds + ")";
+
+                try (PreparedStatement stmt = conn.prepareStatement(itemsSql);
+                     ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        String orderId = rs.getString("order_id");
+                        Map<String, Object> orderMap = ordersMap.get(orderId);
+                        if (orderMap != null) {
+                            Map<String, Object> itemMap = new HashMap<>();
+                            String productId = rs.getString("product_id");
+                            itemMap.put("id", orderId + "_" + productId);
+                            itemMap.put("quantity", rs.getInt("quantity"));
+                            itemMap.put("priceAtPurchase", rs.getBigDecimal("price_at_purchase"));
+
+                            Map<String, Object> productMap = new HashMap<>();
+                            productMap.put("id", productId);
+                            productMap.put("name", rs.getString("product_name"));
+                            productMap.put("brand", rs.getString("shop_name") != null ? rs.getString("shop_name") : "Unknown");
+                            String imageUrl = rs.getString("image_url");
+                            productMap.put("image", imageUrl != null ? imageUrl : "");
+                            productMap.put("price", rs.getBigDecimal("product_price"));
+
+                            itemMap.put("product", productMap);
+                            ((List<Map<String, Object>>) orderMap.get("items")).add(itemMap);
+                        }
+                    }
+                }
+            }
+
+            responseList.addAll(ordersMap.values());
+            return ResponseEntity.ok().body(responseList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/create")
@@ -42,8 +130,98 @@ public class OrderController {
 
     @GetMapping("/shop-orders/{email}")
     public ResponseEntity<?> getShopOrders(@PathVariable String email) {
-        List<com.Finds.dev.Entity.Order> orders = orderService.getShopOrders(email);
-        return ResponseEntity.ok().body(orders.stream().map(this::constructOrderResponse).toList());
+        List<Map<String, Object>> responseList = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(
+                System.getenv("DATABASE_URL"),
+                System.getenv("DATABASE_USERNAME"),
+                System.getenv("DATABASE_PASSWORD"))) {
+
+            String sql = "SELECT DISTINCT o.id, o.created_at, o.status, o.total_price, o.adress " +
+                         "FROM orders o " +
+                         "JOIN order_items oi ON o.id = oi.order_id " +
+                         "JOIN products p ON oi.product_id = p.id " +
+                         "JOIN shops s ON p.shop_id = s.id " +
+                         "JOIN shop_owners so ON s.id = so.shop_id " +
+                         "JOIN users u ON so.user_id = u.id " +
+                         "WHERE u.email = ? " +
+                         "ORDER BY o.created_at DESC";
+
+            Map<String, Map<String, Object>> ordersMap = new java.util.LinkedHashMap<>();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, email);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        String orderId = rs.getString("id");
+                        Map<String, Object> orderMap = new HashMap<>();
+                        orderMap.put("id", orderId);
+                        orderMap.put("createdAt", rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null);
+                        orderMap.put("date", rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null);
+                        orderMap.put("status", rs.getString("status"));
+                        orderMap.put("totalPrice", rs.getBigDecimal("total_price"));
+                        orderMap.put("total", rs.getBigDecimal("total_price"));
+                        orderMap.put("adress", rs.getString("adress"));
+                        orderMap.put("address", rs.getString("adress"));
+                        orderMap.put("items", new ArrayList<Map<String, Object>>());
+                        ordersMap.put(orderId, orderMap);
+                    }
+                }
+            }
+
+            if (!ordersMap.isEmpty()) {
+                String orderIds = String.join(",", ordersMap.keySet().stream()
+                    .map(id -> "'" + id + "'").toList());
+
+                String itemsSql = "SELECT " +
+                                  "  oi.order_id, " +
+                                  "  oi.product_id, " +
+                                  "  oi.quantity, " +
+                                  "  oi.price_at_purchase, " +
+                                  "  p.name AS product_name, " +
+                                  "  p.price AS product_price, " +
+                                  "  s.name AS shop_name, " +
+                                  "  (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id AND pi.is_main = true LIMIT 1) AS image_url " +
+                                  "FROM order_items oi " +
+                                  "JOIN products p ON oi.product_id = p.id " +
+                                  "JOIN shops s ON p.shop_id = s.id " +
+                                  "JOIN shop_owners so ON s.id = so.shop_id " +
+                                  "JOIN users u ON so.user_id = u.id " +
+                                  "WHERE oi.order_id IN (" + orderIds + ") AND u.email = ?";
+
+                try (PreparedStatement stmt = conn.prepareStatement(itemsSql)) {
+                    stmt.setString(1, email);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        while (rs.next()) {
+                            String orderId = rs.getString("order_id");
+                            Map<String, Object> orderMap = ordersMap.get(orderId);
+                            if (orderMap != null) {
+                                Map<String, Object> itemMap = new HashMap<>();
+                                String productId = rs.getString("product_id");
+                                itemMap.put("id", orderId + "_" + productId);
+                                itemMap.put("quantity", rs.getInt("quantity"));
+                                itemMap.put("priceAtPurchase", rs.getBigDecimal("price_at_purchase"));
+
+                                Map<String, Object> productMap = new HashMap<>();
+                                productMap.put("id", productId);
+                                productMap.put("name", rs.getString("product_name"));
+                                productMap.put("brand", rs.getString("shop_name") != null ? rs.getString("shop_name") : "Unknown");
+                                String imageUrl = rs.getString("image_url");
+                                productMap.put("image", imageUrl != null ? imageUrl : "");
+                                productMap.put("price", rs.getBigDecimal("product_price"));
+
+                                itemMap.put("product", productMap);
+                                ((List<Map<String, Object>>) orderMap.get("items")).add(itemMap);
+                            }
+                        }
+                    }
+                }
+            }
+
+            responseList.addAll(ordersMap.values());
+            return ResponseEntity.ok().body(responseList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
     }
 
     private java.util.Map<String, Object> constructOrderResponse(com.Finds.dev.Entity.Order order) {

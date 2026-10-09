@@ -236,7 +236,8 @@
 
 .header-text-overlay {
   position: absolute;
-  width: 530px;
+  width: calc(90% - 20px);
+  max-width: 500px;
   height: 33px;
   left: 50%;
   top: calc(50% + 60px);
@@ -260,9 +261,9 @@
   z-index: 2;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   margin: 0;
-  padding: 0 20px;
+  padding: 0;
   text-align: center;
-  width: 100%;
+  width: calc(100% - 40px);
   max-width: 100%;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -280,9 +281,9 @@
   z-index: 2;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
   margin: 0;
-  padding: 0 20px;
+  padding: 0;
   text-align: center;
-  width: 100%;
+  width: calc(100% - 40px);
   max-width: 100%;
   word-wrap: break-word;
   overflow-wrap: break-word;

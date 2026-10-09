@@ -37,10 +37,21 @@ export const MainPage: React.FC = () => {
         const brandsArray = Array.isArray(brandsData) ? brandsData : [];
         setBrands(brandsArray.slice(0, 6)); // Показываем первые 6 брендов
 
-        // Загружаем популярные товары
-        const productsData = await productApi.getPopularProducts(8);
-        // Убедимся что это массив
-        setPopularProducts(Array.isArray(productsData) ? productsData : []);
+        // Загружаем популярные товары (запрашиваем 5 штук)
+        let productsData = await productApi.getPopularProducts(5);
+        let productsArray = Array.isArray(productsData) ? productsData : [];
+        
+        // Если список пуст, загрузим любые 5 товаров
+        if (productsArray.length === 0) {
+          try {
+            const allProducts = await productApi.getAllProducts({ limit: 5 });
+            productsArray = Array.isArray(allProducts) ? allProducts : [];
+          } catch (e) {
+            console.error('Failed to fallback load products with limit:', e);
+          }
+        }
+        
+        setPopularProducts(productsArray.slice(0, 5));
         
       } catch (err) {
         console.error('Failed to load main page data:', err);
@@ -134,7 +145,7 @@ export const MainPage: React.FC = () => {
             {loading ? (
               <div className="loading-placeholder">Загрузка популярных товаров...</div>
             ) : popularProducts.length === 0 ? (
-              <div className="loading-placeholder">Популярные товары暂时 отсутствуют</div>
+              <div className="loading-placeholder">Популярные товары пока отсутствуют</div>
             ) : (
               popularProducts.map(product => (
                 <ProductCard key={product.id} product={product} />

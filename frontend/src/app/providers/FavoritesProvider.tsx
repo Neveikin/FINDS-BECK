@@ -28,44 +28,51 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     if (!authLoading) {
       if (isAuthenticated) {
         loadFavorites();
       } else {
         const savedFavorites = localStorage.getItem('favorites');
-        if (savedFavorites) {
-          setFavorites(JSON.parse(savedFavorites));
+        if (savedFavorites && isMounted) {
+          try {
+            setFavorites(JSON.parse(savedFavorites));
+          } catch (e) {
+            if (isMounted) {
+              setFavorites([]);
+            }
+          }
         }
       }
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [isAuthenticated, authLoading]);
 
   const loadFavorites = async () => {
     try {
       setLoading(true);
       const response = await favoritesApi.getFavorites() as any;
-      console.log('FavoritesProvider - Response from backend:', response);
-      // Backend returns { Shops: [...], Products: [...] }
       if (response && response.Products && Array.isArray(response.Products)) {
-        // Extract products from favorite items and ensure unique keys
         const products = response.Products.map((favorite: any) => ({
           ...favorite.product,
-          id: favorite.product.id?.trim() // Ensure no trailing spaces in ID
+          id: favorite.product.id?.trim()
         }));
-        
-        // Remove duplicates by ID
+
         const uniqueProducts = products.filter((product: Product, index: number, self: Product[]) =>
           index === self.findIndex((p: Product) => p.id === product.id)
         );
-        
+
         setFavorites(uniqueProducts);
       } else {
         setFavorites([]);
       }
     } catch (error) {
-      // Don't log 401 errors as they're expected when user is not authenticated
       if (error instanceof Error && !error.message.includes('401') && !error.message.includes('Пользователь не авторизован')) {
-        console.error('Failed to load favorites:', error);
+        // Silent fail for auth errors
       }
       setFavorites([]);
     } finally {

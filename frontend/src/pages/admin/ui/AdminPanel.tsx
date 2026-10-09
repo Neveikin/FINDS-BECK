@@ -4,7 +4,9 @@ import { Header } from '../../../widgets/header';
 import { Footer } from '../../../widgets/footer/ui/Footer';
 import { useSimpleAuth } from '../../../app/providers/SimpleAuthProvider';
 import { adminApi } from '../../../shared/api/adminApi';
-import { Product } from '../../../shared/types';
+import { uploadApi } from '../../../shared/api/uploadApi';
+import { Product, ProductVariant } from '../../../shared/types';
+import { ProductVariantsForm } from './ProductVariantsForm';
 import './AdminPanel.css';
 
 type Tab = 'products' | 'shops' | 'users';
@@ -35,6 +37,7 @@ export const AdminPanel: React.FC = () => {
     description: '',
     category: ''
   });
+  const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
 
   const [showShopForm, setShowShopForm] = useState(false);
   const [editingShop, setEditingShop] = useState<any>(null);
@@ -108,6 +111,7 @@ export const AdminPanel: React.FC = () => {
       description: '',
       category: ''
     });
+    setProductVariants([]);
     setShowProductForm(true);
   };
 
@@ -121,6 +125,7 @@ export const AdminPanel: React.FC = () => {
       description: product.description,
       category: typeof product.category === 'object' ? (product.category as any)?.name : product.category
     });
+    setProductVariants(product.variants || []);
     setShowProductForm(true);
   };
 
@@ -134,7 +139,8 @@ export const AdminPanel: React.FC = () => {
       categoryName: productFormData.category,
       stock: 100, // Default stock
       material: 'Cotton', // Default material
-      isActive: true // Required for edit
+      isActive: true, // Required for edit
+      variants: productVariants // Include variants
     };
 
     try {
@@ -145,6 +151,7 @@ export const AdminPanel: React.FC = () => {
       }
       loadProductsByShop(selectedShopId);
       setShowProductForm(false);
+      setProductVariants([]);
     } catch (error) {
       console.error('Failed to save product:', error);
       alert('Ошибка при сохранении товара. Проверьте консоль для деталей.');
@@ -173,6 +180,22 @@ export const AdminPanel: React.FC = () => {
     setShowShopForm(true);
   };
 
+  const handleShopLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const logoUrl = await uploadApi.uploadShopLogo(file);
+        setShopFormData(prev => ({
+          ...prev,
+          logoUrl
+        }));
+      } catch (error) {
+        console.error('Failed to upload logo:', error);
+        alert('Не удалось загрузить логотип');
+      }
+    }
+  };
+
   const handleShopSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -186,6 +209,18 @@ export const AdminPanel: React.FC = () => {
     } catch (error) {
       console.error('Failed to save shop:', error);
       alert('Ошибка при сохранении магазина');
+    }
+  };
+
+  const handleDeleteShop = async (id: string) => {
+    if (window.confirm('Вы уверены, что хотите удалить этот магазин? Все его товары также будут удалены.')) {
+      try {
+        await adminApi.deleteShop(id);
+        loadInitialData();
+      } catch (error) {
+        console.error('Failed to delete shop:', error);
+        alert('Ошибка при удалении магазина');
+      }
     }
   };
 
@@ -288,7 +323,7 @@ export const AdminPanel: React.FC = () => {
                       <input type="text" placeholder="Название" value={productFormData.name} onChange={e => setProductFormData({...productFormData, name: e.target.value})} required />
                       <input type="number" placeholder="Цена" value={productFormData.price} onChange={e => setProductFormData({...productFormData, price: e.target.value})} required />
                       <textarea placeholder="Описание" value={productFormData.description} onChange={e => setProductFormData({...productFormData, description: e.target.value})} />
-                      <input type="text" placeholder="URL картинки" value={productFormData.image} onChange={e => setProductFormData({...productFormData, image: e.target.value})} />
+                      <input type="text" placeholder="URL картинки (основное фото)" value={productFormData.image} onChange={e => setProductFormData({...productFormData, image: e.target.value})} />
                       <select value={productFormData.category} onChange={e => setProductFormData({...productFormData, category: e.target.value})} required>
                         <option value="">Категория</option>
                         <option value="ФУТБОЛКИ">ФУТБОЛКИ</option>
@@ -298,6 +333,12 @@ export const AdminPanel: React.FC = () => {
                         <option value="КУРТКИ">КУРТКИ</option>
                         <option value="АКССЕСУАРЫ">АКССЕСУАРЫ</option>
                       </select>
+
+                      <ProductVariantsForm
+                        variants={productVariants}
+                        onChange={setProductVariants}
+                      />
+
                       <div className="form-actions">
                         <button type="submit">Сохранить</button>
                         <button type="button" onClick={() => setShowProductForm(false)}>Отмена</button>
@@ -338,6 +379,14 @@ export const AdminPanel: React.FC = () => {
                           const email = prompt('Email нового владельца:');
                           if (email) handleAssignOwner(s.id, email);
                         }}>+ Владелец</button>
+                        {isAdmin && (
+                          <button 
+                            onClick={() => handleDeleteShop(s.id)}
+                            style={{ marginLeft: '5px', backgroundColor: '#ef4444', color: 'white' }}
+                          >
+                            Уд.
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -358,8 +407,17 @@ export const AdminPanel: React.FC = () => {
                         <textarea value={shopFormData.description} onChange={e => setShopFormData({...shopFormData, description: e.target.value})} />
                       </div>
                       <div className="form-group">
-                        <label>URL логотипа</label>
-                        <input type="text" value={shopFormData.logoUrl} onChange={e => setShopFormData({...shopFormData, logoUrl: e.target.value})} />
+                        <label>Логотип бренда</label>
+                        <input type="file" accept="image/*" onChange={handleShopLogoChange} />
+                        {shopFormData.logoUrl && (
+                          <div className="image-preview" style={{ marginTop: '10px' }}>
+                            <img src={shopFormData.logoUrl} alt="Logo Preview" style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px' }} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label>URL логотипа (альтернатива)</label>
+                        <input type="text" value={shopFormData.logoUrl} onChange={e => setShopFormData({...shopFormData, logoUrl: e.target.value})} placeholder="Или вставьте URL" />
                       </div>
                       <div className="form-actions">
                         <button type="submit" className="save-btn">Сохранить</button>

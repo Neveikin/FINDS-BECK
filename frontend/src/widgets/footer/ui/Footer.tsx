@@ -48,6 +48,8 @@ export const Footer: React.FC = () => {
             <li><button className="footer-link" onClick={() => handleNavigation('/category/all')}>Каталог</button></li>
             <li><button className="footer-link" onClick={() => handleNavigation('/all-brands')}>Бренды</button></li>
             <li><button className="footer-link" onClick={() => handleNavigation('/profile')}>Личный кабинет</button></li>
+            <li><button className="footer-link" onClick={() => handleNavigation('/terms')}>Пользовательское соглашение</button></li>
+            <li><button className="footer-link" onClick={() => handleNavigation('/privacy')}>Политика конфиденциальности</button></li>
           </ul>
         </div>
       </div>

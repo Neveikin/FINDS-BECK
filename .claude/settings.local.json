@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(curl -s http://localhost:3000)"
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(chmod +x *)",
+      "Bash(./deploy-remote.sh *)",
+      "Bash(git add *)",
+      "Bash(./mvnw clean *)",
+      "Bash(mvn clean *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(./fix-502.sh)",
+      "Bash(ssh *)"
     ]
   }
 }

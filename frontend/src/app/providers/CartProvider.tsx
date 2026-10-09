@@ -30,18 +30,18 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     if (!authLoading) {
       if (isAuthenticated) {
         loadCart();
       } else {
         const savedCart = localStorage.getItem('cart');
-        if (savedCart) {
+        if (savedCart && isMounted) {
           try {
             const parsedCart = JSON.parse(savedCart);
-            // Migrate old cart data if necessary (if it's an array of products instead of cart items)
             const migratedCart = Array.isArray(parsedCart) ? parsedCart.map(item => {
               if (item && !item.product && item.price !== undefined) {
-                // This is old product data, wrap it in CartItem
                 return {
                   id: `${item.id}--`,
                   product: item,
@@ -50,18 +50,25 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }
               return item;
             }).filter(item => item && item.product) : [];
-            
-            setCart(migratedCart);
-            if (JSON.stringify(migratedCart) !== savedCart) {
-              localStorage.setItem('cart', JSON.stringify(migratedCart));
+
+            if (isMounted) {
+              setCart(migratedCart);
+              if (JSON.stringify(migratedCart) !== savedCart) {
+                localStorage.setItem('cart', JSON.stringify(migratedCart));
+              }
             }
           } catch (e) {
-            console.error('Failed to parse cart from localStorage:', e);
-            setCart([]);
+            if (isMounted) {
+              setCart([]);
+            }
           }
         }
       }
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [isAuthenticated, authLoading]);
 
   const loadCart = async () => {
@@ -97,7 +104,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const addToCart = async (product: Product, size?: string, color?: string) => {
-    console.log('CartProvider - Adding to cart:', product.id, 'Size:', size, 'Color:', color);
     if (isAuthenticated) {
       try {
         await cartApi.addItem(product.id, size, color);

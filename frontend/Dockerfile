@@ -1,6 +1,14 @@
 # Multi-stage build for React application
 FROM node:18-alpine AS build
 
+# Build arguments
+ARG REACT_APP_API_URL=https://finds-shop.ru
+ARG REACT_APP_RECAPTCHA_SITE_KEY
+
+# Set environment variables for build
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ENV REACT_APP_RECAPTCHA_SITE_KEY=$REACT_APP_RECAPTCHA_SITE_KEY
+
 WORKDIR /app
 
 # Copy package files

@@ -2,7 +2,6 @@
   padding: 0 40px;
   max-width: 1200px;
   margin: 0 auto;
-  overflow-x: hidden;
   width: 100%;
   box-sizing: border-box;
 }
@@ -39,7 +38,6 @@
 
 .brands-section {
   margin-bottom: 80px;
-  overflow-x: hidden;
   width: 100%;
   box-sizing: border-box;
 }
@@ -80,7 +78,6 @@
 
 .popular-items-section {
   margin-top: 80px;
-  overflow-x: hidden;
   width: 100%;
   box-sizing: border-box;
 }
@@ -321,8 +318,8 @@
   .categories-grid,
   .brands-grid,
   .products-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
   }
 
   .products-grid {
@@ -372,6 +369,7 @@
   .categories-grid,
   .brands-grid,
   .products-grid {
-    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 }

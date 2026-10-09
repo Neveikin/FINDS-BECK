@@ -50,6 +50,9 @@ export const adminApi = {
   updateShop: (shopId: string, data: any) =>
     apiClient.put(`/api/shops/update/${shopId}`, data),
 
+  deleteShop: (shopId: string) =>
+    apiClient.delete(`/api/shops/delete/${shopId}`),
+
   addShopOwner: (shopId: string, email: string) =>
     apiClient.post(`/api/shops/${shopId}/add-owner`, { email }),
 

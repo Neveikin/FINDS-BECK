@@ -152,78 +152,26 @@ export const ProfilePage: React.FC = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Имя *</label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      placeholder="Введите имя"
-                    />
-                  ) : (
-                    <p className="info-value">{formData.firstName}</p>
-                  )}
+                  <p className="info-value">{formData.firstName || '-'}</p>
                 </div>
                 
                 <div className="form-group">
                   <label>Фамилия *</label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      placeholder="Введите фамилию"
-                    />
-                  ) : (
-                    <p className="info-value">{formData.lastName}</p>
-                  )}
+                  <p className="info-value">{formData.lastName || '-'}</p>
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label>Дата рождения *</label>
-                  {isEditing ? (
-                    <input
-                      type="date"
-                      name="birthDate"
-                      value={formData.birthDate}
-                      onChange={handleInputChange}
-                    />
-                  ) : (
-                    <p className="info-value">{formData.birthDate}</p>
-                  )}
+                  <p className="info-value">{formData.birthDate || '-'}</p>
                 </div>
                 
                 <div className="form-group">
                   <label>Пол</label>
-                  {isEditing ? (
-                    <div className="gender-options">
-                      <label className="gender-label">
-                        <input
-                          type="radio"
-                          name="gender"
-                          checked={formData.gender === 'male'}
-                          onChange={() => handleGenderChange('male')}
-                        />
-                        <span>Мужской</span>
-                      </label>
-                      <label className="gender-label">
-                        <input
-                          type="radio"
-                          name="gender"
-                          checked={formData.gender === 'female'}
-                          onChange={() => handleGenderChange('female')}
-                        />
-                        <span>Женский</span>
-                      </label>
-                    </div>
-                  ) : (
-                    <p className="info-value">
-                      {formData.gender === 'male' ? 'Мужской' : 'Женский'}
-                    </p>
-                  )}
+                  <p className="info-value">
+                    {formData.gender === 'male' ? 'Мужской' : formData.gender === 'female' ? 'Женский' : '-'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -234,49 +182,19 @@ export const ProfilePage: React.FC = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Город *</label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      placeholder="Введите город"
-                    />
-                  ) : (
-                    <p className="info-value">{formData.city}</p>
-                  )}
+                  <p className="info-value">{formData.city || '-'}</p>
                 </div>
                 
                 <div className="form-group">
                   <label>Улица *</label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="street"
-                      value={formData.street}
-                      onChange={handleInputChange}
-                      placeholder="Введите улицу"
-                    />
-                  ) : (
-                    <p className="info-value">{formData.street}</p>
-                  )}
+                  <p className="info-value">{formData.street || '-'}</p>
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label>Дом *</label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="house"
-                      value={formData.house}
-                      onChange={handleInputChange}
-                      placeholder="Введите номер дома"
-                    />
-                  ) : (
-                    <p className="info-value">{formData.house}</p>
-                  )}
+                  <p className="info-value">{formData.house || '-'}</p>
                 </div>
               </div>
             </div>
@@ -284,28 +202,13 @@ export const ProfilePage: React.FC = () => {
             <div className="info-block">
               <h3 className="block-title">Номер телефона</h3>
               <div className="form-group">
-                {isEditing ? (
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="+7(***)-***-**-**"
-                  />
-                ) : (
-                  <p className="info-value phone">{formData.phone}</p>
-                )}
+                <p className="info-value phone">{formData.phone || '-'}</p>
               </div>
             </div>
 
-            {!isEditing && (
-              <button className="edit-btn mobile-edit" onClick={() => setIsEditing(true)}>
-                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-                </svg>
-                Изменить
-              </button>
-            )}
+            <div className="footnote-text" style={{ marginTop: '20px', fontSize: '12px', color: '#888', fontStyle: 'italic', borderTop: '1px solid #eee', paddingTop: '10px' }}>
+              * Это учебный проект, мы не собираем персональные данные, поэтому их заполнение невозможно.
+            </div>
           </div>
         );
  case 'favorites':
@@ -549,7 +452,7 @@ export const ProfilePage: React.FC = () => {
                   </button>
                 )}
 
-                {(user?.role === 'ADMIN' || user?.role === 'SELLER') && (
+                {(user?.roles?.includes('ADMIN') || user?.roles?.includes('SELLER')) && (
                   <button
                     className="menu-item admin-link"
                     onClick={() => navigate('/admin')}
@@ -583,20 +486,7 @@ export const ProfilePage: React.FC = () => {
                   </button>
                   <h1 className="profile-title">Личный кабинет</h1>
                 </div>
-                {activeTab === 'profile' && !isEditing && (
-                  <button className="edit-btn desktop-edit" onClick={() => setIsEditing(true)}>
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
-                      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-                    </svg>
-                    Изменить
-                  </button>
-                )}
-                {activeTab === 'profile' && isEditing && (
-                  <div className="edit-actions">
-                    <button className="save-btn" onClick={handleSave}>Сохранить</button>
-                    <button className="cancel-btn" onClick={() => setIsEditing(false)}>Отмена</button>
-                  </div>
-                )}
+
               </div>
 
               {renderContent()}

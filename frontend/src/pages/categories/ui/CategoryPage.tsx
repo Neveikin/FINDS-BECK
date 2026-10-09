@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Header } from '../../../widgets/header';
 import { Footer } from '../../../widgets/footer/ui/Footer';
-import { FavoriteButton } from '../../../features/add-to-favorites/FavoriteButton';
 import { ProductCard } from '../../../entities/product/ui/ProductCard';
 import { productApi } from '../../../shared/api/productApi';
 import './CategoryPage.css';
@@ -30,62 +30,29 @@ export const CategoryPage: React.FC = () => {
     return cat ? cat.name : 'Все товары';
   };
 
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Загрузка товаров по категории
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        
-        let products;
-        if (selectedCategory === 'all') {
-          products = await productApi.getAllProducts({ sortBy });
-        } else {
-          const categoryMap: Record<string, string> = {
-            'futbolki': 'ФУТБОЛКИ',
-            'zipki': 'ЗИПКИ',
-            'svitery': 'СВИТЕРЫ',
-            'shtany': 'ШТАНЫ',
-            'kurtki': 'КУРТКИ',
-            'aksessuary': 'АКССЕСУАРЫ'
-          };
-          products = await productApi.getProductsByCategory(categoryMap[selectedCategory], { sortBy });
-        }
-        
-        setFilteredProducts(Array.isArray(products) ? products : []);
-      } catch (err) {
-        console.error('Failed to load products:', err);
-        setError('Не удалось загрузить товары');
-        setFilteredProducts([]);
-      } finally {
-        setLoading(false);
+  // Use React Query for caching and automatic refetching
+  const { data: products = [], isLoading, error } = useQuery({
+    queryKey: ['products', selectedCategory, sortBy],
+    queryFn: async () => {
+      if (selectedCategory === 'all') {
+        return await productApi.getAllProducts({ sortBy });
+      } else {
+        const categoryMap: Record<string, string> = {
+          'futbolki': 'ФУТБОЛКИ',
+          'zipki': 'ЗИПКИ',
+          'svitery': 'СВИТЕРЫ',
+          'shtany': 'ШТАНЫ',
+          'kurtki': 'КУРТКИ',
+          'aksessuary': 'АКССЕСУАРЫ'
+        };
+        return await productApi.getProductsByCategory(categoryMap[selectedCategory], { sortBy });
       }
-    };
+    },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
 
-    loadProducts();
-  }, [selectedCategory, sortBy]);
-
-  const getSortedProducts = () => {
-    if (!Array.isArray(filteredProducts)) return [];
-    
-    switch(sortBy) {
-      case 'price-asc':
-        return [...filteredProducts].sort((a, b) => a.price - b.price);
-      case 'price-desc':
-        return [...filteredProducts].sort((a, b) => b.price - a.price);
-      case 'name-asc':
-        return [...filteredProducts].sort((a, b) => a.name.localeCompare(b.name));
-      case 'name-desc':
-        return [...filteredProducts].sort((a, b) => b.name.localeCompare(a.name));
-      default:
-        return filteredProducts;
-    }
-  };
-
-  const sortedProducts = getSortedProducts();
+  // No client-side sorting - trust backend sortBy parameter
+  const displayProducts = Array.isArray(products) ? products : [];
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
@@ -93,20 +60,24 @@ export const CategoryPage: React.FC = () => {
     navigate(`/category/${categoryId}`);
   };
 
-  
+
   return (
     <div className="category-page">
-      <Header 
-        title={selectedCategory === 'all' ? 'КАТАЛОГ' : getCategoryName(selectedCategory)} 
-        subtitle="Все товары в одном месте" 
-        showOverlay={true} 
+      <Header
+        title={selectedCategory === 'all' ? 'КАТАЛОГ' : getCategoryName(selectedCategory)}
+        subtitle="Все товары в одном месте"
+        showOverlay={true}
       />
-      
+
       <main className="category-main">
         <div className="category-products">
+          <div className="category-header-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>{selectedCategory === 'all' ? 'Все товары' : getCategoryName(selectedCategory)}</h2>
+            <a href="/all-brands" style={{ fontWeight: 'bold', textDecoration: 'underline', color: '#000', fontSize: '14px' }}>ВСЕ БРЕНДЫ</a>
+          </div>
           <div className="category-controls">
             <div className="category-filter">
-              <button 
+              <button
                 className="filter-button"
                 onClick={() => setShowCategoryFilter(!showCategoryFilter)}
               >
@@ -116,7 +87,7 @@ export const CategoryPage: React.FC = () => {
                 {selectedCategory === 'all' ? 'Все категории' : getCategoryName(selectedCategory)}
                 <span className="filter-arrow">{showCategoryFilter ? '▲' : '▼'}</span>
               </button>
-              
+
               {showCategoryFilter && (
                 <div className="filter-dropdown">
                   {categoriesList.map(cat => (
@@ -133,10 +104,10 @@ export const CategoryPage: React.FC = () => {
               )}
             </div>
 
-            <div className="products-count">Найдено: {sortedProducts.length} товаров</div>
-            
+            <div className="products-count">Найдено: {displayProducts.length} товаров</div>
+
             <div className="sort-container">
-              <button 
+              <button
                 className="sort-button"
                 onClick={() => setShowSortMenu(!showSortMenu)}
               >
@@ -152,10 +123,10 @@ export const CategoryPage: React.FC = () => {
                   {sortBy === 'name-desc' && 'По названию (Я-А)'}
                 </span>
               </button>
-              
+
               {showSortMenu && (
                 <div className="sort-menu">
-                  <button 
+                  <button
                     className={`sort-option ${sortBy === 'popular' ? 'active' : ''}`}
                     onClick={() => {
                       setSortBy('popular');
@@ -164,7 +135,7 @@ export const CategoryPage: React.FC = () => {
                   >
                     Популярные
                   </button>
-                  <button 
+                  <button
                     className={`sort-option ${sortBy === 'price-asc' ? 'active' : ''}`}
                     onClick={() => {
                       setSortBy('price-asc');
@@ -173,7 +144,7 @@ export const CategoryPage: React.FC = () => {
                   >
                     Сначала дешевле
                   </button>
-                  <button 
+                  <button
                     className={`sort-option ${sortBy === 'price-desc' ? 'active' : ''}`}
                     onClick={() => {
                       setSortBy('price-desc');
@@ -182,7 +153,7 @@ export const CategoryPage: React.FC = () => {
                   >
                     Сначала дороже
                   </button>
-                  <button 
+                  <button
                     className={`sort-option ${sortBy === 'name-asc' ? 'active' : ''}`}
                     onClick={() => {
                       setSortBy('name-asc');
@@ -191,7 +162,7 @@ export const CategoryPage: React.FC = () => {
                   >
                     По названию (А-Я)
                   </button>
-                  <button 
+                  <button
                     className={`sort-option ${sortBy === 'name-desc' ? 'active' : ''}`}
                     onClick={() => {
                       setSortBy('name-desc');
@@ -205,11 +176,19 @@ export const CategoryPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="products-grid">
-            {sortedProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="loading-state" style={{ padding: '40px', textAlign: 'center', width: '100%', fontSize: '1.2rem', color: '#666' }}>
+              Загрузка...
+            </div>
+          ) : displayProducts.length > 0 ? (
+            <div className="products-grid">
+              {displayProducts.map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state" style={{ padding: '40px', textAlign: 'center', width: '100%', color: '#666' }}>Нет товаров в этой категории</div>
+          )}
         </div>
       </main>
 

@@ -51,6 +51,9 @@ public class OrderService {
             Product product = productRepository.findById(itemDTO.productId())
                     .orElseThrow(() -> new RuntimeException("Product not found: " + itemDTO.productId()));
 
+            product.setOrderCount(product.getOrderCount() + itemDTO.quantity());
+            productRepository.save(product);
+
             BigDecimal itemTotal = product.getPrice().multiply(BigDecimal.valueOf(itemDTO.quantity()));
             totalPrice = totalPrice.add(itemTotal);
 

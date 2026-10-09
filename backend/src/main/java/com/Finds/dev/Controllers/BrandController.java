@@ -1,6 +1,7 @@
 package com.Finds.dev.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ import java.util.Map;
 public class BrandController {
 
     @GetMapping("/get")
+    @Cacheable(value = "brands", key = "#id != null ? 'brand_' + #id : 'all_brands'", unless = "#result == null")
     public ResponseEntity<?> getBrands(@RequestParam(required = false) String id) {
         List<Map<String, Object>> brands = new ArrayList<>();
         
@@ -35,7 +37,8 @@ public class BrandController {
                     brand.put("id", rs.getString("id"));
                     brand.put("name", rs.getString("name"));
                     brand.put("description", rs.getString("description"));
-                    brand.put("logoUrl", rs.getString("logoUrl"));
+                    brand.put("logo", rs.getString("logoUrl")); // Frontend expects 'logo'
+                    brand.put("logoUrl", rs.getString("logoUrl")); // Keep for compatibility
                     brand.put("coverImage", rs.getString("logoUrl"));
                     return ResponseEntity.ok(brand);
                 } else {
@@ -51,7 +54,8 @@ public class BrandController {
                     brand.put("id", rs.getString("id"));
                     brand.put("name", rs.getString("name"));
                     brand.put("description", rs.getString("description"));
-                    brand.put("logoUrl", rs.getString("logoUrl"));
+                    brand.put("logo", rs.getString("logoUrl")); // Frontend expects 'logo'
+                    brand.put("logoUrl", rs.getString("logoUrl")); // Keep for compatibility
                     brand.put("coverImage", rs.getString("logoUrl"));
                     brands.add(brand);
                 }
@@ -64,15 +68,18 @@ public class BrandController {
     }
 
     @GetMapping("/{brandId}/products")
+    @Cacheable(value = "brands", key = "'brand_products_' + #brandId", unless = "#result == null")
     public ResponseEntity<?> getBrandProducts(@PathVariable String brandId) {
         List<Map<String, Object>> products = new ArrayList<>();
-        
+
         try (Connection conn = DriverManager.getConnection(System.getenv("DATABASE_URL"), System.getenv("DATABASE_USERNAME"), System.getenv("DATABASE_PASSWORD"))) {
-            String sql = "SELECT id, name, description, price, stock, material, shop_id, category_id FROM products WHERE shop_id = ? AND is_active = true";
+            String sql = "SELECT p.id, p.name, p.description, p.price, p.stock, p.material, p.shop_id, p.category_id, " +
+                         "(SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id AND pi.is_main = true LIMIT 1) as main_image " +
+                         "FROM products p WHERE p.shop_id = ? AND p.is_active = true";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, brandId);
             ResultSet rs = stmt.executeQuery();
-            
+
             while (rs.next()) {
                 Map<String, Object> product = new HashMap<>();
                 product.put("id", rs.getString("id"));
@@ -83,8 +90,12 @@ public class BrandController {
                 product.put("material", rs.getString("material"));
                 product.put("shopId", rs.getString("shop_id"));
                 product.put("categoryId", rs.getString("category_id"));
-                product.put("brandId", rs.getString("shop_id")); // Use shop_id as brandId
-                product.put("image", "/images/products/" + rs.getString("id") + ".jpg");
+                product.put("brandId", rs.getString("shop_id"));
+
+                String mainImage = rs.getString("main_image");
+                product.put("image", mainImage != null ? mainImage : "");
+                product.put("imageUrl", mainImage != null ? mainImage : "");
+
                 products.add(product);
             }
             return ResponseEntity.ok(products);

@@ -1,0 +1,87 @@
+.document-page {
+  background-color: #f5f5f7;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.document-main {
+  flex: 1;
+  padding: 40px 20px;
+}
+
+.document-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.document-paper {
+  background: #ffffff;
+  padding: 50px 60px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  color: #1d1d1f;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.65;
+}
+
+.document-paper h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #000000;
+  text-align: center;
+  border-bottom: 2px solid #f5f5f7;
+  padding-bottom: 20px;
+}
+
+.doc-date {
+  font-size: 14px;
+  color: #86868b;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.document-paper section {
+  margin-bottom: 30px;
+}
+
+.document-paper h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1d1d1f;
+}
+
+.document-paper p {
+  font-size: 15px;
+  margin-bottom: 12px;
+  color: #333336;
+  text-align: justify;
+}
+
+.document-paper ul {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.document-paper li {
+  font-size: 15px;
+  margin-bottom: 6px;
+  color: #333336;
+}
+
+.doc-contact {
+  font-weight: 600;
+  color: #0066cc;
+}
+
+@media (max-width: 768px) {
+  .document-paper {
+    padding: 30px 20px;
+  }
+  
+  .document-paper h1 {
+    font-size: 22px;
+  }
+}

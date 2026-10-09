@@ -10,7 +10,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "products")
+@Table(name = "products", indexes = {
+    @Index(name = "idx_product_category_active", columnList = "category_id, is_active"),
+    @Index(name = "idx_product_shop_active", columnList = "shop_id, is_active"),
+    @Index(name = "idx_product_category_id", columnList = "category_id"),
+    @Index(name = "idx_product_shop_id", columnList = "shop_id")
+})
 public class Product {
     
     @Id
@@ -53,6 +58,9 @@ public class Product {
     @Column(name = "is_active")
     private Boolean isActive = true;
     
+    @Column(name = "order_count", columnDefinition = "integer default 0")
+    private Integer orderCount = 0;
+    
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
@@ -78,7 +86,11 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Review> reviews = new ArrayList<>();
-    
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<ProductVariant> variants = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -119,6 +131,9 @@ public class Product {
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
     
+    public Integer getOrderCount() { return orderCount == null ? 0 : orderCount; }
+    public void setOrderCount(Integer orderCount) { this.orderCount = orderCount; }
+    
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     
@@ -139,4 +154,7 @@ public class Product {
     
     public List<Review> getReviews() { return reviews; }
     public void setReviews(List<Review> reviews) { this.reviews = reviews; }
+
+    public List<ProductVariant> getVariants() { return variants; }
+    public void setVariants(List<ProductVariant> variants) { this.variants = variants; }
 }

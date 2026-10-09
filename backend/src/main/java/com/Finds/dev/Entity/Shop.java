@@ -39,6 +39,10 @@ public class Shop {
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Product> products = new ArrayList<>();
+
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<FavoriteShop> favoriteShops = new ArrayList<>();
     
     @PrePersist
     protected void onCreate() {
@@ -65,4 +69,7 @@ public class Shop {
     
     public List<Product> getProducts() { return products; }
     public void setProducts(List<Product> products) { this.products = products; }
+
+    public List<FavoriteShop> getFavoriteShops() { return favoriteShops; }
+    public void setFavoriteShops(List<FavoriteShop> favoriteShops) { this.favoriteShops = favoriteShops; }
 }
